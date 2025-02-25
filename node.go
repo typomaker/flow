@@ -158,7 +158,7 @@ func (it When) IsZero() bool {
 }
 func (it When) LogValue() slog.Value {
 	var attrs []slog.Attr
-	defer useSliceSlogAttr(&attrs)()
+	defer reuseSliceSlogAttr(&attrs)()
 
 	switch {
 	case it.UUID.IsNone():
@@ -217,7 +217,7 @@ type Live struct {
 
 func (it Live) LogValue() slog.Value {
 	var attrs []slog.Attr
-	defer useSliceSlogAttr(&attrs)()
+	defer reuseSliceSlogAttr(&attrs)()
 
 	switch {
 	case it.Since.IsNone():

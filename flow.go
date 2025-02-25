@@ -84,7 +84,7 @@ func New(o ...Option) *Flow {
 	var chain = make([][]Pipe, len(it.stock))
 	for i, p := range it.stock {
 		var ux map[UUID]struct{}
-		defer useMapUUIDSrtuct(&ux)()
+		defer reuseMapUUIDSrtuct(&ux)()
 
 		var pq = make([]Pipe, 0, 8)
 		pq = append(pq, p)
@@ -117,10 +117,10 @@ func (it *Flow) Work(ctx context.Context, nn []Node) (err error) {
 
 	// pipe to node matching
 	var chain []Pipe
-	defer useSlicePipe(&chain)()
+	defer reuseSlicePipe(&chain)()
 
 	var group [][]Node
-	defer useSliceSliceNode(&group)()
+	defer reuseSliceSliceNode(&group)()
 
 	var head int
 	var prev Pipe

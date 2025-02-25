@@ -34,7 +34,7 @@ func (it Pipe) IsZero() bool {
 }
 func (it Pipe) LogValue() slog.Value {
 	var attrs []slog.Attr
-	defer useSliceSlogAttr(&attrs)()
+	defer reuseSliceSlogAttr(&attrs)()
 
 	switch {
 	case it.UUID.IsNone():
