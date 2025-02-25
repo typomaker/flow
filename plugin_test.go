@@ -12,7 +12,7 @@ import (
 func TestInit(t *testing.T) {
 	ctx := context.Background()
 	f := New(
-		WithPipe(Pipe{
+		Pipe{
 			UUID: option.Some(MustUUID("afe9a397-e091-4254-8da4-be0dcf33f481")),
 			When: option.Some(When{}),
 			Code: option.Some(`
@@ -20,8 +20,8 @@ func TestInit(t *testing.T) {
 					nodes[0].kind=initPlugin1()+initPlugin2()
 				}
 			`),
-		}),
-		WithPlugin(Plugin{
+		},
+		Plugin{
 			Init: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
@@ -33,8 +33,8 @@ func TestInit(t *testing.T) {
 				}))
 				return nil
 			},
-		}),
-		WithPlugin(Plugin{
+		},
+		Plugin{
 			Init: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
@@ -46,7 +46,7 @@ func TestInit(t *testing.T) {
 				}))
 				return nil
 			},
-		}),
+		},
 	)
 	a := []Node{{}}
 	err := f.Work(ctx, a)
@@ -56,7 +56,7 @@ func TestInit(t *testing.T) {
 func TestCall(t *testing.T) {
 	ctx := context.Background()
 	f := New(
-		WithPipe(Pipe{
+		Pipe{
 			UUID: option.Some(MustUUID("afe9a397-e091-4254-8da4-be0dcf33f481")),
 			When: option.Some(When{}),
 			Code: option.Some(`
@@ -64,8 +64,8 @@ func TestCall(t *testing.T) {
 					nodes[0].kind=this.callPlugin1()+this.callPlugin2()
 				}
 			`),
-		}),
-		WithPlugin(Plugin{
+		},
+		Plugin{
 			Call: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
@@ -76,8 +76,8 @@ func TestCall(t *testing.T) {
 				}))
 				return nil
 			},
-		}),
-		WithPlugin(Plugin{
+		},
+		Plugin{
 			Call: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
@@ -88,7 +88,7 @@ func TestCall(t *testing.T) {
 				}))
 				return nil
 			},
-		}),
+		},
 	)
 	a := []Node{{}}
 	err := f.Work(ctx, a)
@@ -99,7 +99,7 @@ func TestQuit(t *testing.T) {
 	ctx := context.Background()
 	var quitPlugin1, quitPlugin2 string
 	f := New(
-		WithPipe(Pipe{
+		Pipe{
 			UUID: option.Some(MustUUID("afe9a397-e091-4254-8da4-be0dcf33f481")),
 			When: option.Some(When{}),
 			Code: option.Some(`
@@ -109,8 +109,8 @@ func TestQuit(t *testing.T) {
 					this.quitPlugin2="bar"
 				}
 			`),
-		}),
-		WithPlugin(Plugin{
+		},
+		Plugin{
 			Quit: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
@@ -120,8 +120,8 @@ func TestQuit(t *testing.T) {
 				require.NoError(t, err)
 				return nil
 			},
-		}),
-		WithPlugin(Plugin{
+		},
+		Plugin{
 			Quit: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
@@ -131,7 +131,7 @@ func TestQuit(t *testing.T) {
 				require.NoError(t, err)
 				return nil
 			},
-		}),
+		},
 	)
 	a := []Node{{}}
 	err := f.Work(ctx, a)

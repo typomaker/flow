@@ -12,7 +12,7 @@ import (
 // How to process a node with a specific pipe
 func ExamplePipe_When() {
 	fl := New(
-		WithPipe(Pipe{
+		Pipe{
 			UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
 			Name: option.Some[Name]("flow_dog.js"),
 			// only nodes that meet this condition will be processed by this pipe.
@@ -25,8 +25,8 @@ func ExamplePipe_When() {
 					}
 				}
 			`),
-		}),
-		WithPipe(Pipe{
+		},
+		Pipe{
 			UUID: option.Some(MustUUID("eef97892-b1b5-422a-8d4c-1fba9a2950ce")),
 			Name: option.Some[Name]("flow_cat.js"),
 			// in this case, all nodes whose "kind" is equal to "cat" will be processed.
@@ -38,7 +38,7 @@ func ExamplePipe_When() {
 					}
 				}
 			`),
-		}),
+		},
 	)
 
 	target := []Node{
@@ -67,7 +67,7 @@ func ExamplePipe_When() {
 // How to implement a chain of responsibility pattern
 func ExamplePipe_Next() {
 	fl := New(
-		WithPipe(Pipe{
+		Pipe{
 			UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
 			Name: option.Some[Name]("first.js"),
 			// this pipe will process all nodes due to an empty condition.
@@ -82,8 +82,8 @@ func ExamplePipe_Next() {
 					next(nodes)
 				}
 			`),
-		}),
-		WithPipe(Pipe{
+		},
+		Pipe{
 			UUID: option.Some(MustUUID("eef97892-b1b5-422a-8d4c-1fba9a2950ce")),
 			Name: option.Some[Name]("second.js"),
 			// this pipe will not process nodes, but will be called after the upstream pipe because it is referenced in the Next property.
@@ -96,7 +96,7 @@ func ExamplePipe_Next() {
 					}
 				}
 			`),
-		}),
+		},
 	)
 
 	target := []Node{
@@ -118,7 +118,7 @@ func ExamplePipe_Next() {
 // How to extend the js runtime
 func ExamplePlugin() {
 	fl := New(
-		WithPlugin(Plugin{
+		Plugin{
 			// will be called once after compile and create a goja.Runtime
 			Init: func(ctx context.Context, t Api) error {
 				t.Goja().Set("formatBar", t.Goja().ToValue(func(goja.FunctionCall) goja.Value {
@@ -138,8 +138,8 @@ func ExamplePlugin() {
 				_ = t.This().Delete("foo")
 				return nil
 			},
-		}),
-		WithPipe(Pipe{
+		},
+		Pipe{
 			UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
 			Name: option.Some[Name]("first.js"),
 			// this pipe will process all nodes due to an empty condition.
@@ -151,7 +151,7 @@ func ExamplePlugin() {
 					}
 				}
 			`),
-		}),
+		},
 	)
 
 	target := []Node{

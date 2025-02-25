@@ -10,7 +10,7 @@ The approach is similar to the one used in the gaming industry, when the behavio
 ### Process a node with a specific pipe.
 ```go
 fl := New(
-    WithPipe(Pipe{
+    Pipe{
         UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
         Name: option.Some[Name]("flow_dog.js"),
         // only nodes that meet this condition will be processed by this pipe.
@@ -23,8 +23,8 @@ fl := New(
                 }
             }
         `),
-    }),
-    WithPipe(Pipe{
+    },
+    Pipe{
         UUID: option.Some(MustUUID("eef97892-b1b5-422a-8d4c-1fba9a2950ce")),
         Name: option.Some[Name]("flow_cat.js"),
         // in this case, all nodes whose "kind" is equal to "cat" will be processed.
@@ -36,7 +36,7 @@ fl := New(
                 }
             }
         `),
-    }),
+    },
 )
 
 target := []Node{
@@ -64,7 +64,7 @@ fmt.Println("cat sayword", target[1].Meta.Get()["sayword"])
 ### Implement a chain of responsibility pattern.
 ```go
 fl := New(
-    WithPipe(Pipe{
+    Pipe{
         UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
         Name: option.Some[Name]("first.js"),
         // this pipe will process all nodes due to an empty condition.
@@ -79,8 +79,8 @@ fl := New(
                 next(nodes)
             }
         `),
-    }),
-    WithPipe(Pipe{
+    },
+    Pipe{
         UUID: option.Some(MustUUID("eef97892-b1b5-422a-8d4c-1fba9a2950ce")),
         Name: option.Some[Name]("second.js"),
         // this pipe will not process nodes, but will be called after the upstream pipe because it is referenced in the Next property.
@@ -93,7 +93,7 @@ fl := New(
                 }
             }
         `),
-    }),
+    },
 )
 
 target := []Node{
@@ -114,7 +114,7 @@ fmt.Println(target[0].Meta.Get()["value"])
 ### Extend the js runtime
 ```go
 fl := New(
-    WithPlugin(Plugin{
+    Plugin{
         // will be called once after compile and create a goja.Runtime
         Init: func(ctx context.Context, t Target) error {
             t.Goja().Set("formatBar", t.Goja().ToValue(func(goja.FunctionCall) goja.Value {
@@ -134,8 +134,8 @@ fl := New(
             _ = t.This().Delete("foo")
             return nil
         },
-    }),
-    WithPipe(Pipe{
+    },
+    Pipe{
         UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
         Name: option.Some[Name]("first.js"),
         // this pipe will process all nodes due to an empty condition.
@@ -147,7 +147,7 @@ fl := New(
                 }
             }
         `),
-    }),
+    },
 )
 
 target := []Node{

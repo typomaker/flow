@@ -29,35 +29,11 @@ type Flow struct {
 		program map[string]*goja.Program
 	}
 }
-type Option func(*Flow)
-
-func WithFlow(v *Flow) Option {
-	return func(f *Flow) {
-		f.stock = append(f.stock, v.stock...)
-		f.plugin = append(f.plugin, v.plugin...)
-		f.logger = v.logger
-	}
-}
-func WithPipe(v ...Pipe) Option {
-	return func(f *Flow) {
-		f.stock = append(f.stock, v...)
-	}
-}
-func WithLogger(v *slog.Logger) Option {
-	return func(f *Flow) {
-		f.logger = v
-	}
-}
-func WithPlugin(v Plugin) Option {
-	return func(f *Flow) {
-		f.plugin = append(f.plugin, v)
-	}
-}
 
 func New(o ...Option) *Flow {
 	var it = Flow{}
 	for _, v := range o {
-		v(&it)
+		v.setup(&it)
 	}
 	it.stock = slices.Clip(it.stock)
 	it.plugin = slices.Clip(it.plugin)
