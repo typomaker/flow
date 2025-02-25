@@ -202,7 +202,7 @@ func (it *Flow) handler(ctx context.Context, pipe Pipe) (main func([]Node) error
 		}()
 		var this = rm.NewObject()
 
-		if err = it.triggerCall(ctx, Target{it, pipe, rm, this}); err != nil {
+		if err = it.triggerCall(ctx, Api{it, pipe, rm, this}); err != nil {
 			return err
 		}
 		var main goja.Callable
@@ -219,7 +219,7 @@ func (it *Flow) handler(ctx context.Context, pipe Pipe) (main func([]Node) error
 		if err = convert(rm, target, &nodes); err != nil {
 			return err
 		}
-		if err = it.triggerQuit(ctx, Target{it, pipe, rm, this}); err != nil {
+		if err = it.triggerQuit(ctx, Api{it, pipe, rm, this}); err != nil {
 			return err
 		}
 		return nil
@@ -233,7 +233,7 @@ func (it *Flow) runtime(ctx context.Context, pipe Pipe) (rm *goja.Runtime, err e
 		return nil, err
 	}
 
-	if err = it.triggerInit(ctx, Target{it, pipe, rm, nil}); err != nil {
+	if err = it.triggerInit(ctx, Api{it, pipe, rm, nil}); err != nil {
 		return nil, err
 	}
 	var pm *goja.Program
@@ -418,7 +418,7 @@ func (it *Flow) newPrinter(ctx context.Context, rm *goja.Runtime, printer func(c
 		return nil
 	})
 }
-func (it *Flow) triggerInit(ctx context.Context, t Target) (err error) {
+func (it *Flow) triggerInit(ctx context.Context, t Api) (err error) {
 	for _, p := range it.plugin {
 		if err = p.triggerInit(ctx, t); err != nil {
 			return err
@@ -426,7 +426,7 @@ func (it *Flow) triggerInit(ctx context.Context, t Target) (err error) {
 	}
 	return nil
 }
-func (it *Flow) triggerCall(ctx context.Context, t Target) (err error) {
+func (it *Flow) triggerCall(ctx context.Context, t Api) (err error) {
 	for _, p := range it.plugin {
 		if err = p.triggerCall(ctx, t); err != nil {
 			return err
@@ -434,7 +434,7 @@ func (it *Flow) triggerCall(ctx context.Context, t Target) (err error) {
 	}
 	return nil
 }
-func (it *Flow) triggerQuit(ctx context.Context, t Target) (err error) {
+func (it *Flow) triggerQuit(ctx context.Context, t Api) (err error) {
 	for _, p := range it.plugin {
 		if err = p.triggerQuit(ctx, t); err != nil {
 			return err

@@ -22,7 +22,7 @@ func TestInit(t *testing.T) {
 			`),
 		}),
 		WithPlugin(Plugin{
-			Init: func(ctx context.Context, x Target) error {
+			Init: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
 				require.NotZero(t, x.Pipe())
@@ -35,7 +35,7 @@ func TestInit(t *testing.T) {
 			},
 		}),
 		WithPlugin(Plugin{
-			Init: func(ctx context.Context, x Target) error {
+			Init: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
 				require.NotZero(t, x.Pipe())
@@ -66,7 +66,7 @@ func TestCall(t *testing.T) {
 			`),
 		}),
 		WithPlugin(Plugin{
-			Call: func(ctx context.Context, x Target) error {
+			Call: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
 				require.NotZero(t, x.Pipe())
@@ -78,7 +78,7 @@ func TestCall(t *testing.T) {
 			},
 		}),
 		WithPlugin(Plugin{
-			Call: func(ctx context.Context, x Target) error {
+			Call: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
 				require.NotZero(t, x.Pipe())
@@ -111,7 +111,7 @@ func TestQuit(t *testing.T) {
 			`),
 		}),
 		WithPlugin(Plugin{
-			Quit: func(ctx context.Context, x Target) error {
+			Quit: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
 				require.NotZero(t, x.Pipe())
@@ -122,7 +122,7 @@ func TestQuit(t *testing.T) {
 			},
 		}),
 		WithPlugin(Plugin{
-			Quit: func(ctx context.Context, x Target) error {
+			Quit: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
 				require.NotZero(t, x.Pipe())
