@@ -116,7 +116,7 @@ fmt.Println(target[0].Meta.Get()["value"])
 fl := New(
     Plugin{
         // will be called once after compile and create a goja.Runtime
-        Init: func(ctx context.Context, t Target) error {
+        Init: func(ctx context.Context, t Api) error {
             t.This().Set("formatBar", t.Goja().ToValue(func(goja.FunctionCall) goja.Value {
                 return t.Goja().ToValue("BAR")
             }))
@@ -124,13 +124,13 @@ fl := New(
         },
         // will be called every time before executing a script
         // it may be useful to set values in this context
-        Call: func(ctx context.Context, t Target) error {
+        Call: func(ctx context.Context, t Api) error {
             _ = t.This().Set("foo", "FOO")
             return nil
         },
         // will be called every time after executing a script
         // it might be useful to clear all the values that were defined in the Call section.
-        Quit: func(ctx context.Context, t Target) error {
+        Quit: func(ctx context.Context, t Api) error {
             _ = t.This().Delete("foo")
             return nil
         },
