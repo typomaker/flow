@@ -26,9 +26,9 @@ func TestInit(t *testing.T) {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
 				require.NotZero(t, x.Pipe())
-				require.Nil(t, x.This())
+				require.NotNil(t, x.This())
 
-				x.Goja().Set("initPlugin1", x.Goja().ToValue(func(call goja.ConstructorCall) goja.Value {
+				x.This().Set("initPlugin1", x.Goja().ToValue(func(call goja.ConstructorCall) goja.Value {
 					return x.Goja().ToValue("foo")
 				}))
 				return nil
@@ -39,9 +39,9 @@ func TestInit(t *testing.T) {
 				require.NotNil(t, x.Flow())
 				require.NotNil(t, x.Goja())
 				require.NotZero(t, x.Pipe())
-				require.Nil(t, x.This())
+				require.NotNil(t, x.This())
 
-				x.Goja().Set("initPlugin2", x.Goja().ToValue(func(call goja.ConstructorCall) goja.Value {
+				x.This().Set("initPlugin2", x.Goja().ToValue(func(call goja.ConstructorCall) goja.Value {
 					return x.Goja().ToValue("bar")
 				}))
 				return nil

@@ -233,7 +233,7 @@ func (it *Flow) runtime(ctx context.Context, pipe Pipe) (rm *goja.Runtime, err e
 		return nil, err
 	}
 
-	if err = it.triggerInit(ctx, Api{it, pipe, rm, nil}); err != nil {
+	if err = it.triggerInit(ctx, Api{it, pipe, rm, rm.GlobalObject()}); err != nil {
 		return nil, err
 	}
 	var pm *goja.Program
