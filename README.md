@@ -83,7 +83,7 @@ fl := New(
     Pipe{
         UUID: option.Some(MustUUID("eef97892-b1b5-422a-8d4c-1fba9a2950ce")),
         Name: option.Some[Name]("second.js"),
-        // this pipe will not process nodes, but will be called after the upstream pipe because it is referenced in the Next property.
+        // this pipe will not process nodes according to an unreachable condition, but it will be executed after the above pipe, since it refers to this through the Next property.
         When: option.None[When](),
         Code: option.Some(`
             export default function main(nodes) {
@@ -117,7 +117,7 @@ fl := New(
     Plugin{
         // will be called once after compile and create a goja.Runtime
         Init: func(ctx context.Context, t Target) error {
-            t.Goja().Set("formatBar", t.Goja().ToValue(func(goja.FunctionCall) goja.Value {
+            t.This().Set("formatBar", t.Goja().ToValue(func(goja.FunctionCall) goja.Value {
                 return t.Goja().ToValue("BAR")
             }))
             return nil
