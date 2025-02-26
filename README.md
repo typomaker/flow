@@ -1,7 +1,7 @@
 # Flow
 A tool that allows you to group and execute your business logic into separate JS scripts.
 
-The approach is similar to the one used in the gaming industry, when the behavior of game objects is described in some kind of scripting language. This reduces the delivery time for updates. It allows you to easily extend the business logic and also simply undo changes.
+The approach is similar to the one used in the gaming engines, when the behavior of game objects is described in some kind of scripting language. This reduces the delivery time for updates. It allows you to easily extend the business logic and also simply undo changes.
 
 **This library is under development.**
 
