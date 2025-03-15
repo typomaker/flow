@@ -114,13 +114,13 @@ func convert_GojaValue_Any(rm *goja.Runtime, src goja.Value, dst *any) (err erro
 func convert_GojaValue_List(rm *goja.Runtime, src goja.Value, dst *[]Node) (err error) {
 	switch src.ExportType() {
 	case reflectLazyList:
-		var laz = src.Export().(*lazyList)
-		err = convert_LazyList_List(rm, laz, dst)
+		var src = src.Export().(*lazyList)
+		err = convert_LazyList_List(rm, src, dst)
 	case reflectArray:
 		var src = src.(*goja.Object)
 		var lng = int(src.Get("length").ToInteger())
 		var laz = &lazyList{rm: rm, value: make([]goja.Value, lng)}
-		for i := 0; i < lng; i++ {
+		for i := range lng {
 			laz.Set(i, src.Get(strconv.Itoa(i)))
 		}
 		err = convert_LazyList_List(rm, laz, dst)
@@ -539,7 +539,7 @@ func convert_Any_GojaValue(rm *goja.Runtime, src any, dst *goja.Value) (err erro
 	*dst = rm.ToValue(goAny)
 	return nil
 }
-func convert_Any_Any(rm *goja.Runtime, src any, dst *any) (err error) {
+func convert_Any_Any(_ *goja.Runtime, src any, dst *any) (err error) {
 	switch src := src.(type) {
 	case int:
 		*dst = float64(src)
@@ -573,8 +573,7 @@ func convert_Any_Any(rm *goja.Runtime, src any, dst *any) (err error) {
 func convert_LazyList(rm *goja.Runtime, src *lazyList, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *[]Node:
-		err = convert_LazyList_List(rm, src, &src.proto)
-		*dst = src.proto
+		err = convert_LazyList_List(rm, src, dst)
 	case *any:
 		err = convert_LazyList_Any(rm, src, dst)
 	default:
@@ -615,31 +614,40 @@ func convert_LazyList_Any(rm *goja.Runtime, src *lazyList, dst *any) (err error)
 	return nil
 }
 func convert_LazyList_List(rm *goja.Runtime, src *lazyList, dst *[]Node) (err error) {
-	if src.value == nil {
-		*dst = src.proto
-		return nil
+	var s = src.value
+	var d = src.proto
+	if s != nil && len(d) > len(s) {
+		d = d[:len(s)]
 	}
-	var d = slices.Grow((*dst)[:0], src.Len())[:0]
-	for i := 0; i < len(src.value); i++ {
-		var val = src.value[i]
-		if goja.IsUndefined(val) {
+	for i := 0; i < len(s); i++ {
+		var v = s[i]
+		// без изменений
+		if v == nil {
 			continue
 		}
-		var idx = len(d)
-		d = d[:idx+1]
-		if val == nil {
-			if i < len(src.proto) {
-				d[idx] = (src.proto)[i]
-			} else {
-				d[idx] = Node{}
+		// удалено
+		if goja.IsUndefined(v) {
+			// удалить если было определено
+			if i < len(d) {
+				copy(d[i:], d[i+1:])
+				d = d[:len(d)-1]
+				copy(s[i:], s[i+1:])
+				s = s[:len(s)-1]
+				i--
 			}
 			continue
 		}
-		var protoVal = d[idx]
-		if err = convert(rm, val, &protoVal); err != nil {
+		var p Node
+		if err = convert(rm, v, &p); err != nil {
 			return fmt.Errorf("%d %w", i, err)
 		}
-		d[idx] = protoVal
+		if i < len(d) {
+			// переопределить
+			d[i] = p
+		} else {
+			// добавить
+			d = append(d, p)
+		}
 	}
 	*dst = d
 	return nil
@@ -647,8 +655,7 @@ func convert_LazyList_List(rm *goja.Runtime, src *lazyList, dst *[]Node) (err er
 func convert_LazyItem(rm *goja.Runtime, src *lazyNode, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *Node:
-		err = convert_LazyItem_Item(rm, src, &src.proto)
-		*dst = src.proto
+		err = convert_LazyItem_Item(rm, src, dst)
 	case *any:
 		err = convert_LazyItem_Any(rm, src, dst)
 	default:
@@ -798,6 +805,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 
 //nolint:cyclop,funlen,gocognit // todo: отрефакторить
 func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNode, dst *Node) (err error) {
+	*dst = src.proto
 	if jsUUID := src.value.UUID; jsUUID != nil {
 		switch {
 		case goja.IsUndefined(jsUUID):
@@ -889,8 +897,7 @@ func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNode, dst *Node) (err erro
 func convert_LazyLive(rm *goja.Runtime, src *lazyLive, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *Live:
-		err = convert_LazyLive_Live(rm, src, &src.proto)
-		*dst = src.proto
+		err = convert_LazyLive_Live(rm, src, dst)
 	case *any:
 		err = convert_LazyLive_Any(rm, src, dst)
 	default:
@@ -986,8 +993,7 @@ func convert_LazyObject_Meta(rm *goja.Runtime, src *lazyObject, dst *Meta) (err 
 func convert_LazyObject(rm *goja.Runtime, src *lazyObject, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *map[string]any:
-		err = convert_LazyObject_Object(rm, src, &src.proto)
-		*dst = src.proto
+		err = convert_LazyObject_Object(rm, src, dst)
 	case *any:
 		err = convert_LazyObject_Object(rm, src, &src.proto)
 		*dst = src.proto
@@ -997,10 +1003,7 @@ func convert_LazyObject(rm *goja.Runtime, src *lazyObject, dst any) (err error) 
 	return err
 }
 func convert_LazyObject_Object(rm *goja.Runtime, src *lazyObject, dst *map[string]any) (err error) {
-	if src.value == nil {
-		*dst = src.proto
-		return nil
-	}
+	*dst = src.proto
 	var d = *dst
 	if d == nil {
 		d = make(map[string]any, len(src.value))
@@ -1033,7 +1036,7 @@ func convert_LazyObject_Object(rm *goja.Runtime, src *lazyObject, dst *map[strin
 func convert_LazyArray(rm *goja.Runtime, src *lazyArray, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *[]any:
-		err = convert_LazyArray_Array(rm, src, &src.proto)
+		err = convert_LazyArray_Array(rm, src, dst)
 		*dst = src.proto
 	case *any:
 		err = convert_LazyArray_Array(rm, src, &src.proto)
@@ -1044,32 +1047,40 @@ func convert_LazyArray(rm *goja.Runtime, src *lazyArray, dst any) (err error) {
 	return err
 }
 func convert_LazyArray_Array(rm *goja.Runtime, src *lazyArray, dst *[]any) (err error) {
-	if src.value == nil {
-		*dst = src.proto
-		return nil
+	var s = src.value
+	var d = src.proto
+	if s != nil && len(d) > len(s) {
+		d = d[:len(s)]
 	}
-
-	var d = slices.Grow((*dst)[:0], src.Len())[:0]
-	for i := 0; i < len(src.value); i++ {
-		var val = src.value[i]
-		if goja.IsUndefined(val) {
+	for i := 0; i < len(s); i++ {
+		var v = s[i]
+		// без изменений
+		if v == nil {
 			continue
 		}
-		var idx = len(d)
-		d = d[:idx+1]
-		if val == nil {
-			if i < len(src.proto) {
-				d[idx] = src.proto[i]
-			} else {
-				d[idx] = nil
+		// удалено
+		if goja.IsUndefined(v) {
+			// удалить если было определено
+			if i < len(d) {
+				copy(d[i:], d[i+1:])
+				d = d[:len(d)-1]
+				copy(s[i:], s[i+1:])
+				s = s[:len(s)-1]
+				i--
 			}
 			continue
 		}
-		var protoVal any
-		if err = convert(rm, val, &protoVal); err != nil {
+		var p any
+		if err = convert(rm, v, &p); err != nil {
 			return fmt.Errorf("%d %w", i, err)
 		}
-		d[idx] = protoVal
+		if i < len(d) {
+			// переопределить
+			d[i] = p
+		} else {
+			// добавить
+			d = append(d, p)
+		}
 	}
 	*dst = d
 	return nil

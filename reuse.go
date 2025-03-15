@@ -7,13 +7,13 @@ import (
 )
 
 var reuse struct {
-	SliceSliceNode sync.Pool
-	SliceSlicePipe sync.Pool
-	SlicePipe      sync.Pool
-	MapUUIDStruct  sync.Pool
-	StringsBuilder sync.Pool
-	SliceSlogAttr  sync.Pool
-	SliceError     sync.Pool
+	SliceSliceNode  sync.Pool
+	SliceSlicePipe  sync.Pool
+	SlicePipe       sync.Pool
+	MapStringStruct sync.Pool
+	StringsBuilder  sync.Pool
+	SliceSlogAttr   sync.Pool
+	SliceError      sync.Pool
 }
 
 func reuseSliceSliceNode(v *[][]Node) (closer func()) {
@@ -67,20 +67,20 @@ func reuseSlicePipe(v *[]Pipe) (closer func()) {
 		reuse.SlicePipe.Put(v)
 	}
 }
-func reuseMapUUIDSrtuct(v *map[UUID]struct{}) (closer func()) {
+func reuseMapStringSrtuct(v *map[string]struct{}) (closer func()) {
 	if *v != nil {
 		return
 	}
-	var x, _ = reuse.MapUUIDStruct.Get().(*map[UUID]struct{})
+	var x, _ = reuse.MapStringStruct.Get().(*map[string]struct{})
 	if x == nil {
-		var a = make(map[UUID]struct{}, 8)
+		var a = make(map[string]struct{}, 8)
 		x = &a
 	}
 	*v = *x
 
 	return func() {
 		clear(*v)
-		reuse.MapUUIDStruct.Put(v)
+		reuse.MapStringStruct.Put(v)
 	}
 }
 func reuseStringBuilder(v *strings.Builder) (closer func()) {

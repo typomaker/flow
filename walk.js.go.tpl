@@ -1,7 +1,7 @@
 const entries = []
 {{range $i,$v := . }}
-import entry{{$i}} from "flow:./{{$v.UUID.Get}}"
-entries.push({main:entry{{$i}}, uuid:"{{$v.UUID.Get.String}}", name:"{{$v.String}}" })
+import entry{{$i}} from "flow:./{{$v.Name.Get}}"
+entries.push({main:entry{{$i}}, name:"{{$v.Name.String}}" })
 {{end}}
 export default function (nodes) {
     const walk = (step, nodes) => {
@@ -14,8 +14,7 @@ export default function (nodes) {
             walk(step + 1, nodes)
             return
         }
-        this.FLOW_PIPE_SELF_UUID = entry.uuid
-        this.FLOW_PIPE_SELF_NAME = entry.name
+        this.FLOW_PIPE_NAME = entry.name
         entry.main.call(this, nodes, next(step + 1))
     }
     const next = (n = 0) => {

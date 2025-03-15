@@ -7,17 +7,13 @@ import (
 )
 
 type Pipe struct {
-	UUID option.Option[UUID]
 	Name option.Option[Name]
 	When option.Option[When]
 	Code option.Option[Code]
-	Next option.Option[[]UUID]
+	Next option.Option[[]Name]
 }
 
 func (it Pipe) IsZero() bool {
-	if !it.UUID.IsZero() {
-		return false
-	}
 	if !it.Name.IsZero() {
 		return false
 	}
@@ -36,12 +32,6 @@ func (it Pipe) LogValue() slog.Value {
 	var attrs []slog.Attr
 	defer reuseSliceSlogAttr(&attrs)()
 
-	switch {
-	case it.UUID.IsNone():
-		attrs = append(attrs, slog.Any("uuid", nil))
-	case it.UUID.IsSome():
-		attrs = append(attrs, slog.Any("uuid", it.UUID.Get()))
-	}
 	switch {
 	case it.Name.IsNone():
 		attrs = append(attrs, slog.Any("name", nil))

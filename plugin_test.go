@@ -13,7 +13,7 @@ func TestInit(t *testing.T) {
 	ctx := context.Background()
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("afe9a397-e091-4254-8da4-be0dcf33f481")),
+			Name: option.Some("foo"),
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes){
@@ -24,12 +24,12 @@ func TestInit(t *testing.T) {
 		Plugin{
 			Init: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
-				require.NotNil(t, x.Goja())
+				require.NotNil(t, x.Runtime())
 				require.NotZero(t, x.Pipe())
 				require.NotNil(t, x.This())
 
-				x.This().Set("initPlugin1", x.Goja().ToValue(func(call goja.ConstructorCall) goja.Value {
-					return x.Goja().ToValue("foo")
+				x.This().Set("initPlugin1", x.Runtime().ToValue(func(call goja.ConstructorCall) goja.Value {
+					return x.Runtime().ToValue("foo")
 				}))
 				return nil
 			},
@@ -37,12 +37,12 @@ func TestInit(t *testing.T) {
 		Plugin{
 			Init: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
-				require.NotNil(t, x.Goja())
+				require.NotNil(t, x.Runtime())
 				require.NotZero(t, x.Pipe())
 				require.NotNil(t, x.This())
 
-				x.This().Set("initPlugin2", x.Goja().ToValue(func(call goja.ConstructorCall) goja.Value {
-					return x.Goja().ToValue("bar")
+				x.This().Set("initPlugin2", x.Runtime().ToValue(func(call goja.ConstructorCall) goja.Value {
+					return x.Runtime().ToValue("bar")
 				}))
 				return nil
 			},
@@ -57,7 +57,7 @@ func TestCall(t *testing.T) {
 	ctx := context.Background()
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("afe9a397-e091-4254-8da4-be0dcf33f481")),
+			Name: option.Some("foo"),
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes){
@@ -68,11 +68,11 @@ func TestCall(t *testing.T) {
 		Plugin{
 			Call: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
-				require.NotNil(t, x.Goja())
+				require.NotNil(t, x.Runtime())
 				require.NotZero(t, x.Pipe())
 				require.NotNil(t, x.This())
-				x.This().Set("callPlugin1", x.Goja().ToValue(func(call goja.ConstructorCall) goja.Value {
-					return x.Goja().ToValue("foo")
+				x.This().Set("callPlugin1", x.Runtime().ToValue(func(call goja.ConstructorCall) goja.Value {
+					return x.Runtime().ToValue("foo")
 				}))
 				return nil
 			},
@@ -80,11 +80,11 @@ func TestCall(t *testing.T) {
 		Plugin{
 			Call: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
-				require.NotNil(t, x.Goja())
+				require.NotNil(t, x.Runtime())
 				require.NotZero(t, x.Pipe())
 				require.NotNil(t, x.This())
-				x.This().Set("callPlugin2", x.Goja().ToValue(func(call goja.ConstructorCall) goja.Value {
-					return x.Goja().ToValue("bar")
+				x.This().Set("callPlugin2", x.Runtime().ToValue(func(call goja.ConstructorCall) goja.Value {
+					return x.Runtime().ToValue("bar")
 				}))
 				return nil
 			},
@@ -100,7 +100,7 @@ func TestQuit(t *testing.T) {
 	var quitPlugin1, quitPlugin2 string
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("afe9a397-e091-4254-8da4-be0dcf33f481")),
+			Name: option.Some("foo"),
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes){
@@ -113,10 +113,10 @@ func TestQuit(t *testing.T) {
 		Plugin{
 			Quit: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
-				require.NotNil(t, x.Goja())
+				require.NotNil(t, x.Runtime())
 				require.NotZero(t, x.Pipe())
 				require.NotNil(t, x.This())
-				err := x.Goja().ExportTo(x.This().Get("quitPlugin1"), &quitPlugin1)
+				err := x.Runtime().ExportTo(x.This().Get("quitPlugin1"), &quitPlugin1)
 				require.NoError(t, err)
 				return nil
 			},
@@ -124,10 +124,10 @@ func TestQuit(t *testing.T) {
 		Plugin{
 			Quit: func(ctx context.Context, x Api) error {
 				require.NotNil(t, x.Flow())
-				require.NotNil(t, x.Goja())
+				require.NotNil(t, x.Runtime())
 				require.NotZero(t, x.Pipe())
 				require.NotNil(t, x.This())
-				err := x.Goja().ExportTo(x.This().Get("quitPlugin2"), &quitPlugin2)
+				err := x.Runtime().ExportTo(x.This().Get("quitPlugin2"), &quitPlugin2)
 				require.NoError(t, err)
 				return nil
 			},

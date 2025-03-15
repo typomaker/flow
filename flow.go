@@ -43,28 +43,28 @@ func New(o ...Option) *Flow {
 	var stateProgram = make(map[string]*goja.Program, len(it.stock))
 	for i := 0; i < len(it.stock); i++ {
 		var pipe = it.stock[i]
-		var uuid = pipe.UUID.Get().String()
-		if _, ok := index[uuid]; ok {
+		var name = pipe.Name.Get()
+		if _, ok := index[name]; ok {
 			copy(it.stock[i:], it.stock[i+1:])
 			it.stock = it.stock[:len(it.stock)-1]
 			i--
 			continue
 		}
-		index[uuid] = i
+		index[name] = i
 		if pipe.Name.IsSome() {
-			index[pipe.Name.Get().String()] = i
+			index[pipe.Name.Get()] = i
 		}
-		stateRuntime[uuid] = &sync.Pool{}
-		stateProgram[uuid] = nil
+		stateRuntime[name] = &sync.Pool{}
+		stateProgram[name] = nil
 	}
 	var chain = make([][]Pipe, len(it.stock))
 	for i, p := range it.stock {
-		var ux map[UUID]struct{}
-		defer reuseMapUUIDSrtuct(&ux)()
+		var ux map[string]struct{}
+		defer reuseMapStringSrtuct(&ux)()
 
 		var pq = make([]Pipe, 0, 8)
 		pq = append(pq, p)
-		ux[p.UUID.Get()] = struct{}{}
+		ux[p.Name.Get()] = struct{}{}
 
 		for j := 0; j < len(pq); j++ {
 			for _, du := range pq[j].Next.GetOrZero() {
@@ -73,7 +73,7 @@ func New(o ...Option) *Flow {
 				}
 				ux[du] = struct{}{}
 
-				if di, ok := index[du.String()]; ok {
+				if di, ok := index[du]; ok {
 					pq = append(pq, it.stock[di])
 				}
 			}
@@ -113,12 +113,12 @@ func (it *Flow) Work(ctx context.Context, nn []Node) (err error) {
 			break
 		}
 		switch {
-		case self.UUID.IsZero():
+		case self.Name.IsZero():
 			head++
 			prev = Pipe{}
-		case prev.UUID != self.UUID:
+		case prev.Name != self.Name:
 			head = i
-			chain = append(chain, it.stock[it.index[self.UUID.Get().String()]])
+			chain = append(chain, it.stock[it.index[self.Name.Get()]])
 			group = append(group, nn[head:i+1])
 			prev = self
 		default:
@@ -153,8 +153,8 @@ func (it *Flow) Logger() *slog.Logger {
 func (it *Flow) handler(ctx context.Context, pipe Pipe) (main func([]Node) error) {
 	return func(nodes []Node) error {
 		var err error
-		var uuid = pipe.UUID.String()
-		var pool = it.state.runtime[uuid]
+		var name = pipe.Name.Get()
+		var pool = it.state.runtime[name]
 		var rm, _ = pool.Get().(*goja.Runtime)
 		if rm == nil {
 			rm, err = it.runtime(ctx, pipe)
@@ -223,9 +223,9 @@ func (it *Flow) runtime(ctx context.Context, pipe Pipe) (rm *goja.Runtime, err e
 
 }
 func (it *Flow) program(ctx context.Context, pipe Pipe) (pm *goja.Program, err error) {
-	var uuid = pipe.UUID.String()
+	var name = pipe.Name.String()
 	it.state.mu.RLock()
-	pm = it.state.program[uuid]
+	pm = it.state.program[name]
 	it.state.mu.RUnlock()
 	if pm != nil {
 		return pm, nil
@@ -234,14 +234,14 @@ func (it *Flow) program(ctx context.Context, pipe Pipe) (pm *goja.Program, err e
 		return nil, err
 	}
 	it.state.mu.Lock()
-	it.state.program[uuid] = pm
+	it.state.program[name] = pm
 	it.state.mu.Unlock()
 
 	return pm, nil
 }
-func (it *Flow) compile(ctx context.Context, pipe Pipe) (pm *goja.Program, err error) {
-	var chain = it.chain[it.index[pipe.UUID.Get().String()]]
-	var boot = renderLoopJS(chain)
+func (it *Flow) compile(_ context.Context, pipe Pipe) (pm *goja.Program, err error) {
+	var chain = it.chain[it.index[pipe.Name.Get()]]
+	var boot = renderWalkJS(chain)
 	var bundle = api.Build(api.BuildOptions{
 		Stdin: &api.StdinOptions{
 			Contents:   boot,
@@ -264,7 +264,7 @@ func (it *Flow) compile(ctx context.Context, pipe Pipe) (pm *goja.Program, err e
 			Name: "flow",
 			Setup: func(pb api.PluginBuild) {
 				pb.OnResolve(
-					api.OnResolveOptions{Filter: "^flow:\\./[a-f0-9_-]{36}$"},
+					api.OnResolveOptions{Filter: "^flow:\\./.+$"},
 					func(ora api.OnResolveArgs) (r api.OnResolveResult, err error) {
 						r.Path = ora.Path[5:]
 						r.Namespace = "flow"

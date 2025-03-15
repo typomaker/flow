@@ -2,7 +2,6 @@ package flow
 
 import (
 	"log/slog"
-	"path"
 	"slices"
 	"time"
 
@@ -261,26 +260,14 @@ func (it UUID) GoString() string {
 }
 
 type Kind = string
-type Name string
+type Name = string
 type Meta map[string]any
 type Hook map[string]any
 type Time = time.Time
 
 func (it Pipe) String() string {
-	if it.Name.IsSome() {
-		return it.Name.Get().String()
-	}
-	return it.UUID.Get().String()
+	return it.Name.Get()
 }
 func (it UUID) String() string {
 	return uuid.UUID(it).String()
-}
-func (it Name) String() string {
-	return string(it)
-}
-func (it Name) Base() string {
-	return path.Clean(it.String())
-}
-func (it Name) Ext() string {
-	return path.Ext(it.String())
 }

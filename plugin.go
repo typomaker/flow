@@ -34,10 +34,10 @@ func (it Plugin) triggerQuit(ctx context.Context, t Api) (err error) {
 type Callback = func(context.Context, Api) error
 
 type Api struct {
-	flow *Flow
-	pipe Pipe
-	goja *goja.Runtime
-	this *goja.Object
+	flow    *Flow
+	pipe    Pipe
+	runtime *goja.Runtime
+	this    *goja.Object
 }
 
 func (it Api) Flow() *Flow {
@@ -46,8 +46,8 @@ func (it Api) Flow() *Flow {
 func (it Api) Pipe() Pipe {
 	return it.pipe
 }
-func (it Api) Goja() *goja.Runtime {
-	return it.goja
+func (it Api) Runtime() *goja.Runtime {
+	return it.runtime
 }
 func (it Api) This() *goja.Object {
 	return it.this

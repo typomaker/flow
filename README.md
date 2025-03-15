@@ -11,8 +11,7 @@ The approach is similar to the one used in the gaming engines, when the behavior
 ```go
 fl := New(
     Pipe{
-        UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
-        Name: option.Some[Name]("flow_dog.js"),
+        Name: option.Some("flow_dog.js"),
         // only nodes that meet this condition will be processed by this pipe.
         // in this case, all nodes whose "kind" is equal to "dog" will be processed.
         When: option.Some(When{Kind: option.Some([]Kind{"dog"})}),
@@ -25,8 +24,7 @@ fl := New(
         `),
     },
     Pipe{
-        UUID: option.Some(MustUUID("eef97892-b1b5-422a-8d4c-1fba9a2950ce")),
-        Name: option.Some[Name]("flow_cat.js"),
+        Name: option.Some("flow_cat.js"),
         // in this case, all nodes whose "kind" is equal to "cat" will be processed.
         When: option.Some(When{Kind: option.Some([]Kind{"cat"})}),
         Code: option.Some(`
@@ -65,11 +63,10 @@ fmt.Println("cat sayword", target[1].Meta.Get()["sayword"])
 ```go
 fl := New(
     Pipe{
-        UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
-        Name: option.Some[Name]("first.js"),
+        Name: option.Some("first.js"),
         // this pipe will process all nodes due to an empty condition.
         When: option.Some(When{}),
-        Next: option.Some([]UUID{MustUUID("eef97892-b1b5-422a-8d4c-1fba9a2950ce")}),
+        Next: option.Some([]Name{"second.js"}),
         Code: option.Some(`
             export default function main(nodes, next) {
                 for (const node of nodes) {
@@ -81,9 +78,8 @@ fl := New(
         `),
     },
     Pipe{
-        UUID: option.Some(MustUUID("eef97892-b1b5-422a-8d4c-1fba9a2950ce")),
-        Name: option.Some[Name]("second.js"),
-        // this pipe will not process nodes according to an unreachable condition, but it will be executed after the above pipe, since it refers to this through the Next property.
+        Name: option.Some("second.js"),
+        // this pipe will not process nodes, but will be called after the upstream pipe because it is referenced in the Next property.
         When: option.None[When](),
         Code: option.Some(`
             export default function main(nodes) {
@@ -117,8 +113,8 @@ fl := New(
     Plugin{
         // will be called once after compile and create a goja.Runtime
         Init: func(ctx context.Context, t Api) error {
-            t.This().Set("formatBar", t.Goja().ToValue(func(goja.FunctionCall) goja.Value {
-                return t.Goja().ToValue("BAR")
+            t.Runtime().Set("formatBar", t.Runtime().ToValue(func(goja.FunctionCall) goja.Value {
+                return t.Runtime().ToValue("BAR")
             }))
             return nil
         },
@@ -136,8 +132,7 @@ fl := New(
         },
     },
     Pipe{
-        UUID: option.Some(MustUUID("7ae0a3ea-e17a-44c6-ba30-641df6fdd26d")),
-        Name: option.Some[Name]("first.js"),
+        Name: option.Some("first.js"),
         // this pipe will process all nodes due to an empty condition.
         When: option.Some(When{}),
         Code: option.Some(`

@@ -32,7 +32,7 @@ func TestPipeWhenZero(t *testing.T) {
 	ctx := context.Background()
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("ffe9a397-e091-4254-8da4-be0dcf33f481")),
+			Name: option.Some("foo"),
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes){
@@ -55,7 +55,7 @@ func TestPipeWhenUUIDSome(t *testing.T) {
 	ctx := context.Background()
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("ffe9a397-e091-4254-8da4-be0dcf33f481")),
+			Name: option.Some("foo"),
 			When: option.Some(When{
 				UUID: option.Some([]UUID{
 					MustUUID("bee6576f-19f8-419c-b3f8-41b770006332"),
@@ -84,7 +84,7 @@ func TestPipeWhenKindSome(t *testing.T) {
 	ctx := context.Background()
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("ffe9a397-e091-4254-8da4-be0dcf33f481")),
+			Name: option.Some("foo"),
 			When: option.Some(When{
 				Kind: option.Some([]Kind{
 					"bar",
@@ -113,7 +113,7 @@ func TestPipeWhenHookSome(t *testing.T) {
 	ctx := context.Background()
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("ffe9a397-e091-4254-8da4-be0dcf33f481")),
+			Name: option.Some("foo"),
 			When: option.Some(When{
 				Hook: option.Some([]Hook{
 					{"foo": "bar"},
@@ -142,59 +142,49 @@ func TestPipeNext(t *testing.T) {
 	ctx := context.Background()
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("0e4f9350-f007-474f-b051-d2510e522800")),
+			Name: option.Some("f1"),
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes, next){
 					nodes[0].meta ??= {seq: []}
-					nodes[0].meta.seq.push(this.FLOW_PIPE_SELF_UUID)
+					nodes[0].meta.seq.push(this.FLOW_PIPE_NAME)
 					next(nodes)
 				}
 			`),
-			Next: option.Some([]UUID{
-				MustUUID("1e4f9350-f007-474f-b051-d2510e522800"),
-				MustUUID("2e4f9350-f007-474f-b051-d2510e522800"),
-			}),
+			Next: option.Some([]Name{"f2", "f3"}),
 		},
 		Pipe{
-			UUID: option.Some(MustUUID("1e4f9350-f007-474f-b051-d2510e522800")),
+			Name: option.Some("f2"),
 			Code: option.Some(`
 				export default function main(nodes, next){
 					nodes[0].meta ??= {seq: []}
-					nodes[0].meta.seq.push(this.FLOW_PIPE_SELF_UUID)
+					nodes[0].meta.seq.push(this.FLOW_PIPE_NAME)
 					next(nodes)
 				}
 			`),
-			Next: option.Some([]UUID{
-				MustUUID("3e4f9350-f007-474f-b051-d2510e522800"),
-				MustUUID("1e4f9350-f007-474f-b051-d2510e522800"),
-			}),
+			Next: option.Some([]Name{"f4", "f2"}),
 		},
 		Pipe{
-			UUID: option.Some(MustUUID("2e4f9350-f007-474f-b051-d2510e522800")),
+			Name: option.Some("f3"),
 			Code: option.Some(`
 				export default function main(nodes, next){
 					nodes[0].meta ??= {seq: []}
-					nodes[0].meta.seq.push(this.FLOW_PIPE_SELF_UUID)
+					nodes[0].meta.seq.push(this.FLOW_PIPE_NAME)
 					next(nodes)
 				}
 			`),
-			Next: option.Some([]UUID{
-				MustUUID("0e4f9350-f007-474f-b051-d2510e522800"),
-			}),
+			Next: option.Some([]Name{"f1"}),
 		},
 		Pipe{
-			UUID: option.Some(MustUUID("3e4f9350-f007-474f-b051-d2510e522800")),
-			Next: option.Some([]UUID{
-				MustUUID("9e4f9350-f007-474f-b051-d2510e522800"),
-			}),
+			Name: option.Some("f4"),
+			Next: option.Some([]Name{"f5"}),
 		},
 		Pipe{
-			UUID: option.Some(MustUUID("9e4f9350-f007-474f-b051-d2510e522800")),
+			Name: option.Some("f5"),
 			Code: option.Some(`
 				export default function main(nodes, next){
 					nodes[0].meta ??= {seq: []}
-					nodes[0].meta.seq.push(this.FLOW_PIPE_SELF_UUID)
+					nodes[0].meta.seq.push(this.FLOW_PIPE_NAME)
 					next(nodes)
 				}
 			`),
@@ -209,10 +199,10 @@ func TestPipeNext(t *testing.T) {
 		{
 			UUID: option.Some(MustUUID("aee6576f-19f8-419c-b3f8-41b770006332")),
 			Meta: option.Some(Meta{"seq": []any{
-				"0e4f9350-f007-474f-b051-d2510e522800",
-				"1e4f9350-f007-474f-b051-d2510e522800",
-				"2e4f9350-f007-474f-b051-d2510e522800",
-				"9e4f9350-f007-474f-b051-d2510e522800",
+				"f1",
+				"f2",
+				"f3",
+				"f5",
 			}}),
 		},
 	}
@@ -221,19 +211,21 @@ func TestPipeNext(t *testing.T) {
 func TestPipeDedup(t *testing.T) {
 	f := New(
 		Pipe{
-			UUID: option.Some(MustUUID("0e4f9350-f007-474f-b051-d2510e522800")),
 			Name: option.Some[Name]("foo"),
+			Code: option.Some("foo"),
 		},
 		Pipe{
-			UUID: option.Some(MustUUID("0e4f9350-f007-474f-b051-d2510e522800")),
-			Name: option.Some[Name]("bar"),
+			Name: option.Some[Name]("foo"),
+			Code: option.Some("bar"),
 		},
 		Pipe{
-			UUID: option.Some(MustUUID("1e4f9350-f007-474f-b051-d2510e522800")),
+			Name: option.Some("buz"),
+			Code: option.Some("buz"),
 		},
 	)
 	require.Len(t, f.stock, 2)
-	require.Equal(t, "0e4f9350-f007-474f-b051-d2510e522800", f.stock[0].UUID.Get().String())
-	require.Equal(t, "foo", f.stock[0].Name.Get().String())
-	require.Equal(t, "1e4f9350-f007-474f-b051-d2510e522800", f.stock[1].UUID.Get().String())
+	require.Equal(t, "foo", f.stock[0].Name.Get())
+	require.Equal(t, "foo", f.stock[0].Code.Get())
+	require.Equal(t, "buz", f.stock[1].Name.Get())
+	require.Equal(t, "buz", f.stock[1].Code.Get())
 }

@@ -54,7 +54,7 @@ func renderSkipJS() string {
 	}
 	return wr.String()
 }
-func renderLoopJS(next []Pipe) string {
+func renderWalkJS(next []Pipe) string {
 	var wr strings.Builder
 	defer reuseStringBuilder(&wr)()
 	var err = tmpl.ExecuteTemplate(&wr, "walk.js.go.tpl", next)
