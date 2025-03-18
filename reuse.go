@@ -33,23 +33,6 @@ func reuseSliceSliceNode(v *[][]Node) (closer func()) {
 		reuse.SliceSliceNode.Put(v)
 	}
 }
-func reuseSliceSlicePipe(v *[][]Pipe) (closer func()) {
-	if *v != nil {
-		return
-	}
-	var x, _ = reuse.SliceSlicePipe.Get().(*[][]Pipe)
-	if x == nil {
-		var a = make([][]Pipe, 0, 8)
-		x = &a
-	}
-	*v = *x
-
-	return func() {
-		clear(*v)
-		*v = (*v)[:0]
-		reuse.SliceSlicePipe.Put(v)
-	}
-}
 func reuseSlicePipe(v *[]Pipe) (closer func()) {
 	if *v != nil {
 		return

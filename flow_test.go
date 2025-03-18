@@ -229,3 +229,66 @@ func TestPipeDedup(t *testing.T) {
 	require.Equal(t, "buz", f.stock[1].Name.Get())
 	require.Equal(t, "buz", f.stock[1].Code.Get())
 }
+func TestPriority(t *testing.T) {
+	f := New(
+		Pipe{
+			Name: option.Some("f1"),
+			Code: option.Some(`export default function main(nodes) {}`),
+		},
+		Pipe{
+			Name: option.Some("f2"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			Next: option.Some([]string{"f1", "f3"}),
+		},
+		Pipe{
+			Name: option.Some("f3"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			Next: option.Some([]string{"f1", "f4"}),
+		},
+		Pipe{
+			Name: option.Some("f4"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			When: option.Some(When{}),
+		},
+		Pipe{
+			Name: option.Some("f5"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			When: option.Some(When{Hook: option.Some([]Hook{})}),
+		},
+		Pipe{
+			Name: option.Some("f6"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			When: option.Some(When{Kind: option.Some([]Kind{})}),
+		},
+		Pipe{
+			Name: option.Some("f7"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			When: option.Some(When{Kind: option.Some([]Kind{}), Hook: option.Some([]Hook{})}),
+		},
+		Pipe{
+			Name: option.Some("f8"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			When: option.Some(When{UUID: option.Some([]UUID{})}),
+		},
+		Pipe{
+			Name: option.Some("f9"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			When: option.Some(When{UUID: option.Some([]UUID{}), Kind: option.Some([]Kind{})}),
+		},
+		Pipe{
+			Name: option.Some("f10"),
+			Code: option.Some(`export default function main(nodes) {}`),
+			When: option.Some(When{UUID: option.Some([]UUID{}), Kind: option.Some([]Kind{}), Hook: option.Some([]Hook{})}),
+		},
+	)
+	require.Equal(t, "f10", f.stock[0].Name.Get())
+	require.Equal(t, "f9", f.stock[1].Name.Get())
+	require.Equal(t, "f8", f.stock[2].Name.Get())
+	require.Equal(t, "f7", f.stock[3].Name.Get())
+	require.Equal(t, "f6", f.stock[4].Name.Get())
+	require.Equal(t, "f5", f.stock[5].Name.Get())
+	require.Equal(t, "f4", f.stock[6].Name.Get())
+	require.Equal(t, "f2", f.stock[7].Name.Get())
+	require.Equal(t, "f3", f.stock[8].Name.Get())
+	require.Equal(t, "f1", f.stock[9].Name.Get())
+}

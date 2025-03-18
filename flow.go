@@ -36,6 +36,42 @@ func New(o ...Option) *Flow {
 		v.setup(&it)
 	}
 	it.stock = slices.Clip(it.stock)
+
+	var priority = make(map[string]int, len(it.stock))
+	for _, pipe := range it.stock {
+		var name = pipe.Name.Get()
+		if pipe.When.IsSome() {
+			v, _ := priority[name]
+			if pipe.When.Get().UUID.IsSome() {
+				v += 1000_000
+			}
+			if pipe.When.Get().Kind.IsSome() {
+				v += 100_000
+			}
+			if pipe.When.Get().Hook.IsSome() {
+				v += 10_000
+			}
+			if pipe.When.Get().IsZero() {
+				v += 1_000
+			}
+			priority[name] = v
+		}
+		for _, next := range pipe.Next.GetOrZero() {
+			v, _ := priority[next]
+			priority[next] = v - 1
+		}
+	}
+	slices.SortFunc(it.stock, func(l, r Pipe) int {
+		switch {
+		case priority[l.Name.Get()] < priority[r.Name.Get()]:
+			return +1
+		case priority[l.Name.Get()] > priority[r.Name.Get()]:
+			return -1
+		default:
+			return 0
+		}
+	})
+
 	it.plugin = slices.Clip(it.plugin)
 
 	var index = make(map[string]int, len(it.stock))
@@ -57,6 +93,7 @@ func New(o ...Option) *Flow {
 		stateRuntime[name] = &sync.Pool{}
 		stateProgram[name] = nil
 	}
+
 	var chain = make([][]Pipe, len(it.stock))
 	for i, p := range it.stock {
 		var ux map[string]struct{}
@@ -80,6 +117,7 @@ func New(o ...Option) *Flow {
 		}
 		chain[i] = slices.Clip(pq)
 	}
+
 	it.index = index
 	it.chain = chain
 	it.state.runtime = stateRuntime
