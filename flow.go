@@ -96,10 +96,8 @@ func New(o ...Option) *Flow {
 
 	var chain = make([][]Pipe, len(it.stock))
 	for i, p := range it.stock {
-		var ux map[string]struct{}
-		defer reuseMapStringSrtuct(&ux)()
-
-		var pq = make([]Pipe, 0, 8)
+		var ux = make(map[string]struct{}, 64)
+		var pq = make([]Pipe, 0, 16)
 		pq = append(pq, p)
 		ux[p.Name.Get()] = struct{}{}
 
