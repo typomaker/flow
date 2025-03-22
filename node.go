@@ -128,6 +128,36 @@ func (it Node) When(w When) bool {
 	}
 	return true
 }
+func (it Node) With(pp Node) Node {
+	if !pp.UUID.IsZero() {
+		it.UUID = pp.UUID
+	}
+	if !pp.Kind.IsZero() {
+		it.Kind = pp.Kind
+	}
+	switch {
+	case pp.Meta.IsSome():
+		var with = it.Meta.GetOrZero().With(pp.Meta.GetOrZero())
+		it.Meta = option.Some(with)
+	case pp.Meta.IsNone():
+		it.Meta = pp.Meta
+	}
+	switch {
+	case pp.Hook.IsSome():
+		var with = it.Hook.GetOrZero().With(pp.Hook.GetOrZero())
+		it.Hook = option.Some(with)
+	case pp.Hook.IsNone():
+		it.Hook = pp.Hook
+	}
+	switch {
+	case pp.Live.IsSome():
+		var with = it.Live.GetOrZero().With(pp.Live.GetOrZero())
+		it.Live = option.Some(with)
+	case pp.Live.IsNone():
+		it.Live = pp.Live
+	}
+	return it
+}
 
 type Case struct {
 	When When
@@ -232,6 +262,15 @@ func (it Live) LogValue() slog.Value {
 	}
 	return slog.GroupValue(attrs...)
 }
+func (it Live) With(pp Live) Live {
+	if !pp.Since.IsZero() {
+		it.Since = pp.Since
+	}
+	if !pp.Until.IsZero() {
+		it.Until = pp.Until
+	}
+	return it
+}
 
 type Code = string
 type UUID [16]byte
@@ -262,7 +301,35 @@ func (it UUID) GoString() string {
 type Kind = string
 type Name = string
 type Meta map[string]any
+
+func (it Meta) With(pp Meta) Meta {
+	if len(it) == 0 {
+		return pp
+	}
+	if len(pp) == 0 {
+		return it
+	}
+	for k := range pp {
+		it[k] = deepWith(it[k], pp[k], k[0] == '$')
+	}
+	return it
+}
+
 type Hook map[string]any
+
+func (it Hook) With(pp Hook) Hook {
+	if len(it) == 0 {
+		return pp
+	}
+	if len(pp) == 0 {
+		return it
+	}
+	for k := range pp {
+		it[k] = deepWith(it[k], pp[k], k[0] == '$')
+	}
+	return it
+}
+
 type Time = time.Time
 
 func (it Pipe) String() string {
