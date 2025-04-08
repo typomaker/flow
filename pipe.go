@@ -28,6 +28,9 @@ func (it Pipe) IsZero() bool {
 	}
 	return true
 }
+func (it Pipe) LogAttr() slog.Attr {
+	return slog.Any("pipe", it.LogValue())
+}
 func (it Pipe) LogValue() slog.Value {
 	var attrs []slog.Attr
 	defer reuseSliceSlogAttr(&attrs)()
@@ -57,4 +60,7 @@ func (it Pipe) LogValue() slog.Value {
 		attrs = append(attrs, slog.Any("next", it.Next.Get()))
 	}
 	return slog.GroupValue(attrs...)
+}
+func (it Pipe) String() string {
+	return it.Name.Get()
 }

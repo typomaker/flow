@@ -2,11 +2,12 @@ module github.com/typomaker/flow
 
 go 1.23.4
 
-require github.com/typomaker/option v1.0.2
+require github.com/typomaker/option v1.0.4
 
 require (
 	github.com/kr/text v0.2.0 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
+	github.com/lib/pq v1.10.9 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

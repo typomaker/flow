@@ -5,7 +5,6 @@ import (
 	"slices"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/typomaker/option"
 )
 
@@ -158,183 +157,27 @@ func (it Node) With(pp Node) Node {
 	}
 	return it
 }
-
-type Case struct {
-	When When
-	Then Then
+func (it Node) LogAttr() slog.Attr {
+	return slog.Any("node", it.LogValue())
 }
-type When struct {
-	UUID option.Option[[]UUID]
-	Kind option.Option[[]Kind]
-	Hook option.Option[[]Hook]
-	Live option.Option[[]Live]
-}
-
-func (it When) IsZero() bool {
-	if !it.UUID.IsZero() {
-		return false
+func (it Node) LogValue() slog.Value {
+	var root option.Option[Node]
+	if it.root != nil {
+		root = option.Some(*it.root)
 	}
-	if !it.Kind.IsZero() {
-		return false
-	}
-	if !it.Hook.IsZero() {
-		return false
-	}
-	if !it.Live.IsZero() {
-		return false
-	}
-	return true
-}
-func (it When) LogValue() slog.Value {
-	var attrs []slog.Attr
-	defer reuseSliceSlogAttr(&attrs)()
-
-	switch {
-	case it.UUID.IsNone():
-		attrs = append(attrs, slog.Any("uuid", nil))
-	case it.UUID.IsSome():
-		attrs = append(attrs, slog.Any("uuid", it.UUID.Get()))
-	}
-	switch {
-	case it.Kind.IsNone():
-		attrs = append(attrs, slog.Any("kind", nil))
-	case it.Kind.IsSome():
-		attrs = append(attrs, slog.Any("kind", it.Kind.Get()))
-	}
-	switch {
-	case it.Hook.IsNone():
-		attrs = append(attrs, slog.Any("hook", nil))
-	case it.Hook.IsSome():
-		attrs = append(attrs, slog.Any("hook", it.Hook.Get()))
-	}
-	switch {
-	case it.Live.IsNone():
-		attrs = append(attrs, slog.Any("live", nil))
-	case it.Live.IsSome():
-		attrs = append(attrs, slog.Any("live", it.Live.Get()))
-	}
-	return slog.GroupValue(attrs...)
-}
-
-type Then struct {
-	Kind option.Option[Kind]
-	Meta option.Option[Meta]
-	Hook option.Option[Hook]
-	Live option.Option[Live]
-}
-
-func (it Then) IsZero() bool {
-	if !it.Kind.IsZero() {
-		return false
-	}
-	if !it.Meta.IsZero() {
-		return false
-	}
-	if !it.Hook.IsZero() {
-		return false
-	}
-	if !it.Live.IsZero() {
-		return false
-	}
-	return true
-}
-
-type Live struct {
-	Since option.Option[Time]
-	Until option.Option[Time]
-}
-
-func (it Live) LogValue() slog.Value {
-	var attrs []slog.Attr
-	defer reuseSliceSlogAttr(&attrs)()
-
-	switch {
-	case it.Since.IsNone():
-		attrs = append(attrs, slog.Any("since", nil))
-	case it.Since.IsSome():
-		attrs = append(attrs, slog.Any("since", it.Since.Get()))
-	}
-	switch {
-	case it.Until.IsNone():
-		attrs = append(attrs, slog.Any("until", nil))
-	case it.Until.IsSome():
-		attrs = append(attrs, slog.Any("until", it.Until.Get()))
-	}
-	return slog.GroupValue(attrs...)
-}
-func (it Live) With(pp Live) Live {
-	if !pp.Since.IsZero() {
-		it.Since = pp.Since
-	}
-	if !pp.Until.IsZero() {
-		it.Until = pp.Until
-	}
-	return it
+	return slog.GroupValue(
+		slog.Any("uuid", it.UUID),
+		slog.Any("kind", it.Kind),
+		slog.Any("meta", it.Meta),
+		slog.Any("hook", it.Hook),
+		slog.Any("live", it.Live),
+		slog.Any("root", root),
+	)
 }
 
 type Code = string
-type UUID [16]byte
-
-func NewUUID() UUID {
-	var u = UUID(uuid.Must(uuid.NewRandom()))
-	return u
-}
-func MustUUID(s string) UUID {
-	var u, err = ParseUUID(s)
-	if err != nil {
-		panic(err)
-	}
-	return u
-}
-func ParseUUID(s string) (u UUID, err error) {
-	var x uuid.UUID
-	if x, err = uuid.Parse(s); err != nil {
-		return u, err
-	}
-	u = UUID(x)
-	return u, nil
-}
-func (it UUID) GoString() string {
-	return "\"" + it.String() + "\""
-}
 
 type Kind = string
 type Name = string
-type Meta map[string]any
-
-func (it Meta) With(pp Meta) Meta {
-	if len(it) == 0 {
-		return pp
-	}
-	if len(pp) == 0 {
-		return it
-	}
-	for k := range pp {
-		it[k] = deepWith(it[k], pp[k], k[0] == '$')
-	}
-	return it
-}
-
-type Hook map[string]any
-
-func (it Hook) With(pp Hook) Hook {
-	if len(it) == 0 {
-		return pp
-	}
-	if len(pp) == 0 {
-		return it
-	}
-	for k := range pp {
-		it[k] = deepWith(it[k], pp[k], k[0] == '$')
-	}
-	return it
-}
 
 type Time = time.Time
-
-func (it Pipe) String() string {
-	return it.Name.Get()
-}
-func (it UUID) String() string {
-	return uuid.UUID(it).String()
-}

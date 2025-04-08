@@ -2015,7 +2015,7 @@ func TestUnchangeFirstFlowList(t *testing.T) {
 		flowList,
 	)
 }
-func TestSetOverflowFirstFlowList(t *testing.T) {
+func TestSetRootflowFirstFlowList(t *testing.T) {
 	rm := goja.New()
 	flowList := []Node{
 		{UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
@@ -2753,7 +2753,7 @@ func TestSetArrayLenToHalf(t *testing.T) {
 		array,
 	)
 }
-func TestSetArrayLenToOver(t *testing.T) {
+func TestSetArrayLenToRoot(t *testing.T) {
 	rm := goja.New()
 	array := any([]any{1, 2, 3})
 	var gojaValue goja.Value
@@ -2834,7 +2834,7 @@ func TestSetFlowListLenToHalf(t *testing.T) {
 		flowList,
 	)
 }
-func TestSetFlowListLenToOver(t *testing.T) {
+func TestSetFlowListLenToRoot(t *testing.T) {
 	rm := goja.New()
 	flowList := []Node{
 		{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
