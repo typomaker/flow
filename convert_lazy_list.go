@@ -31,7 +31,7 @@ func (it *lazyList) Get(idx int) goja.Value {
 		return goja.Undefined()
 	}
 	var err error
-	if err = convert(it.rm, it.proto[idx], &jsVal); err != nil {
+	if err = Convert(it.rm, it.proto[idx], &jsVal); err != nil {
 		panic(it.rm.NewGoError(err))
 	}
 	if it.value == nil {
