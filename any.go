@@ -83,86 +83,90 @@ func deepHave(l, r any) bool {
 			return true
 		}
 	default:
-		return deepSame(source, r)
+		return equal(source, r)
 	}
 	return false
 }
-func deepSame(l, r any) bool {
-	switch l := l.(type) {
+func equal[T1, T2 any](l T1, r T2) bool {
+	switch l := any(l).(type) {
+	case interface{ Equal(T2) bool }:
+		if r, ok := any(r).(T2); ok && l.Equal(r) {
+			return true
+		}
 	case int:
-		if r, ok := r.(int); ok && l == r {
+		if r, ok := any(r).(int); ok && l == r {
 			return true
 		}
 	case byte:
-		if r, ok := r.(byte); ok && l == r {
+		if r, ok := any(r).(byte); ok && l == r {
 			return true
 		}
 	case int8:
-		if r, ok := r.(int8); ok && l == r {
+		if r, ok := any(r).(int8); ok && l == r {
 			return true
 		}
 	case int16:
-		if r, ok := r.(int16); ok && l == r {
+		if r, ok := any(r).(int16); ok && l == r {
 			return true
 		}
 	case int32:
-		if r, ok := r.(int32); ok && l == r {
+		if r, ok := any(r).(int32); ok && l == r {
 			return true
 		}
 	case int64:
-		if r, ok := r.(int64); ok && l == r {
+		if r, ok := any(r).(int64); ok && l == r {
 			return true
 		}
 	case bool:
-		if r, ok := r.(bool); ok && l == r {
+		if r, ok := any(r).(bool); ok && l == r {
 			return true
 		}
 	case string:
-		if r, ok := r.(string); ok && l == r {
+		if r, ok := any(r).(string); ok && l == r {
 			return true
 		}
 	case float32:
-		if r, ok := r.(float32); ok && l == r {
+		if r, ok := any(r).(float32); ok && l == r {
 			return true
 		}
 	case float64:
-		if r, ok := r.(float64); ok && l == r {
+		if r, ok := any(r).(float64); ok && l == r {
 			return true
 		}
 	case []byte:
-		if r, ok := r.([]byte); ok && bytes.Equal(l, r) {
+		if r, ok := any(r).([]byte); ok && bytes.Equal(l, r) {
 			return true
 		}
 	case nil:
-		if r == nil {
+		if any(r) == nil {
 			return true
 		}
 	case map[string]any:
-		if r, ok := r.(map[string]any); ok {
+		if r, ok := any(r).(map[string]any); ok {
 			if len(l) != len(r) {
 				return false
 			}
 			for k := range r {
-				if !deepSame(l[k], r[k]) {
+				if !equal(l[k], r[k]) {
 					return false
 				}
 			}
 			return true
 		}
 	case []any:
-		if r, ok := r.([]any); ok {
+		if r, ok := any(r).([]any); ok {
 			if len(l) != len(r) {
 				return false
 			}
 			for i := range l {
-				if !deepSame(l[i], r[i]) {
+				if !equal(l[i], r[i]) {
 					return false
 				}
 			}
 			return true
 		}
 	case time.Time:
-		if r, ok := r.(time.Time); ok && l.Equal(r) {
+		if r, ok := any(r).(time.Time); ok && l.Equal(r) {
 			return true
 		}
 	default:

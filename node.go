@@ -19,6 +19,22 @@ type Node struct {
 	Live option.Option[Live]
 }
 
+func (it Node) Equal(t Node) bool {
+	switch {
+	case it.UUID != t.UUID:
+		return false
+	case it.Kind != t.Kind:
+		return false
+	case !it.Meta.GetOrZero().Equal(t.Meta.GetOrZero()):
+		return false
+	case !it.Hook.GetOrZero().Equal(t.Hook.GetOrZero()):
+		return false
+	case !it.Live.GetOrZero().Equal(t.Live.GetOrZero()):
+		return false
+	default:
+		return true
+	}
+}
 func (it Node) IsZero() bool {
 	if it.root != nil {
 		return false

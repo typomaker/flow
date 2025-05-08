@@ -8,6 +8,9 @@ import (
 
 type Meta map[string]any
 
+func (it Meta) Equal(t Meta) bool {
+	return equal(it, t)
+}
 func (it Meta) With(pp Meta) Meta {
 	if len(it) == 0 {
 		return pp

@@ -13,6 +13,16 @@ type Live struct {
 	Until option.Option[Time]
 }
 
+func (it Live) Equal(t Live) bool {
+	switch {
+	case !it.Since.GetOrZero().Equal(t.Since.GetOrZero()):
+		return false
+	case !it.Until.GetOrZero().Equal(t.Until.GetOrZero()):
+		return false
+	default:
+		return true
+	}
+}
 func (it Live) With(pp Live) Live {
 	if !pp.Since.IsZero() {
 		it.Since = pp.Since

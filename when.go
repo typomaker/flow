@@ -3,6 +3,7 @@ package flow
 import (
 	"fmt"
 	"log/slog"
+	"slices"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/typomaker/option"
@@ -15,6 +16,20 @@ type When struct {
 	Live option.Option[[]Live] `json:"live,omitempty"`
 }
 
+func (it When) Equal(t When) bool {
+	switch {
+	case !slices.Equal(it.UUID.GetOrZero(), t.UUID.GetOrZero()):
+		return false
+	case !slices.Equal(it.Kind.GetOrZero(), t.Kind.GetOrZero()):
+		return false
+	case !slices.EqualFunc(it.Hook.GetOrZero(), t.Hook.GetOrZero(), Hook.Equal):
+		return false
+	case !slices.EqualFunc(it.Live.GetOrZero(), t.Live.GetOrZero(), Live.Equal):
+		return false
+	default:
+		return true
+	}
+}
 func (it When) IsZero() bool {
 	if !it.UUID.IsZero() {
 		return false

@@ -8,6 +8,9 @@ import (
 
 type Hook map[string]any
 
+func (it Hook) Equal(t Hook) bool {
+	return equal(it, t)
+}
 func (it Hook) With(pp Hook) Hook {
 	if len(it) == 0 {
 		return pp
