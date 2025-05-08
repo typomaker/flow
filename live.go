@@ -1,7 +1,6 @@
 package flow
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 
@@ -35,18 +34,34 @@ func (it Live) LogValue() slog.Value {
 		slog.Any("until", it.Until),
 	)
 }
+
+type _LiveJSON struct {
+	Since jsoniter.RawMessage `json:"since,omitempty"`
+	Until jsoniter.RawMessage `json:"until,omitempty"`
+}
+
 func (it Live) MarshalJSON() (b []byte, err error) {
-	var j struct {
-		Since json.RawMessage `json:"since,omitempty"`
-		Until json.RawMessage `json:"until,omitempty"`
-	}
-	if j.Since, err = it.Since.MarshalJSON(); err != nil {
+	var js _LiveJSON
+	if js.Since, err = jsoniter.Marshal(it.Since); err != nil {
 		return nil, fmt.Errorf("since: %w", err)
 	}
-	if j.Until, err = it.Until.MarshalJSON(); err != nil {
+	if js.Until, err = jsoniter.Marshal(it.Until); err != nil {
 		return nil, fmt.Errorf("until: %w", err)
 	}
-	return jsoniter.Marshal(j)
+	return jsoniter.Marshal(js)
+}
+func (it *Live) UnmarshalJSON(b []byte) (err error) {
+	var js _LiveJSON
+	if err = jsoniter.Unmarshal(b, js); err != nil {
+		return err
+	}
+	if err = jsoniter.Unmarshal(js.Since, &it.Since); err != nil {
+		return fmt.Errorf("since: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.Until, &it.Until); err != nil {
+		return fmt.Errorf("until: %w", err)
+	}
+	return nil
 }
 func (it Live) IsZero() bool {
 	return it == Live{}

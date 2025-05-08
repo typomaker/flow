@@ -1,6 +1,10 @@
 package flow
 
-import "log/slog"
+import (
+	"log/slog"
+
+	jsoniter "github.com/json-iterator/go"
+)
 
 type Meta map[string]any
 
@@ -21,4 +25,16 @@ func (it Meta) LogAttr() slog.Attr {
 }
 func (it Meta) LogValue() slog.Value {
 	return slog.AnyValue(map[string]any(it))
+}
+func (it Meta) MarshalJSON() (b []byte, err error) {
+	var js = map[string]any(it)
+	return jsoniter.Marshal(js)
+}
+func (it *Meta) UnmarshalJSON(b []byte) (err error) {
+	var js map[string]any
+	if err = jsoniter.Unmarshal(b, &js); err != nil {
+		return err
+	}
+	*it = Meta(js)
+	return nil
 }

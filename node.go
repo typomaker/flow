@@ -1,10 +1,12 @@
 package flow
 
 import (
+	"fmt"
 	"log/slog"
 	"slices"
 	"time"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/typomaker/option"
 )
 
@@ -173,6 +175,63 @@ func (it Node) LogValue() slog.Value {
 		slog.Any("live", it.Live),
 		slog.Any("root", root),
 	)
+}
+
+type _NodeJSON struct {
+	UUID jsoniter.RawMessage `json:"uuid,omitempty"`
+	Kind jsoniter.RawMessage `json:"kind,omitempty"`
+	Meta jsoniter.RawMessage `json:"meta,omitempty"`
+	Hook jsoniter.RawMessage `json:"hook,omitempty"`
+	Live jsoniter.RawMessage `json:"live,omitempty"`
+	Root jsoniter.RawMessage `json:"root,omitempty"`
+}
+
+func (it Node) MarshalJSON() (b []byte, err error) {
+	var js _NodeJSON
+	if js.UUID, err = jsoniter.Marshal(it.UUID); err != nil {
+		return nil, fmt.Errorf("uuid: %w", err)
+	}
+	if js.Kind, err = jsoniter.Marshal(it.Kind); err != nil {
+		return nil, fmt.Errorf("kind: %w", err)
+	}
+	if js.Meta, err = jsoniter.Marshal(it.Meta); err != nil {
+		return nil, fmt.Errorf("meta: %w", err)
+	}
+	if js.Hook, err = jsoniter.Marshal(it.Hook); err != nil {
+		return nil, fmt.Errorf("hook: %w", err)
+	}
+	if js.Live, err = jsoniter.Marshal(it.Live); err != nil {
+		return nil, fmt.Errorf("live: %w", err)
+	}
+	if js.Root, err = jsoniter.Marshal(it.root); err != nil {
+		return nil, fmt.Errorf("root: %w", err)
+	}
+	return jsoniter.Marshal(js)
+}
+func (it *Node) UnmarshalJSON(b []byte) (err error) {
+	var js _NodeJSON
+	if err = jsoniter.Unmarshal(b, &js); err != nil {
+		return err
+	}
+	if err = jsoniter.Unmarshal(js.UUID, &it.UUID); err != nil {
+		return fmt.Errorf("uuid: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.Kind, &it.Kind); err != nil {
+		return fmt.Errorf("kind: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.Meta, &it.Meta); err != nil {
+		return fmt.Errorf("meta: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.Hook, &it.Hook); err != nil {
+		return fmt.Errorf("hook: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.Live, &it.Live); err != nil {
+		return fmt.Errorf("live: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.Root, it.root); err != nil {
+		return fmt.Errorf("root: %w", err)
+	}
+	return nil
 }
 
 type Code = string

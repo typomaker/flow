@@ -1,8 +1,10 @@
 package flow
 
 import (
+	"fmt"
 	"log/slog"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/typomaker/option"
 )
 
@@ -60,6 +62,49 @@ func (it Pipe) LogValue() slog.Value {
 		attrs = append(attrs, slog.Any("next", it.Next.Get()))
 	}
 	return slog.GroupValue(attrs...)
+}
+
+type _PipeJSON struct {
+	Name jsoniter.RawMessage `json:"name,omitempty"`
+	When jsoniter.RawMessage `json:"when,omitempty"`
+	Code jsoniter.RawMessage `json:"code,omitempty"`
+	Next jsoniter.RawMessage `json:"next,omitempty"`
+}
+
+func (it Pipe) MarshalJSON() (b []byte, err error) {
+	var js _PipeJSON
+	if js.Name, err = jsoniter.Marshal(it.Name); err != nil {
+		return nil, fmt.Errorf("name: %w", err)
+	}
+	if js.When, err = jsoniter.Marshal(it.When); err != nil {
+		return nil, fmt.Errorf("when: %w", err)
+	}
+	if js.Code, err = jsoniter.Marshal(it.Code); err != nil {
+		return nil, fmt.Errorf("code: %w", err)
+	}
+	if js.Next, err = jsoniter.Marshal(it.Next); err != nil {
+		return nil, fmt.Errorf("next: %w", err)
+	}
+	return jsoniter.Marshal(js)
+}
+func (it *Pipe) UnmarshalJSON(b []byte) (err error) {
+	var js _PipeJSON
+	if err = jsoniter.Unmarshal(b, &js); err != nil {
+		return err
+	}
+	if err = jsoniter.Unmarshal(js.Name, &it.Name); err != nil {
+		return fmt.Errorf("name: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.When, &it.When); err != nil {
+		return fmt.Errorf("when: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.Code, &it.Code); err != nil {
+		return fmt.Errorf("code: %w", err)
+	}
+	if err = jsoniter.Unmarshal(js.Next, &it.Next); err != nil {
+		return fmt.Errorf("next: %w", err)
+	}
+	return nil
 }
 func (it Pipe) String() string {
 	return it.Name.Get()
