@@ -15,6 +15,20 @@ type Then struct {
 	Live option.Option[Live]
 }
 
+func (it Then) Equal(t Then) bool {
+	switch {
+	case it.Kind != t.Kind:
+		return false
+	case !it.Meta.GetOrZero().Equal(t.Meta.GetOrZero()):
+		return false
+	case !it.Hook.GetOrZero().Equal(t.Hook.GetOrZero()):
+		return false
+	case !it.Live.GetOrZero().Equal(t.Live.GetOrZero()):
+		return false
+	default:
+		return true
+	}
+}
 func (it Then) IsZero() bool {
 	if !it.Kind.IsZero() {
 		return false
