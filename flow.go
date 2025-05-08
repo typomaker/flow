@@ -222,13 +222,13 @@ func (it *Flow) handler(ctx context.Context, pipe Pipe) (main func([]Node) error
 			return err
 		}
 		var target goja.Value
-		if err = Convert(rm, nodes, &target); err != nil {
+		if err = convert(rm, nodes, &target); err != nil {
 			return err
 		}
 		if _, err = main(this, target); err != nil {
 			return err
 		}
-		if err = Convert(rm, target, &nodes); err != nil {
+		if err = convert(rm, target, &nodes); err != nil {
 			return err
 		}
 		if err = it.triggerQuit(ctx, Api{it, pipe, rm, this}); err != nil {
@@ -399,7 +399,7 @@ func (it *Flow) newPrinter(ctx context.Context, rm *goja.Runtime, printer func(c
 		}
 		if arg := call.Argument(start); arg.ExportType() == reflectObject {
 			var v any
-			if err = Convert(rm, arg, &v); err != nil {
+			if err = convert(rm, arg, &v); err != nil {
 				field = append(field, slog.String("logError", err.Error()))
 			} else if o, ok := v.(map[string]any); !ok {
 				field = append(field, slog.Any("logUnknow", arg.Export()))
@@ -415,7 +415,7 @@ func (it *Flow) newPrinter(ctx context.Context, rm *goja.Runtime, printer func(c
 			for i := start; i < len(call.Arguments); i++ {
 				var arg = call.Argument(i)
 				var val any
-				if err = Convert(rm, arg, &val); err != nil {
+				if err = convert(rm, arg, &val); err != nil {
 					val = err
 				}
 				args = append(args, val)

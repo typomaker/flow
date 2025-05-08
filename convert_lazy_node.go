@@ -74,7 +74,7 @@ func (it *lazyNode) Get(key string) (val goja.Value) {
 			case it.proto.Meta.IsNone():
 				it.value.Meta = goja.Null()
 			case it.proto.Meta.IsSome():
-				err = Convert(it.rm, it.proto.Meta.Get(), &it.value.Meta)
+				err = convert(it.rm, it.proto.Meta.Get(), &it.value.Meta)
 			}
 		}
 		val = it.value.Meta
@@ -84,7 +84,7 @@ func (it *lazyNode) Get(key string) (val goja.Value) {
 			case it.proto.Hook.IsNone():
 				it.value.Hook = goja.Null()
 			case it.proto.Hook.IsSome():
-				err = Convert(it.rm, it.proto.Hook.Get(), &it.value.Hook)
+				err = convert(it.rm, it.proto.Hook.Get(), &it.value.Hook)
 			}
 		}
 		val = it.value.Hook
@@ -94,14 +94,14 @@ func (it *lazyNode) Get(key string) (val goja.Value) {
 			case it.proto.Live.IsNone():
 				it.value.Live = goja.Null()
 			case it.proto.Live.IsSome():
-				err = Convert(it.rm, it.proto.Live.Get(), &it.value.Live)
+				err = convert(it.rm, it.proto.Live.Get(), &it.value.Live)
 			}
 		}
 		val = it.value.Live
 	case keyRoot:
 		if it.value.Root == nil {
 			if !it.proto.Root().IsZero() {
-				err = Convert(it.rm, it.proto.Root(), &it.value.Root)
+				err = convert(it.rm, it.proto.Root(), &it.value.Root)
 			}
 		}
 		val = it.value.Root

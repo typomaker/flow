@@ -30,7 +30,7 @@ func (it *lazyObject) Get(key string) goja.Value {
 			return goja.Undefined()
 		}
 		var err error
-		if err = Convert(it.rm, goAny, &jsAny); err != nil {
+		if err = convert(it.rm, goAny, &jsAny); err != nil {
 			panic(it.rm.NewGoError(err))
 		}
 		if it.value == nil {

@@ -11,7 +11,7 @@ import (
 	"github.com/typomaker/option"
 )
 
-func Convert(rm *goja.Runtime, src, dst any) (err error) {
+func convert(rm *goja.Runtime, src, dst any) (err error) {
 	switch src := src.(type) {
 	case []Node:
 		err = convert_List(rm, src, dst)
@@ -277,7 +277,7 @@ func convert_GojaValue_When(rm *goja.Runtime, src goja.Value, dst *When) (err er
 				case goja.IsNull(jsHookItem):
 					continue
 				default:
-					if err = Convert(rm, jsHookItem, &goHookItem); err != nil {
+					if err = convert(rm, jsHookItem, &goHookItem); err != nil {
 						return fmt.Errorf(`hook %d %w`, i, err)
 					}
 					goHook = append(goHook, goHookItem)
@@ -325,7 +325,7 @@ func convert_GojaValue_Then(rm *goja.Runtime, src goja.Value, dst *Then) (err er
 		case goja.IsNull(jsMeta):
 			dst.Meta = option.None[Meta]()
 		default:
-			if err = Convert(rm, jsMeta, &goMeta); err != nil {
+			if err = convert(rm, jsMeta, &goMeta); err != nil {
 				return fmt.Errorf(`meta %w`, err)
 			}
 			dst.Meta = option.Some(goMeta)
@@ -339,7 +339,7 @@ func convert_GojaValue_Then(rm *goja.Runtime, src goja.Value, dst *Then) (err er
 		case goja.IsNull(jsHook):
 			dst.Hook = option.None[Hook]()
 		default:
-			if err = Convert(rm, jsHook, &goHook); err != nil {
+			if err = convert(rm, jsHook, &goHook); err != nil {
 				return fmt.Errorf(`hook %w`, err)
 			}
 			dst.Hook = option.Some(goHook)
@@ -353,7 +353,7 @@ func convert_GojaValue_Then(rm *goja.Runtime, src goja.Value, dst *Then) (err er
 		case goja.IsNull(jsLive):
 			dst.Live = option.None[Live]()
 		default:
-			if err = Convert(rm, jsLive, &goLive); err != nil {
+			if err = convert(rm, jsLive, &goLive); err != nil {
 				return fmt.Errorf(`live %w`, err)
 			}
 			dst.Live = option.Some(goLive)
@@ -605,7 +605,7 @@ func convert_LazyList_Any(rm *goja.Runtime, src *lazyList, dst *any) (err error)
 			}
 			jsVal = &lazyNode{rm: rm, proto: src.proto[i]}
 		}
-		if err = Convert(rm, jsVal, &goVal); err != nil {
+		if err = convert(rm, jsVal, &goVal); err != nil {
 			return fmt.Errorf("%d %w", i, err)
 		}
 		d[idx] = goVal
@@ -638,7 +638,7 @@ func convert_LazyList_List(rm *goja.Runtime, src *lazyList, dst *[]Node) (err er
 			continue
 		}
 		var p Node
-		if err = Convert(rm, v, &p); err != nil {
+		if err = convert(rm, v, &p); err != nil {
 			return fmt.Errorf("%d %w", i, err)
 		}
 		if i < len(d) {
@@ -716,7 +716,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 		d["meta"] = nil
 	case src.value.Meta != nil:
 		var goMeta any
-		if err = Convert(rm, src.value.Meta, &goMeta); err != nil {
+		if err = convert(rm, src.value.Meta, &goMeta); err != nil {
 			return fmt.Errorf("meta %w", err)
 		}
 		d["meta"] = goMeta
@@ -726,7 +726,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 		d["meta"] = nil
 	case src.proto.Meta.IsSome():
 		var goMeta any
-		if err = Convert(rm, src.proto.Meta.Get(), &goMeta); err != nil {
+		if err = convert(rm, src.proto.Meta.Get(), &goMeta); err != nil {
 			return err
 		}
 		d["meta"] = goMeta
@@ -739,7 +739,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 		d["hook"] = nil
 	case src.value.Hook != nil:
 		var goHook any
-		if err = Convert(rm, src.value.Hook, &goHook); err != nil {
+		if err = convert(rm, src.value.Hook, &goHook); err != nil {
 			return fmt.Errorf("hook %w", err)
 		}
 		d["hook"] = goHook
@@ -749,7 +749,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 		d["hook"] = nil
 	case src.proto.Hook.IsSome():
 		var goHook any
-		if err = Convert(rm, src.proto.Hook.Get(), &goHook); err != nil {
+		if err = convert(rm, src.proto.Hook.Get(), &goHook); err != nil {
 			return err
 		}
 		d["hook"] = goHook
@@ -762,7 +762,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 		d["live"] = nil
 	case src.value.Live != nil:
 		var goLive any
-		if err = Convert(rm, src.value.Live, &goLive); err != nil {
+		if err = convert(rm, src.value.Live, &goLive); err != nil {
 			return fmt.Errorf("live %w", err)
 		}
 		d["live"] = goLive
@@ -772,7 +772,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 		d["live"] = nil
 	case src.proto.Live.IsSome():
 		var goLive any
-		if err = Convert(rm, src.proto.Live.Get(), &goLive); err != nil {
+		if err = convert(rm, src.proto.Live.Get(), &goLive); err != nil {
 			return err
 		}
 		d["live"] = goLive
@@ -785,7 +785,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 		d["root"] = nil
 	case src.value.Root != nil:
 		var goRoot any
-		if err = Convert(rm, src.value.Root, &goRoot); err != nil {
+		if err = convert(rm, src.value.Root, &goRoot); err != nil {
 			return fmt.Errorf("root %w", err)
 		}
 		d["root"] = goRoot
@@ -793,7 +793,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 		delete(d, "root")
 	default:
 		var goRoot any
-		if err = Convert(rm, src.proto.Root(), &goRoot); err != nil {
+		if err = convert(rm, src.proto.Root(), &goRoot); err != nil {
 			return err
 		}
 		d["root"] = goRoot
@@ -846,7 +846,7 @@ func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNode, dst *Node) (err erro
 			dst.Meta = option.None[Meta]()
 		default:
 			var goMeta Meta
-			if err = Convert(rm, jsMeta, &goMeta); err != nil {
+			if err = convert(rm, jsMeta, &goMeta); err != nil {
 				return fmt.Errorf("meta %w", err)
 			}
 			dst.Meta = option.Some(goMeta)
@@ -860,7 +860,7 @@ func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNode, dst *Node) (err erro
 			dst.Hook = option.None[Hook]()
 		default:
 			var goHook Hook
-			if err = Convert(rm, jsHook, &goHook); err != nil {
+			if err = convert(rm, jsHook, &goHook); err != nil {
 				return fmt.Errorf("hook %w", err)
 			}
 			dst.Hook = option.Some(goHook)
@@ -874,7 +874,7 @@ func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNode, dst *Node) (err erro
 			dst.Live = option.None[Live]()
 		default:
 			var goLive Live
-			if err = Convert(rm, jsLive, &goLive); err != nil {
+			if err = convert(rm, jsLive, &goLive); err != nil {
 				return fmt.Errorf("live %w", err)
 			}
 			dst.Live = option.Some(goLive)
@@ -886,7 +886,7 @@ func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNode, dst *Node) (err erro
 			dst.SetRoot(Node{})
 		default:
 			var goRoot Node
-			if err = Convert(rm, jsRoot, &goRoot); err != nil {
+			if err = convert(rm, jsRoot, &goRoot); err != nil {
 				return fmt.Errorf("rate %w", err)
 			}
 			dst.SetRoot(goRoot)
@@ -1017,7 +1017,7 @@ func convert_LazyObject_Object(rm *goja.Runtime, src *lazyObject, dst *map[strin
 			continue
 		}
 		var protoVal any
-		if err = Convert(rm, val, &protoVal); err != nil {
+		if err = convert(rm, val, &protoVal); err != nil {
 			return fmt.Errorf("%s %w", key, err)
 		}
 		d[key] = protoVal
@@ -1071,7 +1071,7 @@ func convert_LazyArray_Array(rm *goja.Runtime, src *lazyArray, dst *[]any) (err 
 			continue
 		}
 		var p any
-		if err = Convert(rm, v, &p); err != nil {
+		if err = convert(rm, v, &p); err != nil {
 			return fmt.Errorf("%d %w", i, err)
 		}
 		if i < len(d) {
@@ -1103,7 +1103,7 @@ func convert_Object_Any(rm *goja.Runtime, src map[string]any, dst *any) (err err
 	}
 	for key, val := range src {
 		var goVal any
-		if err = Convert(rm, val, &goVal); err != nil {
+		if err = convert(rm, val, &goVal); err != nil {
 			return err
 		}
 		d[key] = goVal
@@ -1129,7 +1129,7 @@ func convert_Array_Any(rm *goja.Runtime, src []any, dst *any) (err error) {
 	}
 	for idx, val := range src {
 		var goVal any
-		if err = Convert(rm, val, &goVal); err != nil {
+		if err = convert(rm, val, &goVal); err != nil {
 			return err
 		}
 		d[idx] = goVal

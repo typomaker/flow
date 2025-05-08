@@ -52,3 +52,6 @@ func (it Api) Runtime() *goja.Runtime {
 func (it Api) This() *goja.Object {
 	return it.this
 }
+func (it Api) Convert(src, dst any) (err error) {
+	return convert(it.runtime, src, dst)
+}

@@ -15,7 +15,7 @@ func TestGetNodeUUID(t *testing.T) {
 		UUID: option.Some(MustUUID("84d835bf-ccca-42ca-90aa-2207372f33dd")),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -27,7 +27,7 @@ func TestGetNodeUUID(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, MustUUID("84d835bf-ccca-42ca-90aa-2207372f33dd"), node.UUID.Get())
@@ -38,7 +38,7 @@ func TestGetNodeUUIDNull(t *testing.T) {
 		UUID: option.None[UUID](),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -50,7 +50,7 @@ func TestGetNodeUUIDNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.UUID.IsNone())
@@ -61,7 +61,7 @@ func TestGetNodeUUIDUndefined(t *testing.T) {
 		UUID: option.Option[UUID]{},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -73,7 +73,7 @@ func TestGetNodeUUIDUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.UUID.IsZero())
@@ -82,7 +82,7 @@ func TestSetNodeUUID(t *testing.T) {
 	rm := goja.New()
 	node := Node{}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -94,7 +94,7 @@ func TestSetNodeUUID(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, MustUUID("2bd42b00-d96d-4360-b767-ca4bd8279576"), node.UUID.Get())
@@ -105,7 +105,7 @@ func TestSetNodeUUIDNull(t *testing.T) {
 		UUID: option.Some(MustUUID("094db975-1196-45f0-9e32-d96497507a2d")),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -117,7 +117,7 @@ func TestSetNodeUUIDNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.UUID.IsNone())
@@ -128,7 +128,7 @@ func TestSetNodeUUIDUndefined(t *testing.T) {
 		UUID: option.Some(MustUUID("094db975-1196-45f0-9e32-d96497507a2d")),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -139,7 +139,7 @@ func TestSetNodeUUIDUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.UUID.IsZero())
@@ -151,7 +151,7 @@ func TestGetNodeKind(t *testing.T) {
 		Kind: option.Some("foo"),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -163,7 +163,7 @@ func TestGetNodeKind(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, "foo", node.Kind.Get())
@@ -174,7 +174,7 @@ func TestGetNodeKindNull(t *testing.T) {
 		Kind: option.None[Kind](),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -186,7 +186,7 @@ func TestGetNodeKindNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Kind.IsNone())
@@ -197,7 +197,7 @@ func TestGetNodeKindUndefined(t *testing.T) {
 		Kind: option.Option[Kind]{},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -209,7 +209,7 @@ func TestGetNodeKindUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.UUID.IsZero())
@@ -218,7 +218,7 @@ func TestSetNodeKind(t *testing.T) {
 	rm := goja.New()
 	node := Node{}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -230,7 +230,7 @@ func TestSetNodeKind(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, "foo", node.Kind.Get())
@@ -239,7 +239,7 @@ func TestSetNodeKindNull(t *testing.T) {
 	rm := goja.New()
 	node := Node{}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -251,7 +251,7 @@ func TestSetNodeKindNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Kind.IsNone())
@@ -260,7 +260,7 @@ func TestSetNodeKindUndefined(t *testing.T) {
 	rm := goja.New()
 	node := Node{}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -272,7 +272,7 @@ func TestSetNodeKindUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Kind.IsZero())
@@ -284,7 +284,7 @@ func TestGetNodeMeta(t *testing.T) {
 		Meta: option.Some(Meta{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -296,7 +296,7 @@ func TestGetNodeMeta(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, Meta{}, node.Meta.Get())
@@ -307,7 +307,7 @@ func TestGetNodeMetaNull(t *testing.T) {
 		Meta: option.None[Meta](),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -319,7 +319,7 @@ func TestGetNodeMetaNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Meta.IsNone())
@@ -330,7 +330,7 @@ func TestGetNodeMetaUndefined(t *testing.T) {
 		Meta: option.Option[Meta]{},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -342,7 +342,7 @@ func TestGetNodeMetaUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Meta.IsZero())
@@ -351,7 +351,7 @@ func TestSetNodeMeta(t *testing.T) {
 	rm := goja.New()
 	node := Node{}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -363,7 +363,7 @@ func TestSetNodeMeta(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, Meta{}, node.Meta.Get())
@@ -374,7 +374,7 @@ func TestSetNodeMetaNull(t *testing.T) {
 		Meta: option.Some(Meta{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -386,7 +386,7 @@ func TestSetNodeMetaNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Meta.IsNone())
@@ -397,7 +397,7 @@ func TestSetNodeMetaUndefined(t *testing.T) {
 		Meta: option.Some(Meta{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -408,7 +408,7 @@ func TestSetNodeMetaUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Meta.IsZero())
@@ -420,7 +420,7 @@ func TestGetNodeHook(t *testing.T) {
 		Hook: option.Some(Hook{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -432,7 +432,7 @@ func TestGetNodeHook(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, Hook{}, node.Hook.Get())
@@ -443,7 +443,7 @@ func TestGetNodeHookNull(t *testing.T) {
 		Hook: option.None[Hook](),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -455,7 +455,7 @@ func TestGetNodeHookNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Hook.IsNone())
@@ -466,7 +466,7 @@ func TestGetFlowHookUndefined(t *testing.T) {
 		Hook: option.Option[Hook]{},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -478,7 +478,7 @@ func TestGetFlowHookUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Hook.IsZero())
@@ -487,7 +487,7 @@ func TestSetNodeHook(t *testing.T) {
 	rm := goja.New()
 	node := Node{}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -499,7 +499,7 @@ func TestSetNodeHook(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, Hook{}, node.Hook.Get())
@@ -510,7 +510,7 @@ func TestSetNodeHookNull(t *testing.T) {
 		Hook: option.Some(Hook{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -522,7 +522,7 @@ func TestSetNodeHookNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Hook.IsNone())
@@ -533,7 +533,7 @@ func TestSetNodeHookUndefined(t *testing.T) {
 		Hook: option.Some(Hook{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -544,7 +544,7 @@ func TestSetNodeHookUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Hook.IsZero())
@@ -556,7 +556,7 @@ func TestGetNodeLive(t *testing.T) {
 		Live: option.Some(Live{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -568,7 +568,7 @@ func TestGetNodeLive(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, Live{}, node.Live.Get())
@@ -579,7 +579,7 @@ func TestGetNodeLiveNull(t *testing.T) {
 		Live: option.None[Live](),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -591,7 +591,7 @@ func TestGetNodeLiveNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Live.IsNone())
@@ -602,7 +602,7 @@ func TestGetNodeLiveUndefined(t *testing.T) {
 		Live: option.Option[Live]{},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -614,7 +614,7 @@ func TestGetNodeLiveUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Live.IsZero())
@@ -623,7 +623,7 @@ func TestSetNodeLive(t *testing.T) {
 	rm := goja.New()
 	node := Node{}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -635,7 +635,7 @@ func TestSetNodeLive(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.Equal(t, Live{}, node.Live.Get())
@@ -646,7 +646,7 @@ func TestSetNodeLiveNull(t *testing.T) {
 		Live: option.Some(Live{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -658,7 +658,7 @@ func TestSetNodeLiveNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Live.IsNone())
@@ -669,7 +669,7 @@ func TestSetNodeLiveUndefined(t *testing.T) {
 		Live: option.Some(Live{}),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, node, &gojaValue)
+	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -680,7 +680,7 @@ func TestSetNodeLiveUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &node)
+	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
 	require.True(t, node.Live.IsZero())
@@ -693,7 +693,7 @@ func TestGetLiveSince(t *testing.T) {
 		Since: option.Some(now),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -705,7 +705,7 @@ func TestGetLiveSince(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.WithinDuration(t, now, live.Since.Get(), time.Second)
@@ -716,7 +716,7 @@ func TestGetLiveSinceNull(t *testing.T) {
 		Since: option.None[time.Time](),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -728,7 +728,7 @@ func TestGetLiveSinceNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.True(t, live.Since.IsNone())
@@ -739,7 +739,7 @@ func TestGetLiveSinceUndefined(t *testing.T) {
 		Since: option.Option[time.Time]{},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -751,7 +751,7 @@ func TestGetLiveSinceUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.True(t, live.Since.IsZero())
@@ -760,7 +760,7 @@ func TestSetLiveSince(t *testing.T) {
 	rm := goja.New()
 	live := Live{}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -772,7 +772,7 @@ func TestSetLiveSince(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	now := time.Date(2021, 11, 16, 6, 0, 0, 0, time.UTC)
@@ -785,7 +785,7 @@ func TestSetLiveSinceNull(t *testing.T) {
 		Since: option.Some(now),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -797,7 +797,7 @@ func TestSetLiveSinceNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.True(t, live.Since.IsNone())
@@ -809,7 +809,7 @@ func TestSetLiveSinceUndefined(t *testing.T) {
 		Since: option.Some(now),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -821,7 +821,7 @@ func TestSetLiveSinceUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.True(t, live.Since.IsZero())
@@ -834,7 +834,7 @@ func TestGetLiveUntil(t *testing.T) {
 		Until: option.Some(now),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -846,7 +846,7 @@ func TestGetLiveUntil(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.WithinDuration(t, now, live.Until.Get(), time.Second)
@@ -857,7 +857,7 @@ func TestGetLiveUntilNull(t *testing.T) {
 		Until: option.None[time.Time](),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -869,7 +869,7 @@ func TestGetLiveUntilNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.True(t, live.Until.IsNone())
@@ -880,7 +880,7 @@ func TestGetLiveUntilUndefined(t *testing.T) {
 		Until: option.Option[time.Time]{},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -892,7 +892,7 @@ func TestGetLiveUntilUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.True(t, live.Until.IsZero())
@@ -901,7 +901,7 @@ func TestSetLiveUntil(t *testing.T) {
 	rm := goja.New()
 	live := Live{}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -913,7 +913,7 @@ func TestSetLiveUntil(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	now := time.Date(2021, 11, 16, 6, 0, 0, 0, time.UTC)
@@ -926,7 +926,7 @@ func TestSetLiveUntilNull(t *testing.T) {
 		Until: option.Some(now),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -938,7 +938,7 @@ func TestSetLiveUntilNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.True(t, live.Until.IsNone())
@@ -950,7 +950,7 @@ func TestSetLiveUntilUndefined(t *testing.T) {
 		Until: option.Some(now),
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, live, &gojaValue)
+	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("live", gojaValue)
@@ -962,7 +962,7 @@ func TestSetLiveUntilUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &live)
+	err = convert(rm, gojaValue, &live)
 	require.NoError(t, err)
 
 	require.True(t, live.Until.IsZero())
@@ -971,7 +971,7 @@ func TestGetMetaUndefined(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -983,7 +983,7 @@ func TestGetMetaUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.NotContains(t, meta, "value")
 }
@@ -991,7 +991,7 @@ func TestSetMetaUndefined(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1003,7 +1003,7 @@ func TestSetMetaUndefined(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 
 	require.NotContains(t, meta, "value")
@@ -1014,7 +1014,7 @@ func TestGetMetaNull(t *testing.T) {
 		"value": nil,
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1026,7 +1026,7 @@ func TestGetMetaNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.Contains(t, meta, "value")
 	require.Equal(t, nil, meta["value"])
@@ -1035,7 +1035,7 @@ func TestSetMetaNull(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1047,7 +1047,7 @@ func TestSetMetaNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 
 	require.Contains(t, meta, "value")
@@ -1059,7 +1059,7 @@ func TestGetMetaString(t *testing.T) {
 		"value": "foo",
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1071,7 +1071,7 @@ func TestGetMetaString(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.Equal(t, "foo", meta["value"])
 }
@@ -1079,7 +1079,7 @@ func TestSetMetaString(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1091,7 +1091,7 @@ func TestSetMetaString(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 
 	require.Equal(t, "foo", meta["value"])
@@ -1102,7 +1102,7 @@ func TestGetMetaNumber(t *testing.T) {
 		"value": 5,
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1114,7 +1114,7 @@ func TestGetMetaNumber(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.Contains(t, meta, "value")
 	require.Equal(t, 5., meta["value"])
@@ -1123,7 +1123,7 @@ func TestSetMetaNumber(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1135,7 +1135,7 @@ func TestSetMetaNumber(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 
 	require.Equal(t, 5., meta["value"])
@@ -1146,7 +1146,7 @@ func TestGetMetaBoolean(t *testing.T) {
 		"value": true,
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1158,7 +1158,7 @@ func TestGetMetaBoolean(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.Contains(t, meta, "value")
 	require.Equal(t, true, meta["value"])
@@ -1167,7 +1167,7 @@ func TestSetMetaBoolean(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1179,7 +1179,7 @@ func TestSetMetaBoolean(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 
 	require.Equal(t, true, meta["value"])
@@ -1190,7 +1190,7 @@ func TestGetMetaArray(t *testing.T) {
 		"value": []any{"foo", 1, false, []any{}, map[string]any{}},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1207,7 +1207,7 @@ func TestGetMetaArray(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.Contains(t, meta, "value")
 	require.Equal(t, []any{"foo", 1., false, []any{}, map[string]any{}}, meta["value"])
@@ -1216,7 +1216,7 @@ func TestSetMetaArray(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1234,7 +1234,7 @@ func TestSetMetaArray(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 
 	require.Equal(t, []any{"foo", 1., false, []any{}, map[string]any{}}, meta["value"])
@@ -1245,7 +1245,7 @@ func TestGetMetaObject(t *testing.T) {
 		"value": map[string]any{"a": "foo", "b": 1, "c": false, "d": []any{}, "e": map[string]any{}},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1262,7 +1262,7 @@ func TestGetMetaObject(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.Contains(t, meta, "value")
 	require.Equal(t, map[string]any{"a": "foo", "b": 1., "c": false, "d": []any{}, "e": map[string]any{}}, meta["value"])
@@ -1271,7 +1271,7 @@ func TestSetMetaObject(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1289,7 +1289,7 @@ func TestSetMetaObject(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.Contains(t, meta, "value")
 	require.Equal(t, map[string]any{"a": "foo", "b": 1., "c": false, "d": []any{}, "e": map[string]any{}}, meta["value"])
@@ -1326,13 +1326,13 @@ func TestSetMetaLazyList(t *testing.T) {
 		{},
 	}
 	jsList := goja.Value(nil)
-	err := Convert(rm, goList, &jsList)
+	err := convert(rm, goList, &jsList)
 	require.NoError(t, err)
 	require.IsType(t, (*lazyList)(nil), jsList.Export())
 
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err = Convert(rm, goMeta, &jsMeta)
+	err = convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 
 	err = rm.Set("list", jsList)
@@ -1344,7 +1344,7 @@ func TestSetMetaLazyList(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Contains(t, goMeta, "value")
 	require.Equal(t,
@@ -1382,7 +1382,7 @@ func TestSetMetaLazyLive(t *testing.T) {
 	rm := goja.New()
 	meta := Meta{}
 	var gojaValue goja.Value
-	err := Convert(rm, meta, &gojaValue)
+	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("meta", gojaValue)
@@ -1400,7 +1400,7 @@ func TestSetMetaLazyLive(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &meta)
+	err = convert(rm, gojaValue, &meta)
 	require.NoError(t, err)
 	require.Contains(t, meta, "value")
 	require.Equal(t, map[string]any{"a": "foo", "b": 1., "c": false, "d": []any{}, "e": map[string]any{}}, meta["value"])
@@ -1415,7 +1415,7 @@ func TestExportFlowMeta(t *testing.T) {
 		}),
 	}
 	var dst goja.Value
-	err := Convert(rm, src, &dst)
+	err := convert(rm, src, &dst)
 	require.NoError(t, err)
 
 	dst = dst.(*goja.Object).Get("meta")
@@ -1430,7 +1430,7 @@ func TestGetFlowMetaString(t *testing.T) {
 		}),
 	}
 	var dst goja.Value
-	_ = Convert(rm, node, &dst)
+	_ = convert(rm, node, &dst)
 	dst = dst.(*goja.Object).Get("meta")
 	require.Equal(t, rm.ToValue("foo"), dst.(*goja.Object).Get("value"))
 }
@@ -1442,7 +1442,7 @@ func TestGetFlowMetaBoolean(t *testing.T) {
 		}),
 	}
 	var dst goja.Value
-	_ = Convert(rm, src, &dst)
+	_ = convert(rm, src, &dst)
 
 	dst = dst.(*goja.Object).Get("meta")
 	require.Equal(t, rm.ToValue(true), dst.(*goja.Object).Get("value"))
@@ -1455,7 +1455,7 @@ func TestGetFlowMetaInteger(t *testing.T) {
 		}),
 	}
 	var dst goja.Value
-	_ = Convert(rm, src, &dst)
+	_ = convert(rm, src, &dst)
 
 	dst = dst.(*goja.Object).Get("meta")
 	require.Equal(t, rm.ToValue(1), dst.(*goja.Object).Get("value"))
@@ -1468,7 +1468,7 @@ func TestGetFlowMetaFloat(t *testing.T) {
 		}),
 	}
 	var dst goja.Value
-	_ = Convert(rm, src, &dst)
+	_ = convert(rm, src, &dst)
 
 	dst = dst.(*goja.Object).Get("meta")
 	require.Equal(t, rm.ToValue(1.1), dst.(*goja.Object).Get("value"))
@@ -1487,7 +1487,7 @@ func TestExportFlowMetaArray(t *testing.T) {
 		}),
 	}
 	var dst goja.Value
-	_ = Convert(rm, src, &dst)
+	_ = convert(rm, src, &dst)
 
 	value := dst.(*goja.Object).
 		Get("meta").(*goja.Object).
@@ -1509,7 +1509,7 @@ func TestUnchangeFlowMetaArray(t *testing.T) {
 		}),
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowItem, &gojaValue)
+	_ = convert(rm, flowItem, &gojaValue)
 
 	err := rm.Set("item", gojaValue)
 	require.NoError(t, err)
@@ -1517,7 +1517,7 @@ func TestUnchangeFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`item.object = true`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]any{
@@ -1544,7 +1544,7 @@ func TestDeleteFlowMetaArray(t *testing.T) {
 		}),
 	}
 	gojaValue := (goja.Value)(nil)
-	err := Convert(rm, flowItem, &gojaValue)
+	err := convert(rm, flowItem, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -1556,7 +1556,7 @@ func TestDeleteFlowMetaArray(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t, []any{true, nil}, flowItem.Meta.GetOrZero()["value"])
 }
@@ -1564,14 +1564,14 @@ func TestCreateEmptyFlowMetaArray(t *testing.T) {
 	rm := goja.New()
 	flowItem := Node{}
 	var jsval goja.Value
-	_ = Convert(rm, flowItem, &jsval)
+	_ = convert(rm, flowItem, &jsval)
 	err := rm.Set("node", jsval)
 	require.NoError(t, err)
 
 	_, err = rm.RunString(`node.meta = {value: []}`)
 	require.NoError(t, err)
 
-	err = Convert(rm, rm.Get("node"), &flowItem)
+	err = convert(rm, rm.Get("node"), &flowItem)
 	require.NoError(t, err)
 
 	require.Equal(t, []any{}, flowItem.Meta.GetOrZero()["value"])
@@ -1580,7 +1580,7 @@ func TestCreateFlowMetaArray(t *testing.T) {
 	rm := goja.New()
 	inval := Meta{}
 	var jsval goja.Value
-	_ = Convert(rm, inval, &jsval)
+	_ = convert(rm, inval, &jsval)
 	err := rm.Set("meta", jsval)
 	require.NoError(t, err)
 
@@ -1588,7 +1588,7 @@ func TestCreateFlowMetaArray(t *testing.T) {
 	require.NoError(t, err)
 
 	outval := Meta{}
-	err = Convert(rm, rm.Get("meta"), &outval)
+	err = convert(rm, rm.Get("meta"), &outval)
 	require.NoError(t, err)
 
 	require.Equal(t, []any{1.}, outval["value"])
@@ -1597,7 +1597,7 @@ func TestPushFlowMetaArray(t *testing.T) {
 	rm := goja.New()
 	inval := Meta{"value": []any{1}}
 	var jsval goja.Value
-	_ = Convert(rm, inval, &jsval)
+	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
 	require.NoError(t, err)
 
@@ -1605,7 +1605,7 @@ func TestPushFlowMetaArray(t *testing.T) {
 	require.NoError(t, err)
 
 	outval := Meta{}
-	err = Convert(rm, rm.Get("flow"), &outval)
+	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{1, 2.}, outval["value"])
 }
@@ -1613,7 +1613,7 @@ func TestSetValueFlowMetaArray(t *testing.T) {
 	rm := goja.New()
 	inval := Meta{"value": []any{1}}
 	var jsval goja.Value
-	_ = Convert(rm, inval, &jsval)
+	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
 	require.NoError(t, err)
 
@@ -1621,7 +1621,7 @@ func TestSetValueFlowMetaArray(t *testing.T) {
 	require.NoError(t, err)
 
 	outval := Meta{}
-	err = Convert(rm, rm.Get("flow"), &outval)
+	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{[]any{true}}, outval["value"])
 }
@@ -1629,7 +1629,7 @@ func TestSetNullFlowMetaArray(t *testing.T) {
 	rm := goja.New()
 	inval := Meta{"value": []any{1}}
 	var jsval goja.Value
-	_ = Convert(rm, inval, &jsval)
+	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
 	require.NoError(t, err)
 
@@ -1637,7 +1637,7 @@ func TestSetNullFlowMetaArray(t *testing.T) {
 	require.NoError(t, err)
 
 	outval := Meta{}
-	err = Convert(rm, rm.Get("flow"), &outval)
+	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{nil}, outval["value"])
 }
@@ -1645,7 +1645,7 @@ func TestSetUndefinedFlowMetaArray(t *testing.T) {
 	rm := goja.New()
 	inval := Meta{"value": []any{1}}
 	var jsval goja.Value
-	_ = Convert(rm, inval, &jsval)
+	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
 	require.NoError(t, err)
 
@@ -1653,7 +1653,7 @@ func TestSetUndefinedFlowMetaArray(t *testing.T) {
 	require.NoError(t, err)
 
 	outval := Meta{}
-	err = Convert(rm, rm.Get("flow"), &outval)
+	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{}, outval["value"])
 }
@@ -1661,7 +1661,7 @@ func TestGetFlowMetaArray(t *testing.T) {
 	rm := goja.New()
 	inval := Meta{"value": []any{1}}
 	var jsval goja.Value
-	_ = Convert(rm, inval, &jsval)
+	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
 	require.NoError(t, err)
 
@@ -1669,7 +1669,7 @@ func TestGetFlowMetaArray(t *testing.T) {
 	require.NoError(t, err)
 
 	outval := Meta{}
-	err = Convert(rm, rm.Get("flow"), &outval)
+	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{1.}, outval["value"])
 }
@@ -1679,7 +1679,7 @@ func TestReferenceFlowMetaArray(t *testing.T) {
 		Meta: option.Some(Meta{"value": []any{1}}),
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowItem, &gojaValue)
+	_ = convert(rm, flowItem, &gojaValue)
 
 	err := rm.Set("node", gojaValue)
 	require.NoError(t, err)
@@ -1692,7 +1692,7 @@ func TestReferenceFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`shared.a++`)
 	require.NoError(t, err)
 
-	err = Convert(rm, rm.Get("node"), &flowItem)
+	err = convert(rm, rm.Get("node"), &flowItem)
 	require.NoError(t, err)
 	require.Equal(t, map[string]any{"a": 3.}, flowItem.Meta.Get()["value"])
 }
@@ -1702,7 +1702,7 @@ func TestLengthFlowMetaArray(t *testing.T) {
 		Meta: option.Some(Meta{"value": []any{1}}),
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowItem, &gojaValue)
+	_ = convert(rm, flowItem, &gojaValue)
 
 	err := rm.Set("node", gojaValue)
 	require.NoError(t, err)
@@ -1721,7 +1721,7 @@ func TestLengthFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`if(node.meta.value.length !== 3) throw "unexpected length"`)
 	require.NoError(t, err)
 
-	err = Convert(rm, rm.Get("node"), &flowItem)
+	err = convert(rm, rm.Get("node"), &flowItem)
 	require.NoError(t, err)
 	require.Equal(t, []any{2.}, flowItem.Meta.Get()["value"])
 }
@@ -1736,7 +1736,7 @@ func TestGetFlowHookObject(t *testing.T) {
 		}),
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowItem, &gojaValue)
+	_ = convert(rm, flowItem, &gojaValue)
 
 	err := rm.Set("node", gojaValue)
 	require.NoError(t, err)
@@ -1748,7 +1748,7 @@ func TestGetFlowHookObject(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
 		Hook{
@@ -1769,7 +1769,7 @@ func TestSetFlowHookObject(t *testing.T) {
 		}),
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowItem, &gojaValue)
+	_ = convert(rm, flowItem, &gojaValue)
 
 	err := rm.Set("node", gojaValue)
 	require.NoError(t, err)
@@ -1785,7 +1785,7 @@ func TestSetFlowHookObject(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
 		Hook{
@@ -1806,7 +1806,7 @@ func TestDeleteFlowHookObject(t *testing.T) {
 		}),
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowItem, &gojaValue)
+	_ = convert(rm, flowItem, &gojaValue)
 
 	err := rm.Set("node", gojaValue)
 	require.NoError(t, err)
@@ -1817,7 +1817,7 @@ func TestDeleteFlowHookObject(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
 		Hook{},
@@ -1834,7 +1834,7 @@ func TestKeysFlowHookObject(t *testing.T) {
 		}),
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowItem, &gojaValue)
+	_ = convert(rm, flowItem, &gojaValue)
 
 	err := rm.Set("node", gojaValue)
 	require.NoError(t, err)
@@ -1856,7 +1856,7 @@ func TestGetFlowHookUnused(t *testing.T) {
 		Hook: option.Some(Hook{"0": "foo", "1": false, "2": 1, "3": nil}),
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowItem, &gojaValue)
+	_ = convert(rm, flowItem, &gojaValue)
 
 	err := rm.Set("node", gojaValue)
 	require.NoError(t, err)
@@ -1865,7 +1865,7 @@ func TestGetFlowHookUnused(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t, Hook{"0": "foo", "1": false, "2": 1, "3": nil, "4": 12.}, flowItem.Hook.Get())
 }
@@ -1877,7 +1877,7 @@ func TestGetFlowList(t *testing.T) {
 		{UUID: option.Some(MustUUID("df196843-7ba0-44d9-8c56-fadbbed6a4e3"))},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, flowList, &gojaValue)
+	err := convert(rm, flowList, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -1890,7 +1890,7 @@ func TestGetFlowList(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 
 	require.Equal(t,
@@ -1909,7 +1909,7 @@ func TestSetFlowList(t *testing.T) {
 		{UUID: option.Some(MustUUID("31253d1d-1002-4f63-a97c-a19de970970f"))},
 	}
 	var gojaValue goja.Value
-	err := Convert(rm, flowList, &gojaValue)
+	err := convert(rm, flowList, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -1928,7 +1928,7 @@ func TestSetFlowList(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 
 	require.Equal(t,
@@ -1953,10 +1953,10 @@ func TestUnchangeFlowList(t *testing.T) {
 		},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, inFlowList, &gojaValue)
+	_ = convert(rm, inFlowList, &gojaValue)
 
 	outFlowList := []Node{}
-	err := Convert(rm, gojaValue, &outFlowList)
+	err := convert(rm, gojaValue, &outFlowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		inFlowList,
@@ -1971,7 +1971,7 @@ func TestDeleteFlowList(t *testing.T) {
 		{UUID: option.Some(MustUUID("2e355596-7105-419f-b766-8290c47e4988"))},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flows", gojaValue)
 	require.NoError(t, err)
@@ -1983,7 +1983,7 @@ func TestDeleteFlowList(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Len(t, flowList, 0)
 }
@@ -1995,7 +1995,7 @@ func TestUnchangeFirstFlowList(t *testing.T) {
 		{UUID: option.Some(MustUUID("2e355596-7105-419f-b766-8290c47e4988"))},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flows", gojaValue)
 	require.NoError(t, err)
@@ -2004,7 +2004,7 @@ func TestUnchangeFirstFlowList(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2021,7 +2021,7 @@ func TestSetRootflowFirstFlowList(t *testing.T) {
 		{UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flows", gojaValue)
 	require.NoError(t, err)
@@ -2032,7 +2032,7 @@ func TestSetRootflowFirstFlowList(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2055,7 +2055,7 @@ func TestGetFlowMetaTime(t *testing.T) {
 		},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flows", gojaValue)
 	require.NoError(t, err)
@@ -2065,7 +2065,7 @@ func TestGetFlowMetaTime(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2088,7 +2088,7 @@ func TestSetFlowMetaTime(t *testing.T) {
 		},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flows", gojaValue)
 	require.NoError(t, err)
@@ -2097,7 +2097,7 @@ func TestSetFlowMetaTime(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2122,7 +2122,7 @@ func TestGetFlowMetaTimeNull(t *testing.T) {
 		},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flows", gojaValue)
 	require.NoError(t, err)
@@ -2132,7 +2132,7 @@ func TestGetFlowMetaTimeNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2157,7 +2157,7 @@ func TestSetFlowMetaTimeNull(t *testing.T) {
 		},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flows", gojaValue)
 	require.NoError(t, err)
@@ -2166,7 +2166,7 @@ func TestSetFlowMetaTimeNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2190,7 +2190,7 @@ func TestSetFlowMetaTimeInvalidDate(t *testing.T) {
 	}
 
 	var gojaValue goja.Value
-	err := Convert(rm, flowItem, &gojaValue)
+	err := convert(rm, flowItem, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -2201,7 +2201,7 @@ func TestSetFlowMetaTimeInvalidDate(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
 		Node{
@@ -2236,7 +2236,7 @@ func TestGetFlowRoot(t *testing.T) {
 	flowItem.SetRoot(flowItem.Copy())
 
 	var gojaValue goja.Value
-	err := Convert(rm, flowItem, &gojaValue)
+	err := convert(rm, flowItem, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -2285,7 +2285,7 @@ func TestSetFlowRoot(t *testing.T) {
 	flowItem.SetRoot(flowItem.Copy())
 
 	var gojaValue goja.Value
-	err := Convert(rm, flowItem, &gojaValue)
+	err := convert(rm, flowItem, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -2301,7 +2301,7 @@ func TestSetFlowRoot(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 
 	expected := Node{
@@ -2371,7 +2371,7 @@ func TestSetFlowRootNull(t *testing.T) {
 	flowItem.SetRoot(flowItem.Copy())
 
 	var gojaValue goja.Value
-	err := Convert(rm, flowItem, &gojaValue)
+	err := convert(rm, flowItem, &gojaValue)
 	require.NoError(t, err)
 
 	err = rm.Set("node", gojaValue)
@@ -2382,7 +2382,7 @@ func TestSetFlowRootNull(t *testing.T) {
 	`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowItem)
+	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 
 	require.Equal(t,
@@ -2411,14 +2411,14 @@ func TestGetMetaWithLive(t *testing.T) {
 	rm := goja.New()
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err := Convert(rm, goMeta, &jsMeta)
+	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
 	goLiveSome := Live{Since: option.Some(time.Date(2021, 2, 3, 4, 5, 6, 0, time.UTC)), Until: option.Some(time.Date(2022, 2, 3, 4, 5, 6, 0, time.UTC))}
 	jsLiveSome := goja.Value(nil)
-	err = Convert(rm, goLiveSome, &jsLiveSome)
+	err = convert(rm, goLiveSome, &jsLiveSome)
 	require.NoError(t, err)
 	err = rm.Set("liveSome", jsLiveSome)
 	require.NoError(t, err)
@@ -2427,7 +2427,7 @@ func TestGetMetaWithLive(t *testing.T) {
 
 	goLiveNone := Live{Since: option.None[time.Time](), Until: option.None[time.Time]()}
 	jsLiveNone := goja.Value(nil)
-	err = Convert(rm, goLiveNone, &jsLiveNone)
+	err = convert(rm, goLiveNone, &jsLiveNone)
 	require.NoError(t, err)
 	err = rm.Set("liveNone", jsLiveNone)
 	require.NoError(t, err)
@@ -2436,14 +2436,14 @@ func TestGetMetaWithLive(t *testing.T) {
 
 	goLiveZero := Live{}
 	jsLiveZero := goja.Value(nil)
-	err = Convert(rm, goLiveZero, &jsLiveZero)
+	err = convert(rm, goLiveZero, &jsLiveZero)
 	require.NoError(t, err)
 	err = rm.Set("liveZero", jsLiveZero)
 	require.NoError(t, err)
 	_, err = rm.RunString(`meta.liveZero = liveZero`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
 		Meta{
@@ -2459,14 +2459,14 @@ func TestSetMetaWithLive(t *testing.T) {
 	rm := goja.New()
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err := Convert(rm, goMeta, &jsMeta)
+	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
 	goLiveSome := Live{Since: option.Some(time.Date(2021, 2, 3, 4, 5, 6, 0, time.UTC)), Until: option.Some(time.Date(2022, 2, 3, 4, 5, 6, 0, time.UTC))}
 	jsLiveSome := goja.Value(nil)
-	err = Convert(rm, goLiveSome, &jsLiveSome)
+	err = convert(rm, goLiveSome, &jsLiveSome)
 	require.NoError(t, err)
 	err = rm.Set("liveSome", jsLiveSome)
 	require.NoError(t, err)
@@ -2477,7 +2477,7 @@ func TestSetMetaWithLive(t *testing.T) {
 
 	goLiveNone := Live{Since: option.None[time.Time](), Until: option.None[time.Time]()}
 	jsLiveNone := goja.Value(nil)
-	err = Convert(rm, goLiveNone, &jsLiveNone)
+	err = convert(rm, goLiveNone, &jsLiveNone)
 	require.NoError(t, err)
 	err = rm.Set("liveNone", jsLiveNone)
 	require.NoError(t, err)
@@ -2488,7 +2488,7 @@ func TestSetMetaWithLive(t *testing.T) {
 
 	goLiveZero := Live{}
 	jsLiveZero := goja.Value(nil)
-	err = Convert(rm, goLiveZero, &jsLiveZero)
+	err = convert(rm, goLiveZero, &jsLiveZero)
 	require.NoError(t, err)
 	err = rm.Set("liveZero", jsLiveZero)
 	require.NoError(t, err)
@@ -2497,7 +2497,7 @@ func TestSetMetaWithLive(t *testing.T) {
 	_, err = rm.RunString(`liveZero.since=null; liveZero.until=null`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
 		Meta{
@@ -2512,21 +2512,21 @@ func TestGetMetaWithFlowMeta(t *testing.T) {
 	rm := goja.New()
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err := Convert(rm, goMeta, &jsMeta)
+	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
 	goFlowMeta := Meta{"foo": 1.}
 	jsFlowMeta := goja.Value(nil)
-	err = Convert(rm, goFlowMeta, &jsFlowMeta)
+	err = convert(rm, goFlowMeta, &jsFlowMeta)
 	require.NoError(t, err)
 	err = rm.Set("flowMeta", jsFlowMeta)
 	require.NoError(t, err)
 	_, err = rm.RunString(`meta.flowMeta = flowMeta`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
 		Meta{
@@ -2539,14 +2539,14 @@ func TestSetMetaWithFlowMeta(t *testing.T) {
 	rm := goja.New()
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err := Convert(rm, goMeta, &jsMeta)
+	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
 	goFlowMeta := Meta{"foo": 1}
 	jsFlowMeta := goja.Value(nil)
-	err = Convert(rm, goFlowMeta, &jsFlowMeta)
+	err = convert(rm, goFlowMeta, &jsFlowMeta)
 	require.NoError(t, err)
 	err = rm.Set("flowMeta", jsFlowMeta)
 	require.NoError(t, err)
@@ -2555,7 +2555,7 @@ func TestSetMetaWithFlowMeta(t *testing.T) {
 	_, err = rm.RunString(`flowMeta.foo=1;flowMeta.bar=2`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
 		Meta{
@@ -2568,21 +2568,21 @@ func TestGetMetaWithFlowHook(t *testing.T) {
 	rm := goja.New()
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err := Convert(rm, goMeta, &jsMeta)
+	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
 	goFlowHook := Hook{"foo": []any{1.}}
 	jsFlowHook := goja.Value(nil)
-	err = Convert(rm, goFlowHook, &jsFlowHook)
+	err = convert(rm, goFlowHook, &jsFlowHook)
 	require.NoError(t, err)
 	err = rm.Set("flowHook", jsFlowHook)
 	require.NoError(t, err)
 	_, err = rm.RunString(`meta.flowHook = flowHook`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
 		Meta{
@@ -2595,14 +2595,14 @@ func TestSetMetaWithFlowHook(t *testing.T) {
 	rm := goja.New()
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err := Convert(rm, goMeta, &jsMeta)
+	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
 	goFlowHook := Hook{"foo": []any{1}}
 	jsFlowHook := goja.Value(nil)
-	err = Convert(rm, goFlowHook, &jsFlowHook)
+	err = convert(rm, goFlowHook, &jsFlowHook)
 	require.NoError(t, err)
 	err = rm.Set("flowHook", jsFlowHook)
 	require.NoError(t, err)
@@ -2611,7 +2611,7 @@ func TestSetMetaWithFlowHook(t *testing.T) {
 	_, err = rm.RunString(`flowHook.foo[0]=2;flowHook.bar=2`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
 		Meta{
@@ -2624,7 +2624,7 @@ func TestSetMetaWithFlowListProto(t *testing.T) {
 	rm := goja.New()
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err := Convert(rm, goMeta, &jsMeta)
+	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
@@ -2639,14 +2639,14 @@ func TestSetMetaWithFlowListProto(t *testing.T) {
 			Live: option.None[Live](), Hook: option.None[Hook](), Meta: option.None[Meta](), Kind: option.None[string]()},
 	}
 	jsFlowList := goja.Value(nil)
-	err = Convert(rm, goFlowList, &jsFlowList)
+	err = convert(rm, goFlowList, &jsFlowList)
 	require.NoError(t, err)
 	err = rm.Set("flowList", jsFlowList)
 	require.NoError(t, err)
 	_, err = rm.RunString(`meta.flowList = flowList`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
 		Meta{
@@ -2665,7 +2665,7 @@ func TestSetMetaWithFlowList(t *testing.T) {
 	rm := goja.New()
 	goMeta := Meta{}
 	jsMeta := goja.Value(nil)
-	err := Convert(rm, goMeta, &jsMeta)
+	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
@@ -2680,7 +2680,7 @@ func TestSetMetaWithFlowList(t *testing.T) {
 			Live: option.None[Live](), Hook: option.None[Hook](), Meta: option.None[Meta](), Kind: option.None[string]()},
 	}
 	jsFlowList := goja.Value(nil)
-	err = Convert(rm, goFlowList, &jsFlowList)
+	err = convert(rm, goFlowList, &jsFlowList)
 	require.NoError(t, err)
 	err = rm.Set("flowList", jsFlowList)
 	require.NoError(t, err)
@@ -2697,7 +2697,7 @@ func TestSetMetaWithFlowList(t *testing.T) {
 	_, err = rm.RunString(`flowList.push({uuid:"6524cfa4-12a3-4061-820f-6ff0babc44bf",live:null,hook:null,meta:null,kind:null})`)
 	require.NoError(t, err)
 
-	err = Convert(rm, jsMeta, &goMeta)
+	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
 		Meta{
@@ -2721,14 +2721,14 @@ func TestSetArrayLenToZero(t *testing.T) {
 	rm := goja.New()
 	array := any([]any{1, 2, 3})
 	var gojaValue goja.Value
-	_ = Convert(rm, array, &gojaValue)
+	_ = convert(rm, array, &gojaValue)
 
 	err := rm.Set("array", gojaValue)
 	require.NoError(t, err)
 	_, err = rm.RunString(`array.length=0`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &array)
+	err = convert(rm, gojaValue, &array)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]any{},
@@ -2739,14 +2739,14 @@ func TestSetArrayLenToHalf(t *testing.T) {
 	rm := goja.New()
 	array := any([]any{1, 2, 3})
 	var gojaValue goja.Value
-	_ = Convert(rm, array, &gojaValue)
+	_ = convert(rm, array, &gojaValue)
 
 	err := rm.Set("array", gojaValue)
 	require.NoError(t, err)
 	_, err = rm.RunString(`array.length=2`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &array)
+	err = convert(rm, gojaValue, &array)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]any{1, 2},
@@ -2757,14 +2757,14 @@ func TestSetArrayLenToRoot(t *testing.T) {
 	rm := goja.New()
 	array := any([]any{1, 2, 3})
 	var gojaValue goja.Value
-	_ = Convert(rm, array, &gojaValue)
+	_ = convert(rm, array, &gojaValue)
 
 	err := rm.Set("array", gojaValue)
 	require.NoError(t, err)
 	_, err = rm.RunString(`array.length=4`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &array)
+	err = convert(rm, gojaValue, &array)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]any{1, 2, 3},
@@ -2775,7 +2775,7 @@ func TestSetArrayLenUnset(t *testing.T) {
 	rm := goja.New()
 	array := any([]any{1, 2, 3})
 	var gojaValue goja.Value
-	_ = Convert(rm, array, &gojaValue)
+	_ = convert(rm, array, &gojaValue)
 
 	err := rm.Set("array", gojaValue)
 	require.NoError(t, err)
@@ -2784,7 +2784,7 @@ func TestSetArrayLenUnset(t *testing.T) {
 	_, err = rm.RunString(`array.length=4`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &array)
+	err = convert(rm, gojaValue, &array)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]any{1},
@@ -2795,14 +2795,14 @@ func TestSetFlowListLenToZero(t *testing.T) {
 	rm := goja.New()
 	flowList := []Node{{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))}}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flow", gojaValue)
 	require.NoError(t, err)
 	_, err = rm.RunString(`flow.length=0`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{},
@@ -2817,14 +2817,14 @@ func TestSetFlowListLenToHalf(t *testing.T) {
 		{UUID: option.Some(MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flow", gojaValue)
 	require.NoError(t, err)
 	_, err = rm.RunString(`flow.length=2`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2842,14 +2842,14 @@ func TestSetFlowListLenToRoot(t *testing.T) {
 		{UUID: option.Some(MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flow", gojaValue)
 	require.NoError(t, err)
 	_, err = rm.RunString(`flow.length=4`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2868,7 +2868,7 @@ func TestSetFlowListLenUnset(t *testing.T) {
 		{UUID: option.Some(MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, flowList, &gojaValue)
+	_ = convert(rm, flowList, &gojaValue)
 
 	err := rm.Set("flow", gojaValue)
 	require.NoError(t, err)
@@ -2877,7 +2877,7 @@ func TestSetFlowListLenUnset(t *testing.T) {
 	_, err = rm.RunString(`flow.length=4`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &flowList)
+	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{
@@ -2890,7 +2890,7 @@ func TestResetLenLazyArray(t *testing.T) {
 	rm := goja.New()
 	val := any([]any{1, 2, 3})
 	var gojaValue goja.Value
-	_ = Convert(rm, val, &gojaValue)
+	_ = convert(rm, val, &gojaValue)
 
 	err := rm.Set("val", gojaValue)
 	require.NoError(t, err)
@@ -2907,7 +2907,7 @@ func TestResetLenLazyArray(t *testing.T) {
 	_, err = rm.RunString(`if(val?.[4] !== undefined) throw "unexpected 4"`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &val)
+	err = convert(rm, gojaValue, &val)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]any{},
@@ -2922,7 +2922,7 @@ func TestResetLenFlowList(t *testing.T) {
 		{UUID: option.Some(MustUUID("5d7f252c-404c-43dc-902c-7c548620f8b9"))},
 	}
 	var gojaValue goja.Value
-	_ = Convert(rm, val, &gojaValue)
+	_ = convert(rm, val, &gojaValue)
 
 	err := rm.Set("val", gojaValue)
 	require.NoError(t, err)
@@ -2939,7 +2939,7 @@ func TestResetLenFlowList(t *testing.T) {
 	_, err = rm.RunString(`if(val?.[4] !== undefined) throw "unexpected 4"`)
 	require.NoError(t, err)
 
-	err = Convert(rm, gojaValue, &val)
+	err = convert(rm, gojaValue, &val)
 	require.NoError(t, err)
 	require.Equal(t,
 		[]Node{},
