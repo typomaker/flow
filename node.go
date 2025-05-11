@@ -11,12 +11,12 @@ import (
 )
 
 type Node struct {
-	root *Node
-	UUID option.Option[UUID]
-	Kind option.Option[Kind]
-	Meta option.Option[Meta]
-	Hook option.Option[Hook]
-	Live option.Option[Live]
+	origin *Node
+	UUID   option.Option[UUID]
+	Kind   option.Option[Kind]
+	Meta   option.Option[Meta]
+	Hook   option.Option[Hook]
+	Live   option.Option[Live]
 }
 
 func (it Node) Equal(t Node) bool {
@@ -36,7 +36,7 @@ func (it Node) Equal(t Node) bool {
 	}
 }
 func (it Node) IsZero() bool {
-	if it.root != nil {
+	if it.origin != nil {
 		return false
 	}
 	if !it.UUID.IsZero() {
@@ -63,9 +63,9 @@ func (it Node) Copy() Node {
 	if it.Hook.IsSome() {
 		it.Hook = option.Some(it.Hook.Get().Copy())
 	}
-	if it.root != nil {
-		var cp = it.root.Copy()
-		it.root = &cp
+	if it.origin != nil {
+		var cp = it.origin.Copy()
+		it.origin = &cp
 	}
 	return it
 }
@@ -89,17 +89,17 @@ func (it Hook) Copy() Hook {
 	}
 	return cp
 }
-func (it *Node) Root() Node {
-	if it.root != nil {
-		return *it.root
+func (it *Node) Origin() Node {
+	if it.origin != nil {
+		return *it.origin
 	}
 	return Node{}
 }
-func (it *Node) SetRoot(o Node) {
+func (it *Node) SetOrigin(o Node) {
 	if o.IsZero() {
-		it.root = nil
+		it.origin = nil
 	} else {
-		it.root = &o
+		it.origin = &o
 	}
 }
 func (it Node) When(w When) bool {
@@ -179,9 +179,9 @@ func (it Node) LogAttr() slog.Attr {
 	return slog.Any("node", it.LogValue())
 }
 func (it Node) LogValue() slog.Value {
-	var root option.Option[Node]
-	if it.root != nil {
-		root = option.Some(*it.root)
+	var origin option.Option[Node]
+	if it.origin != nil {
+		origin = option.Some(*it.origin)
 	}
 	return slog.GroupValue(
 		slog.Any("uuid", it.UUID),
@@ -189,17 +189,17 @@ func (it Node) LogValue() slog.Value {
 		slog.Any("meta", it.Meta),
 		slog.Any("hook", it.Hook),
 		slog.Any("live", it.Live),
-		slog.Any("root", root),
+		slog.Any("origin", origin),
 	)
 }
 
 type _NodeJSON struct {
-	UUID jsoniter.RawMessage `json:"uuid,omitempty"`
-	Kind jsoniter.RawMessage `json:"kind,omitempty"`
-	Meta jsoniter.RawMessage `json:"meta,omitempty"`
-	Hook jsoniter.RawMessage `json:"hook,omitempty"`
-	Live jsoniter.RawMessage `json:"live,omitempty"`
-	Root jsoniter.RawMessage `json:"root,omitempty"`
+	UUID   jsoniter.RawMessage `json:"uuid,omitempty"`
+	Kind   jsoniter.RawMessage `json:"kind,omitempty"`
+	Meta   jsoniter.RawMessage `json:"meta,omitempty"`
+	Hook   jsoniter.RawMessage `json:"hook,omitempty"`
+	Live   jsoniter.RawMessage `json:"live,omitempty"`
+	Origin jsoniter.RawMessage `json:"origin,omitempty"`
 }
 
 func (it Node) MarshalJSON() (b []byte, err error) {
@@ -219,8 +219,8 @@ func (it Node) MarshalJSON() (b []byte, err error) {
 	if js.Live, err = jsoniter.Marshal(it.Live); err != nil {
 		return nil, fmt.Errorf("live: %w", err)
 	}
-	if js.Root, err = jsoniter.Marshal(it.root); err != nil {
-		return nil, fmt.Errorf("root: %w", err)
+	if js.Origin, err = jsoniter.Marshal(it.origin); err != nil {
+		return nil, fmt.Errorf("origin: %w", err)
 	}
 	return jsoniter.Marshal(js)
 }
@@ -244,8 +244,8 @@ func (it *Node) UnmarshalJSON(b []byte) (err error) {
 	if err = jsoniter.Unmarshal(js.Live, &it.Live); err != nil {
 		return fmt.Errorf("live: %w", err)
 	}
-	if err = jsoniter.Unmarshal(js.Root, it.root); err != nil {
-		return fmt.Errorf("root: %w", err)
+	if err = jsoniter.Unmarshal(js.Origin, it.origin); err != nil {
+		return fmt.Errorf("origin: %w", err)
 	}
 	return nil
 }

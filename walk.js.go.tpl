@@ -25,7 +25,7 @@ export default function (nodes) {
     if (entries.length == 0) {
         throw new Error("flow: entries is not defined")
     }
-    this.FLOW_PIPE_ROOT_UUID = entries[0].uuid;
-    this.FLOW_PIPE_ROOT_NAME = entries[0].name;
+    this.FLOW_PIPE_ORIGIN_UUID = entries[0].uuid;
+    this.FLOW_PIPE_ORIGIN_NAME = entries[0].name;
     walk(0, nodes)
 }

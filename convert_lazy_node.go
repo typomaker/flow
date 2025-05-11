@@ -10,12 +10,12 @@ type lazyNode struct {
 	rm    *goja.Runtime
 	proto Node
 	value struct {
-		UUID goja.Value
-		Kind goja.Value
-		Meta goja.Value
-		Hook goja.Value
-		Live goja.Value
-		Root goja.Value
+		UUID   goja.Value
+		Kind   goja.Value
+		Meta   goja.Value
+		Hook   goja.Value
+		Live   goja.Value
+		Origin goja.Value
 	}
 }
 
@@ -98,13 +98,13 @@ func (it *lazyNode) Get(key string) (val goja.Value) {
 			}
 		}
 		val = it.value.Live
-	case keyRoot:
-		if it.value.Root == nil {
-			if !it.proto.Root().IsZero() {
-				err = convert(it.rm, it.proto.Root(), &it.value.Root)
+	case keyOrigin:
+		if it.value.Origin == nil {
+			if !it.proto.Origin().IsZero() {
+				err = convert(it.rm, it.proto.Origin(), &it.value.Origin)
 			}
 		}
-		val = it.value.Root
+		val = it.value.Origin
 	}
 	if err != nil {
 		err = fmt.Errorf("flowItem.get: %w", err)
@@ -144,11 +144,11 @@ func (it *lazyNode) Has(key string) bool {
 			return !goja.IsUndefined(it.value.Live)
 		}
 		return !it.proto.Live.IsZero()
-	case keyRoot:
-		if it.value.Root != nil {
-			return !goja.IsUndefined(it.value.Root)
+	case keyOrigin:
+		if it.value.Origin != nil {
+			return !goja.IsUndefined(it.value.Origin)
 		}
-		return !it.proto.Root().IsZero()
+		return !it.proto.Origin().IsZero()
 	default:
 		return false
 	}
@@ -172,8 +172,8 @@ func (it *lazyNode) Set(key string, val goja.Value) bool {
 	case keyLive:
 		it.value.Live = val
 		return true
-	case keyRoot:
-		it.value.Root = val
+	case keyOrigin:
+		it.value.Origin = val
 		return true
 	default:
 		return false
@@ -225,12 +225,12 @@ func (it *lazyNode) Keys() []string {
 		keys = append(keys, keyLive)
 	}
 
-	if it.value.Root != nil {
-		if !goja.IsUndefined(it.value.Root) {
-			keys = append(keys, keyRoot)
+	if it.value.Origin != nil {
+		if !goja.IsUndefined(it.value.Origin) {
+			keys = append(keys, keyOrigin)
 		}
-	} else if !it.proto.Root().IsZero() {
-		keys = append(keys, keyRoot)
+	} else if !it.proto.Origin().IsZero() {
+		keys = append(keys, keyOrigin)
 	}
 	return keys
 }

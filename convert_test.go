@@ -1308,7 +1308,7 @@ func TestSetMetaLazyList(t *testing.T) {
 				Since: option.Some(t1),
 				Until: option.Some(t2),
 			}),
-			root: &Node{
+			origin: &Node{
 				UUID: option.None[UUID](),
 				Kind: option.None[Kind](),
 				Meta: option.None[Meta](),
@@ -1358,7 +1358,7 @@ func TestSetMetaLazyList(t *testing.T) {
 					"since": "2021-01-02T03:04:05Z",
 					"until": "2022-01-02T03:04:05Z",
 				},
-				"root": map[string]any{
+				"origin": map[string]any{
 					"uuid": nil,
 					"kind": nil,
 					"meta": nil,
@@ -2015,7 +2015,7 @@ func TestUnchangeFirstFlowList(t *testing.T) {
 		flowList,
 	)
 }
-func TestSetRootflowFirstFlowList(t *testing.T) {
+func TestSetOriginflowFirstFlowList(t *testing.T) {
 	rm := goja.New()
 	flowList := []Node{
 		{UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
@@ -2212,7 +2212,7 @@ func TestSetFlowMetaTimeInvalidDate(t *testing.T) {
 		flowItem,
 	)
 }
-func TestGetFlowRoot(t *testing.T) {
+func TestGetFlowOrigin(t *testing.T) {
 	rm := goja.New()
 
 	flowItem := Node{
@@ -2233,7 +2233,7 @@ func TestGetFlowRoot(t *testing.T) {
 			},
 		}),
 	}
-	flowItem.SetRoot(flowItem.Copy())
+	flowItem.SetOrigin(flowItem.Copy())
 
 	var gojaValue goja.Value
 	err := convert(rm, flowItem, &gojaValue)
@@ -2244,24 +2244,24 @@ func TestGetFlowRoot(t *testing.T) {
 
 	_, err = rm.RunString(`
 		node.uuid="d04e0183-e84a-427f-b14e-a7523e5885d0"
-		if (node.root.uuid !== "9e2e7f50-9885-4fcf-b78e-804c8a6d8740") 
+		if (node.origin.uuid !== "9e2e7f50-9885-4fcf-b78e-804c8a6d8740") 
 			throw "unexpected uuid"
 		
 		node.kind="ffff"
-		if (node.root.kind !== "ffff") 
+		if (node.origin.kind !== "ffff") 
 			throw "unexpected kind"
 		
 		node.meta.a[0].b=2
-		if (node.root.meta.a[0].b !== 1) 
+		if (node.origin.meta.a[0].b !== 1) 
 			throw "unexpected meta"
 		
 		node.hook.a[0].b=2
-		if (node.root.hook.a[0].b !== 1) 
+		if (node.origin.hook.a[0].b !== 1) 
 			throw "unexpected hook"
 	`)
 	require.NoError(t, err)
 }
-func TestSetFlowRoot(t *testing.T) {
+func TestSetFlowOrigin(t *testing.T) {
 	rm := goja.New()
 
 	flowItem := Node{
@@ -2282,7 +2282,7 @@ func TestSetFlowRoot(t *testing.T) {
 			},
 		}),
 	}
-	flowItem.SetRoot(flowItem.Copy())
+	flowItem.SetOrigin(flowItem.Copy())
 
 	var gojaValue goja.Value
 	err := convert(rm, flowItem, &gojaValue)
@@ -2292,12 +2292,12 @@ func TestSetFlowRoot(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = rm.RunString(`
-		node.root.uuid="d04e0183-e84a-427f-b14e-a7523e5885d0"
-		node.root.kind="ffff2"
-		node.root.meta.a[0].b="2"
-		node.root.meta.a[0].c=true
-		node.root.hook.a[0].b="2"
-		node.root.hook.a[0].c=false
+		node.origin.uuid="d04e0183-e84a-427f-b14e-a7523e5885d0"
+		node.origin.kind="ffff2"
+		node.origin.meta.a[0].b="2"
+		node.origin.meta.a[0].c=true
+		node.origin.hook.a[0].b="2"
+		node.origin.hook.a[0].c=false
 	`)
 	require.NoError(t, err)
 
@@ -2322,7 +2322,7 @@ func TestSetFlowRoot(t *testing.T) {
 			},
 		}),
 	}
-	expected.SetRoot(Node{
+	expected.SetOrigin(Node{
 		UUID: option.Some(MustUUID("d04e0183-e84a-427f-b14e-a7523e5885d0")),
 		Kind: option.Some("ffff2"),
 		Meta: option.Some(Meta{
@@ -2347,7 +2347,7 @@ func TestSetFlowRoot(t *testing.T) {
 		flowItem,
 	)
 }
-func TestSetFlowRootNull(t *testing.T) {
+func TestSetFlowOriginNull(t *testing.T) {
 	rm := goja.New()
 
 	flowItem := Node{
@@ -2368,7 +2368,7 @@ func TestSetFlowRootNull(t *testing.T) {
 			},
 		}),
 	}
-	flowItem.SetRoot(flowItem.Copy())
+	flowItem.SetOrigin(flowItem.Copy())
 
 	var gojaValue goja.Value
 	err := convert(rm, flowItem, &gojaValue)
@@ -2378,7 +2378,7 @@ func TestSetFlowRootNull(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = rm.RunString(`
-		node.root = null
+		node.origin = null
 	`)
 	require.NoError(t, err)
 
@@ -2753,7 +2753,7 @@ func TestSetArrayLenToHalf(t *testing.T) {
 		array,
 	)
 }
-func TestSetArrayLenToRoot(t *testing.T) {
+func TestSetArrayLenToOrigin(t *testing.T) {
 	rm := goja.New()
 	array := any([]any{1, 2, 3})
 	var gojaValue goja.Value
@@ -2834,7 +2834,7 @@ func TestSetFlowListLenToHalf(t *testing.T) {
 		flowList,
 	)
 }
-func TestSetFlowListLenToRoot(t *testing.T) {
+func TestSetFlowListLenToOrigin(t *testing.T) {
 	rm := goja.New()
 	flowList := []Node{
 		{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},

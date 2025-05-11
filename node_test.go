@@ -37,7 +37,7 @@ func TestNodeLog(t *testing.T) {
 			Hook: option.None[Hook](),
 			Live: option.None[Live](),
 		}
-		v.SetRoot(Node{})
+		v.SetOrigin(Node{})
 		l.Info("foo", slog.Any("v", v), v.LogAttr())
 		require.JSONEq(t, `{
 				"v":{
@@ -68,7 +68,7 @@ func TestNodeLog(t *testing.T) {
 			Hook: option.Some(Hook{"a": "1"}),
 			Live: option.Some(Live{Since: option.Some(time.Unix(0, 0).UTC())}),
 		}
-		v.SetRoot(v)
+		v.SetOrigin(v)
 
 		l.Info("foo", slog.Any("v", v), v.LogAttr())
 		require.JSONEq(t,
@@ -79,7 +79,7 @@ func TestNodeLog(t *testing.T) {
 					"meta":{"b":"2"},
 					"hook":{"a":"1"},
 					"live":{"since":"1970-01-01T00:00:00Z"},
-					"root":{
+					"origin":{
 						"uuid":"85432856-ba6c-46d3-9fcf-05650bfd5814",
 						"kind":"foo",
 						"meta":{"b":"2"},
@@ -93,7 +93,7 @@ func TestNodeLog(t *testing.T) {
 					"meta":{"b":"2"},
 					"hook":{"a":"1"},
 					"live":{"since":"1970-01-01T00:00:00Z"},
-					"root":{
+					"origin":{
 						"uuid":"85432856-ba6c-46d3-9fcf-05650bfd5814",
 						"kind":"foo",
 						"meta":{"b":"2"},

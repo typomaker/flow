@@ -779,24 +779,24 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 	}
 
 	switch {
-	case goja.IsUndefined(src.value.Root):
-		delete(d, "root")
-	case goja.IsNull(src.value.Root):
-		d["root"] = nil
-	case src.value.Root != nil:
-		var goRoot any
-		if err = convert(rm, src.value.Root, &goRoot); err != nil {
-			return fmt.Errorf("root %w", err)
+	case goja.IsUndefined(src.value.Origin):
+		delete(d, "origin")
+	case goja.IsNull(src.value.Origin):
+		d["origin"] = nil
+	case src.value.Origin != nil:
+		var goOrigin any
+		if err = convert(rm, src.value.Origin, &goOrigin); err != nil {
+			return fmt.Errorf("origin %w", err)
 		}
-		d["root"] = goRoot
-	case src.proto.Root().IsZero():
-		delete(d, "root")
+		d["origin"] = goOrigin
+	case src.proto.Origin().IsZero():
+		delete(d, "origin")
 	default:
-		var goRoot any
-		if err = convert(rm, src.proto.Root(), &goRoot); err != nil {
+		var goOrigin any
+		if err = convert(rm, src.proto.Origin(), &goOrigin); err != nil {
 			return err
 		}
-		d["root"] = goRoot
+		d["origin"] = goOrigin
 	}
 
 	*dst = d
@@ -880,16 +880,16 @@ func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNode, dst *Node) (err erro
 			dst.Live = option.Some(goLive)
 		}
 	}
-	if jsRoot := src.value.Root; jsRoot != nil {
+	if jsOrigin := src.value.Origin; jsOrigin != nil {
 		switch {
-		case goja.IsUndefined(jsRoot), goja.IsNull(jsRoot):
-			dst.SetRoot(Node{})
+		case goja.IsUndefined(jsOrigin), goja.IsNull(jsOrigin):
+			dst.SetOrigin(Node{})
 		default:
-			var goRoot Node
-			if err = convert(rm, jsRoot, &goRoot); err != nil {
+			var goOrigin Node
+			if err = convert(rm, jsOrigin, &goOrigin); err != nil {
 				return fmt.Errorf("rate %w", err)
 			}
-			dst.SetRoot(goRoot)
+			dst.SetOrigin(goOrigin)
 		}
 	}
 	return nil
