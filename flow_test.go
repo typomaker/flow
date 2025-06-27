@@ -36,7 +36,7 @@ func TestPipeWhenZero(t *testing.T) {
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes){
-					nodes[0].kind="foo"
+					nodes[0].meta={val: "foo"}
 				}
 			`),
 		},
@@ -47,7 +47,7 @@ func TestPipeWhenZero(t *testing.T) {
 	err := f.Work(ctx, a)
 	require.NoError(t, err)
 	e := []Node{
-		{UUID: option.Some(MustUUID("bee6576f-19f8-419c-b3f8-41b770006332")), Kind: option.Some("foo")},
+		{UUID: option.Some(MustUUID("bee6576f-19f8-419c-b3f8-41b770006332")), Meta: option.Some(Meta{"val": "foo"})},
 	}
 	require.Equal(t, e, a)
 }
@@ -63,7 +63,7 @@ func TestPipeWhenUUIDSome(t *testing.T) {
 			}),
 			Code: option.Some(`
 				export default function main(nodes){
-					nodes[0].kind="foo"
+					nodes[0].meta = {val:"foo"}
 				}
 			`),
 		},
@@ -76,36 +76,7 @@ func TestPipeWhenUUIDSome(t *testing.T) {
 	require.NoError(t, err)
 	e := []Node{
 		{UUID: option.Some(MustUUID("aee6576f-19f8-419c-b3f8-41b770006332"))},
-		{UUID: option.Some(MustUUID("bee6576f-19f8-419c-b3f8-41b770006332")), Kind: option.Some("foo")},
-	}
-	require.Equal(t, e, a)
-}
-func TestPipeWhenKindSome(t *testing.T) {
-	ctx := context.Background()
-	f := New(
-		Pipe{
-			Name: option.Some("foo"),
-			When: option.Some(When{
-				Kind: option.Some([]Kind{
-					"bar",
-				}),
-			}),
-			Code: option.Some(`
-				export default function main(nodes){
-					nodes[0].kind="foo"
-				}
-			`),
-		},
-	)
-	a := []Node{
-		{UUID: option.Some(MustUUID("aee6576f-19f8-419c-b3f8-41b770006332")), Kind: option.Some("buz")},
-		{UUID: option.Some(MustUUID("bee6576f-19f8-419c-b3f8-41b770006332")), Kind: option.Some("bar")},
-	}
-	err := f.Work(ctx, a)
-	require.NoError(t, err)
-	e := []Node{
-		{UUID: option.Some(MustUUID("aee6576f-19f8-419c-b3f8-41b770006332")), Kind: option.Some("buz")},
-		{UUID: option.Some(MustUUID("bee6576f-19f8-419c-b3f8-41b770006332")), Kind: option.Some("foo")},
+		{UUID: option.Some(MustUUID("bee6576f-19f8-419c-b3f8-41b770006332")), Meta: option.Some(Meta{"val": "foo"})},
 	}
 	require.Equal(t, e, a)
 }
@@ -121,7 +92,7 @@ func TestPipeWhenHookSome(t *testing.T) {
 			}),
 			Code: option.Some(`
 				export default function main(nodes){
-					nodes[0].kind="foo"
+					nodes[0].meta={val:"foo"}
 				}
 			`),
 		},
@@ -134,7 +105,7 @@ func TestPipeWhenHookSome(t *testing.T) {
 	require.NoError(t, err)
 	e := []Node{
 		{UUID: option.Some(MustUUID("aee6576f-19f8-419c-b3f8-41b770006332")), Hook: option.Some(Hook{"foo": "buz"})},
-		{UUID: option.Some(MustUUID("bee6576f-19f8-419c-b3f8-41b770006332")), Kind: option.Some("foo"), Hook: option.Some(Hook{"foo": "bar"})},
+		{UUID: option.Some(MustUUID("bee6576f-19f8-419c-b3f8-41b770006332")), Meta: option.Some(Meta{"val": "foo"}), Hook: option.Some(Hook{"foo": "bar"})},
 	}
 	require.Equal(t, e, a)
 }
@@ -256,39 +227,21 @@ func TestPriority(t *testing.T) {
 			When: option.Some(When{Hook: option.Some([]Hook{})}),
 		},
 		Pipe{
-			Name: option.Some("f6"),
-			Code: option.Some(`export default function main(nodes) {}`),
-			When: option.Some(When{Kind: option.Some([]Kind{})}),
-		},
-		Pipe{
-			Name: option.Some("f7"),
-			Code: option.Some(`export default function main(nodes) {}`),
-			When: option.Some(When{Kind: option.Some([]Kind{}), Hook: option.Some([]Hook{})}),
-		},
-		Pipe{
 			Name: option.Some("f8"),
 			Code: option.Some(`export default function main(nodes) {}`),
 			When: option.Some(When{UUID: option.Some([]UUID{})}),
 		},
 		Pipe{
-			Name: option.Some("f9"),
-			Code: option.Some(`export default function main(nodes) {}`),
-			When: option.Some(When{UUID: option.Some([]UUID{}), Kind: option.Some([]Kind{})}),
-		},
-		Pipe{
 			Name: option.Some("f10"),
 			Code: option.Some(`export default function main(nodes) {}`),
-			When: option.Some(When{UUID: option.Some([]UUID{}), Kind: option.Some([]Kind{}), Hook: option.Some([]Hook{})}),
+			When: option.Some(When{UUID: option.Some([]UUID{}), Hook: option.Some([]Hook{})}),
 		},
 	)
 	require.Equal(t, "f10", f.stock[0].Name.Get())
-	require.Equal(t, "f9", f.stock[1].Name.Get())
-	require.Equal(t, "f8", f.stock[2].Name.Get())
-	require.Equal(t, "f7", f.stock[3].Name.Get())
-	require.Equal(t, "f6", f.stock[4].Name.Get())
-	require.Equal(t, "f5", f.stock[5].Name.Get())
-	require.Equal(t, "f4", f.stock[6].Name.Get())
-	require.Equal(t, "f2", f.stock[7].Name.Get())
-	require.Equal(t, "f3", f.stock[8].Name.Get())
-	require.Equal(t, "f1", f.stock[9].Name.Get())
+	require.Equal(t, "f8", f.stock[1].Name.Get())
+	require.Equal(t, "f5", f.stock[2].Name.Get())
+	require.Equal(t, "f4", f.stock[3].Name.Get())
+	require.Equal(t, "f2", f.stock[4].Name.Get())
+	require.Equal(t, "f3", f.stock[5].Name.Get())
+	require.Equal(t, "f1", f.stock[6].Name.Get())
 }

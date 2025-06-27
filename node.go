@@ -13,7 +13,6 @@ import (
 type Node struct {
 	origin *Node
 	UUID   option.Option[UUID]
-	Kind   option.Option[Kind]
 	Meta   option.Option[Meta]
 	Hook   option.Option[Hook]
 	Live   option.Option[Live]
@@ -22,8 +21,6 @@ type Node struct {
 func (it Node) Equal(t Node) bool {
 	switch {
 	case it.UUID != t.UUID:
-		return false
-	case it.Kind != t.Kind:
 		return false
 	case !it.Meta.GetOrZero().Equal(t.Meta.GetOrZero()):
 		return false
@@ -40,9 +37,6 @@ func (it Node) IsZero() bool {
 		return false
 	}
 	if !it.UUID.IsZero() {
-		return false
-	}
-	if !it.Kind.IsZero() {
 		return false
 	}
 	if !it.Meta.IsZero() {
@@ -110,11 +104,6 @@ func (it Node) When(w When) bool {
 		w.UUID.IsSome() && !slices.Contains(w.UUID.Get(), it.UUID.Get()):
 		return false
 	case
-		w.Kind.IsNone() && !it.Kind.IsNone(),
-		w.Kind.IsSome() && !it.Kind.IsSome(),
-		w.Kind.IsSome() && !slices.Contains(w.Kind.Get(), it.Kind.Get()):
-		return false
-	case
 		w.Hook.IsNone() && !it.Hook.IsNone(),
 		w.Hook.IsSome() && !it.Hook.IsSome(),
 		w.Hook.IsSome() &&
@@ -149,9 +138,6 @@ func (it Node) With(pp Node) Node {
 	if !pp.UUID.IsZero() {
 		it.UUID = pp.UUID
 	}
-	if !pp.Kind.IsZero() {
-		it.Kind = pp.Kind
-	}
 	switch {
 	case pp.Meta.IsSome():
 		var with = it.Meta.GetOrZero().With(pp.Meta.GetOrZero())
@@ -185,7 +171,6 @@ func (it Node) LogValue() slog.Value {
 	}
 	return slog.GroupValue(
 		slog.Any("uuid", it.UUID),
-		slog.Any("kind", it.Kind),
 		slog.Any("meta", it.Meta),
 		slog.Any("hook", it.Hook),
 		slog.Any("live", it.Live),
@@ -206,9 +191,6 @@ func (it Node) MarshalJSON() (b []byte, err error) {
 	var js _NodeJSON
 	if js.UUID, err = jsoniter.Marshal(it.UUID); err != nil {
 		return nil, fmt.Errorf("uuid: %w", err)
-	}
-	if js.Kind, err = jsoniter.Marshal(it.Kind); err != nil {
-		return nil, fmt.Errorf("kind: %w", err)
 	}
 	if js.Meta, err = jsoniter.Marshal(it.Meta); err != nil {
 		return nil, fmt.Errorf("meta: %w", err)
@@ -231,9 +213,6 @@ func (it *Node) UnmarshalJSON(b []byte) (err error) {
 	}
 	if err = jsoniter.Unmarshal(js.UUID, &it.UUID); err != nil {
 		return fmt.Errorf("uuid: %w", err)
-	}
-	if err = jsoniter.Unmarshal(js.Kind, &it.Kind); err != nil {
-		return fmt.Errorf("kind: %w", err)
 	}
 	if err = jsoniter.Unmarshal(js.Meta, &it.Meta); err != nil {
 		return fmt.Errorf("meta: %w", err)

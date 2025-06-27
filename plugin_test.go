@@ -17,7 +17,7 @@ func TestInit(t *testing.T) {
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes){
-					nodes[0].kind=initPlugin1()+initPlugin2()
+					nodes[0].meta = {val: initPlugin1()+initPlugin2()}
 				}
 			`),
 		},
@@ -51,7 +51,7 @@ func TestInit(t *testing.T) {
 	a := []Node{{}}
 	err := f.Work(ctx, a)
 	require.NoError(t, err)
-	require.Equal(t, a[0].Kind.Get(), "foobar")
+	require.Equal(t, a[0].Meta.Get()["val"], "foobar")
 }
 func TestCall(t *testing.T) {
 	ctx := context.Background()
@@ -61,7 +61,7 @@ func TestCall(t *testing.T) {
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes){
-					nodes[0].kind=this.callPlugin1()+this.callPlugin2()
+					nodes[0].meta={val:this.callPlugin1()+this.callPlugin2()}
 				}
 			`),
 		},
@@ -93,7 +93,7 @@ func TestCall(t *testing.T) {
 	a := []Node{{}}
 	err := f.Work(ctx, a)
 	require.NoError(t, err)
-	require.Equal(t, a[0].Kind.Get(), "foobar")
+	require.Equal(t, a[0].Meta.Get()["val"], "foobar")
 }
 func TestQuit(t *testing.T) {
 	ctx := context.Background()
@@ -104,7 +104,6 @@ func TestQuit(t *testing.T) {
 			When: option.Some(When{}),
 			Code: option.Some(`
 				export default function main(nodes){
-					nodes[0].kind="foobar"
 					this.quitPlugin1="foo"
 					this.quitPlugin2="bar"
 				}
@@ -136,7 +135,6 @@ func TestQuit(t *testing.T) {
 	a := []Node{{}}
 	err := f.Work(ctx, a)
 	require.NoError(t, err)
-	require.Equal(t, a[0].Kind.Get(), "foobar")
 	require.Equal(t, "foo", quitPlugin1)
 	require.Equal(t, "bar", quitPlugin2)
 }

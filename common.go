@@ -11,7 +11,6 @@ import (
 
 const (
 	keyUUID   = "uuid"
-	keyKind   = "kind"
 	keyMeta   = "meta"
 	keyHook   = "hook"
 	keyLive   = "live"

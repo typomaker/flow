@@ -16,7 +16,7 @@ func ExamplePipe_When() {
 			Name: option.Some("flow_dog.js"),
 			// only nodes that meet this condition will be processed by this pipe.
 			// in this case, all nodes whose "kind" is equal to "dog" will be processed.
-			When: option.Some(When{Kind: option.Some([]Kind{"dog"})}),
+			When: option.Some(When{Hook: option.Some([]Hook{{"kind": "dog"}})}),
 			Code: option.Some(`
 				export default function main(nodes, next) {
 					for (const node of nodes) {
@@ -28,7 +28,7 @@ func ExamplePipe_When() {
 		Pipe{
 			Name: option.Some("flow_cat.js"),
 			// in this case, all nodes whose "kind" is equal to "cat" will be processed.
-			When: option.Some(When{Kind: option.Some([]Kind{"cat"})}),
+			When: option.Some(When{Hook: option.Some([]Hook{{"kind": "cat"}})}),
 			Code: option.Some(`
 				export default function main(nodes, next) {
 					for (const node of nodes) {
@@ -42,11 +42,11 @@ func ExamplePipe_When() {
 	target := []Node{
 		{
 			UUID: option.Some(MustUUID("5f883c2d-52a6-4d55-84b5-6763b2717f86")),
-			Kind: option.Some("dog"),
+			Hook: option.Some(Hook{"kind": "dog"}),
 		},
 		{
 			UUID: option.Some(MustUUID("5719e68a-963b-4c88-9018-7ee216454350")),
-			Kind: option.Some("cat"),
+			Hook: option.Some(Hook{"kind": "cat"}),
 		},
 	}
 	err := fl.Work(context.Background(), target)

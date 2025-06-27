@@ -145,139 +145,6 @@ func TestSetNodeUUIDUndefined(t *testing.T) {
 	require.True(t, node.UUID.IsZero())
 }
 
-func TestGetNodeKind(t *testing.T) {
-	rm := goja.New()
-	node := Node{
-		Kind: option.Some("foo"),
-	}
-	var gojaValue goja.Value
-	err := convert(rm, node, &gojaValue)
-	require.NoError(t, err)
-
-	err = rm.Set("node", gojaValue)
-	require.NoError(t, err)
-
-	_, err = rm.RunString(`
-		if (!("kind" in node)) throw "expected kind"
-		if (node.kind !== "foo") throw "unexpected kind"
-	`)
-	require.NoError(t, err)
-
-	err = convert(rm, gojaValue, &node)
-	require.NoError(t, err)
-
-	require.Equal(t, "foo", node.Kind.Get())
-}
-func TestGetNodeKindNull(t *testing.T) {
-	rm := goja.New()
-	node := Node{
-		Kind: option.None[Kind](),
-	}
-	var gojaValue goja.Value
-	err := convert(rm, node, &gojaValue)
-	require.NoError(t, err)
-
-	err = rm.Set("node", gojaValue)
-	require.NoError(t, err)
-
-	_, err = rm.RunString(`
-		if (!("kind" in node)) throw "expected kind"
-		if (node.kind !== null) throw "unexpected kind"
-	`)
-	require.NoError(t, err)
-
-	err = convert(rm, gojaValue, &node)
-	require.NoError(t, err)
-
-	require.True(t, node.Kind.IsNone())
-}
-func TestGetNodeKindUndefined(t *testing.T) {
-	rm := goja.New()
-	node := Node{
-		Kind: option.Option[Kind]{},
-	}
-	var gojaValue goja.Value
-	err := convert(rm, node, &gojaValue)
-	require.NoError(t, err)
-
-	err = rm.Set("node", gojaValue)
-	require.NoError(t, err)
-
-	_, err = rm.RunString(`
-		if ("kind" in node) throw "unexpected kind"
-		if (node.kind !== undefined) throw "unexpected kind"
-	`)
-	require.NoError(t, err)
-
-	err = convert(rm, gojaValue, &node)
-	require.NoError(t, err)
-
-	require.True(t, node.UUID.IsZero())
-}
-func TestSetNodeKind(t *testing.T) {
-	rm := goja.New()
-	node := Node{}
-	var gojaValue goja.Value
-	err := convert(rm, node, &gojaValue)
-	require.NoError(t, err)
-
-	err = rm.Set("node", gojaValue)
-	require.NoError(t, err)
-
-	_, err = rm.RunString(`
-		node.kind = "foo"
-		if (!("kind" in node)) throw "expected kind"
-	`)
-	require.NoError(t, err)
-
-	err = convert(rm, gojaValue, &node)
-	require.NoError(t, err)
-
-	require.Equal(t, "foo", node.Kind.Get())
-}
-func TestSetNodeKindNull(t *testing.T) {
-	rm := goja.New()
-	node := Node{}
-	var gojaValue goja.Value
-	err := convert(rm, node, &gojaValue)
-	require.NoError(t, err)
-
-	err = rm.Set("node", gojaValue)
-	require.NoError(t, err)
-
-	_, err = rm.RunString(`
-		node.kind = null
-		if (!("kind" in node)) throw "expected kind"
-	`)
-	require.NoError(t, err)
-
-	err = convert(rm, gojaValue, &node)
-	require.NoError(t, err)
-
-	require.True(t, node.Kind.IsNone())
-}
-func TestSetNodeKindUndefined(t *testing.T) {
-	rm := goja.New()
-	node := Node{}
-	var gojaValue goja.Value
-	err := convert(rm, node, &gojaValue)
-	require.NoError(t, err)
-
-	err = rm.Set("node", gojaValue)
-	require.NoError(t, err)
-
-	_, err = rm.RunString(`
-		node.kind = undefined
-		if ("kind" in node) throw "unexpected kind"
-	`)
-	require.NoError(t, err)
-
-	err = convert(rm, gojaValue, &node)
-	require.NoError(t, err)
-
-	require.True(t, node.Kind.IsZero())
-}
-
 func TestGetNodeMeta(t *testing.T) {
 	rm := goja.New()
 	node := Node{
@@ -1301,7 +1168,6 @@ func TestSetMetaLazyList(t *testing.T) {
 	goList := []Node{
 		{
 			UUID: option.Some(MustUUID("a50507cf-5015-4685-8eab-6f03f6be59e8")),
-			Kind: option.Some("foo"),
 			Meta: option.Some(Meta{"a": "foo", "b": 1, "c": false, "d": []any{}, "e": map[string]any{}}),
 			Hook: option.Some(Hook{"a": "foo", "b": 1, "c": false, "d": []any{}, "e": map[string]any{}}),
 			Live: option.Some(Live{
@@ -1310,7 +1176,6 @@ func TestSetMetaLazyList(t *testing.T) {
 			}),
 			origin: &Node{
 				UUID: option.None[UUID](),
-				Kind: option.None[Kind](),
 				Meta: option.None[Meta](),
 				Hook: option.None[Hook](),
 				Live: option.None[Live](),
@@ -1318,7 +1183,6 @@ func TestSetMetaLazyList(t *testing.T) {
 		},
 		{
 			UUID: option.None[UUID](),
-			Kind: option.None[Kind](),
 			Meta: option.None[Meta](),
 			Hook: option.None[Hook](),
 			Live: option.None[Live](),
@@ -1351,7 +1215,6 @@ func TestSetMetaLazyList(t *testing.T) {
 		[]any{
 			map[string]any{
 				"uuid": "a50507cf-5015-4685-8eab-6f03f6be59e8",
-				"kind": "foo",
 				"meta": map[string]any{"a": "foo", "b": 1., "c": false, "d": []any{}, "e": map[string]any{}},
 				"hook": map[string]any{"a": "foo", "b": 1., "c": false, "d": []any{}, "e": map[string]any{}},
 				"live": map[string]any{
@@ -1360,7 +1223,6 @@ func TestSetMetaLazyList(t *testing.T) {
 				},
 				"origin": map[string]any{
 					"uuid": nil,
-					"kind": nil,
 					"meta": nil,
 					"hook": nil,
 					"live": nil,
@@ -1368,7 +1230,6 @@ func TestSetMetaLazyList(t *testing.T) {
 			},
 			map[string]any{
 				"uuid": nil,
-				"kind": nil,
 				"meta": nil,
 				"hook": nil,
 				"live": nil,
@@ -1946,7 +1807,6 @@ func TestUnchangeFlowList(t *testing.T) {
 	inFlowList := []Node{
 		{
 			UUID: option.Some(MustUUID("fe355596-7105-419f-b766-8290c47e4988")),
-			Kind: option.Some("foo"),
 			Meta: option.Some(Meta{"key": "val"}),
 			Hook: option.Some(Hook{"k": "v"}),
 			Live: option.Some(Live{Since: option.Some(now), Until: option.None[time.Time]()}),
@@ -2217,7 +2077,6 @@ func TestGetFlowOrigin(t *testing.T) {
 
 	flowItem := Node{
 		UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-		Kind: option.Some("ffff"),
 		Meta: option.Some(Meta{
 			"a": []any{
 				map[string]any{
@@ -2247,10 +2106,6 @@ func TestGetFlowOrigin(t *testing.T) {
 		if (node.origin.uuid !== "9e2e7f50-9885-4fcf-b78e-804c8a6d8740") 
 			throw "unexpected uuid"
 		
-		node.kind="ffff"
-		if (node.origin.kind !== "ffff") 
-			throw "unexpected kind"
-		
 		node.meta.a[0].b=2
 		if (node.origin.meta.a[0].b !== 1) 
 			throw "unexpected meta"
@@ -2266,7 +2121,6 @@ func TestSetFlowOrigin(t *testing.T) {
 
 	flowItem := Node{
 		UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-		Kind: option.Some("ffff"),
 		Meta: option.Some(Meta{
 			"a": []any{
 				map[string]any{
@@ -2293,7 +2147,6 @@ func TestSetFlowOrigin(t *testing.T) {
 
 	_, err = rm.RunString(`
 		node.origin.uuid="d04e0183-e84a-427f-b14e-a7523e5885d0"
-		node.origin.kind="ffff2"
 		node.origin.meta.a[0].b="2"
 		node.origin.meta.a[0].c=true
 		node.origin.hook.a[0].b="2"
@@ -2306,7 +2159,6 @@ func TestSetFlowOrigin(t *testing.T) {
 
 	expected := Node{
 		UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-		Kind: option.Some("ffff"),
 		Meta: option.Some(Meta{
 			"a": []any{
 				map[string]any{
@@ -2324,7 +2176,6 @@ func TestSetFlowOrigin(t *testing.T) {
 	}
 	expected.SetOrigin(Node{
 		UUID: option.Some(MustUUID("d04e0183-e84a-427f-b14e-a7523e5885d0")),
-		Kind: option.Some("ffff2"),
 		Meta: option.Some(Meta{
 			"a": []any{
 				map[string]any{
@@ -2352,7 +2203,6 @@ func TestSetFlowOriginNull(t *testing.T) {
 
 	flowItem := Node{
 		UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-		Kind: option.Some("ffff"),
 		Meta: option.Some(Meta{
 			"a": []any{
 				map[string]any{
@@ -2388,7 +2238,6 @@ func TestSetFlowOriginNull(t *testing.T) {
 	require.Equal(t,
 		Node{
 			UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-			Kind: option.Some("ffff"),
 			Meta: option.Some(Meta{
 				"a": []any{
 					map[string]any{
@@ -2630,13 +2479,13 @@ func TestSetMetaWithFlowListProto(t *testing.T) {
 	require.NoError(t, err)
 
 	goFlowList := []Node{
-		{UUID: option.Some(MustUUID("1bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Kind: option.Some("foo")},
+		{UUID: option.Some(MustUUID("1bbab2c0-38d7-4b25-81ec-ebca2291ce25"))},
 		{UUID: option.Some(MustUUID("2bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Hook: option.Some(Hook{"a": 1})},
 		{UUID: option.Some(MustUUID("3bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Meta: option.Some(Meta{"a": 1})},
 		{UUID: option.Some(MustUUID("5bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
 			Live: option.Some(Live{Since: option.Some(time.Date(2021, 1, 1, 1, 1, 1, 0, time.UTC)), Until: option.None[time.Time]()})},
 		{UUID: option.Some(MustUUID("6bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
-			Live: option.None[Live](), Hook: option.None[Hook](), Meta: option.None[Meta](), Kind: option.None[string]()},
+			Live: option.None[Live](), Hook: option.None[Hook](), Meta: option.None[Meta]()},
 	}
 	jsFlowList := goja.Value(nil)
 	err = convert(rm, goFlowList, &jsFlowList)
@@ -2651,11 +2500,11 @@ func TestSetMetaWithFlowListProto(t *testing.T) {
 	require.Equal(t,
 		Meta{
 			"flowList": []any{
-				map[string]any{"uuid": "1bbab2c0-38d7-4b25-81ec-ebca2291ce25", "kind": "foo"},
+				map[string]any{"uuid": "1bbab2c0-38d7-4b25-81ec-ebca2291ce25"},
 				map[string]any{"uuid": "2bbab2c0-38d7-4b25-81ec-ebca2291ce25", "hook": map[string]any{"a": 1.}},
 				map[string]any{"uuid": "3bbab2c0-38d7-4b25-81ec-ebca2291ce25", "meta": map[string]any{"a": 1.}},
 				map[string]any{"uuid": "5bbab2c0-38d7-4b25-81ec-ebca2291ce25", "live": map[string]any{"since": "2021-01-01T01:01:01Z", "until": nil}},
-				map[string]any{"uuid": "6bbab2c0-38d7-4b25-81ec-ebca2291ce25", "live": nil, "hook": nil, "meta": nil, "kind": nil},
+				map[string]any{"uuid": "6bbab2c0-38d7-4b25-81ec-ebca2291ce25", "live": nil, "hook": nil, "meta": nil},
 			},
 		},
 		goMeta,
@@ -2671,13 +2520,13 @@ func TestSetMetaWithFlowList(t *testing.T) {
 	require.NoError(t, err)
 
 	goFlowList := []Node{
-		{UUID: option.Some(MustUUID("1bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Kind: option.Some("foo")},
+		{UUID: option.Some(MustUUID("1bbab2c0-38d7-4b25-81ec-ebca2291ce25"))},
 		{UUID: option.Some(MustUUID("2bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Hook: option.Some(Hook{"a": 1})},
 		{UUID: option.Some(MustUUID("3bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Meta: option.Some(Meta{"a": 1})},
 		{UUID: option.Some(MustUUID("5bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
 			Live: option.Some(Live{Since: option.Some(time.Date(2021, 1, 1, 1, 1, 1, 0, time.UTC)), Until: option.None[time.Time]()})},
 		{UUID: option.Some(MustUUID("6bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
-			Live: option.None[Live](), Hook: option.None[Hook](), Meta: option.None[Meta](), Kind: option.None[string]()},
+			Live: option.None[Live](), Hook: option.None[Hook](), Meta: option.None[Meta]()},
 	}
 	jsFlowList := goja.Value(nil)
 	err = convert(rm, goFlowList, &jsFlowList)
@@ -2686,7 +2535,7 @@ func TestSetMetaWithFlowList(t *testing.T) {
 	require.NoError(t, err)
 	_, err = rm.RunString(`meta.flowList = flowList`)
 	require.NoError(t, err)
-	_, err = rm.RunString(`flowList.push({uuid:"1524cfa4-12a3-4061-820f-6ff0babc44bf",kind:"foo"})`)
+	_, err = rm.RunString(`flowList.push({uuid:"1524cfa4-12a3-4061-820f-6ff0babc44bf"})`)
 	require.NoError(t, err)
 	_, err = rm.RunString(`flowList.push({uuid:"2524cfa4-12a3-4061-820f-6ff0babc44bf",meta:{a:2}})`)
 	require.NoError(t, err)
@@ -2694,7 +2543,7 @@ func TestSetMetaWithFlowList(t *testing.T) {
 	require.NoError(t, err)
 	_, err = rm.RunString(`flowList.push({uuid:"5524cfa4-12a3-4061-820f-6ff0babc44bf",live:{since:null,until:new Date("2019-03-04T01:01:01Z")}})`)
 	require.NoError(t, err)
-	_, err = rm.RunString(`flowList.push({uuid:"6524cfa4-12a3-4061-820f-6ff0babc44bf",live:null,hook:null,meta:null,kind:null})`)
+	_, err = rm.RunString(`flowList.push({uuid:"6524cfa4-12a3-4061-820f-6ff0babc44bf",live:null,hook:null,meta:null})`)
 	require.NoError(t, err)
 
 	err = convert(rm, jsMeta, &goMeta)
@@ -2702,16 +2551,16 @@ func TestSetMetaWithFlowList(t *testing.T) {
 	require.Equal(t,
 		Meta{
 			"flowList": []any{
-				map[string]any{"uuid": "1bbab2c0-38d7-4b25-81ec-ebca2291ce25", "kind": "foo"},
+				map[string]any{"uuid": "1bbab2c0-38d7-4b25-81ec-ebca2291ce25"},
 				map[string]any{"uuid": "2bbab2c0-38d7-4b25-81ec-ebca2291ce25", "hook": map[string]any{"a": 1.}},
 				map[string]any{"uuid": "3bbab2c0-38d7-4b25-81ec-ebca2291ce25", "meta": map[string]any{"a": 1.}},
 				map[string]any{"uuid": "5bbab2c0-38d7-4b25-81ec-ebca2291ce25", "live": map[string]any{"since": "2021-01-01T01:01:01Z", "until": nil}},
-				map[string]any{"uuid": "6bbab2c0-38d7-4b25-81ec-ebca2291ce25", "live": nil, "hook": nil, "meta": nil, "kind": nil},
-				map[string]any{"uuid": "1524cfa4-12a3-4061-820f-6ff0babc44bf", "kind": "foo"},
+				map[string]any{"uuid": "6bbab2c0-38d7-4b25-81ec-ebca2291ce25", "live": nil, "hook": nil, "meta": nil},
+				map[string]any{"uuid": "1524cfa4-12a3-4061-820f-6ff0babc44bf"},
 				map[string]any{"uuid": "2524cfa4-12a3-4061-820f-6ff0babc44bf", "meta": map[string]any{"a": 2.}},
 				map[string]any{"uuid": "3524cfa4-12a3-4061-820f-6ff0babc44bf", "hook": map[string]any{"a": 2.}},
 				map[string]any{"uuid": "5524cfa4-12a3-4061-820f-6ff0babc44bf", "live": map[string]any{"since": nil, "until": "2019-03-04T01:01:01Z"}},
-				map[string]any{"uuid": "6524cfa4-12a3-4061-820f-6ff0babc44bf", "live": nil, "hook": nil, "meta": nil, "kind": nil},
+				map[string]any{"uuid": "6524cfa4-12a3-4061-820f-6ff0babc44bf", "live": nil, "hook": nil, "meta": nil},
 			},
 		},
 		goMeta,

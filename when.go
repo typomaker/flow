@@ -11,7 +11,6 @@ import (
 
 type When struct {
 	UUID option.Option[[]UUID] `json:"uuid,omitempty"`
-	Kind option.Option[[]Kind] `json:"kind,omitempty"`
 	Hook option.Option[[]Hook] `json:"hook,omitempty"`
 	Live option.Option[[]Live] `json:"live,omitempty"`
 }
@@ -19,8 +18,6 @@ type When struct {
 func (it When) Equal(t When) bool {
 	switch {
 	case !slices.Equal(it.UUID.GetOrZero(), t.UUID.GetOrZero()):
-		return false
-	case !slices.Equal(it.Kind.GetOrZero(), t.Kind.GetOrZero()):
 		return false
 	case !slices.EqualFunc(it.Hook.GetOrZero(), t.Hook.GetOrZero(), Hook.Equal):
 		return false
@@ -32,9 +29,6 @@ func (it When) Equal(t When) bool {
 }
 func (it When) IsZero() bool {
 	if !it.UUID.IsZero() {
-		return false
-	}
-	if !it.Kind.IsZero() {
 		return false
 	}
 	if !it.Hook.IsZero() {
@@ -51,7 +45,6 @@ func (it When) LogAttr() slog.Attr {
 func (it When) LogValue() slog.Value {
 	return slog.GroupValue(
 		slog.Any("uuid", it.UUID),
-		slog.Any("kind", it.Kind),
 		slog.Any("hook", it.Hook),
 		slog.Any("live", it.Live),
 	)
@@ -59,7 +52,6 @@ func (it When) LogValue() slog.Value {
 
 type _WhenJSON struct {
 	UUID jsoniter.RawMessage `json:"uuid,omitempty"`
-	Kind jsoniter.RawMessage `json:"kind,omitempty"`
 	Hook jsoniter.RawMessage `json:"hook,omitempty"`
 	Live jsoniter.RawMessage `json:"live,omitempty"`
 }
@@ -68,9 +60,6 @@ func (it When) MarshalJSON() (b []byte, err error) {
 	var js _WhenJSON
 	if js.UUID, err = jsoniter.Marshal(it.UUID); err != nil {
 		return nil, fmt.Errorf("uuid: %w", err)
-	}
-	if js.Kind, err = jsoniter.Marshal(it.Kind); err != nil {
-		return nil, fmt.Errorf("kind: %w", err)
 	}
 	if js.Hook, err = jsoniter.Marshal(it.Hook); err != nil {
 		return nil, fmt.Errorf("hook: %w", err)
@@ -87,9 +76,6 @@ func (it *When) UnmarshalJSON(b []byte) (err error) {
 	}
 	if err = jsoniter.Unmarshal(js.UUID, &it.UUID); err != nil {
 		return fmt.Errorf("uuid: %w", err)
-	}
-	if err = jsoniter.Unmarshal(js.Kind, &it.Kind); err != nil {
-		return fmt.Errorf("kind: %w", err)
 	}
 	if err = jsoniter.Unmarshal(js.Hook, &it.Hook); err != nil {
 		return fmt.Errorf("hook: %w", err)

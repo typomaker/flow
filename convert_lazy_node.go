@@ -27,9 +27,6 @@ func (it *lazyNode) Delete(key string) bool {
 	case keyUUID:
 		it.value.UUID = goja.Undefined()
 		return true
-	case keyKind:
-		it.value.Kind = goja.Undefined()
-		return true
 	case keyMeta:
 		it.value.Meta = goja.Undefined()
 		return true
@@ -58,16 +55,6 @@ func (it *lazyNode) Get(key string) (val goja.Value) {
 			}
 		}
 		val = it.value.UUID
-	case keyKind:
-		if it.value.Kind == nil {
-			switch {
-			case it.proto.Kind.IsNone():
-				it.value.Kind = goja.Null()
-			case it.proto.Kind.IsSome():
-				it.value.Kind = it.rm.ToValue(it.proto.Kind.Get())
-			}
-		}
-		val = it.value.Kind
 	case keyMeta:
 		if it.value.Meta == nil {
 			switch {
@@ -124,11 +111,6 @@ func (it *lazyNode) Has(key string) bool {
 			return !goja.IsUndefined(it.value.UUID)
 		}
 		return !it.proto.UUID.IsZero()
-	case keyKind:
-		if it.value.Kind != nil {
-			return !goja.IsUndefined(it.value.Kind)
-		}
-		return !it.proto.Kind.IsZero()
 	case keyMeta:
 		if it.value.Meta != nil {
 			return !goja.IsUndefined(it.value.Meta)
@@ -160,9 +142,6 @@ func (it *lazyNode) Set(key string, val goja.Value) bool {
 	case keyUUID:
 		it.value.UUID = val
 		return true
-	case keyKind:
-		it.value.Kind = val
-		return true
 	case keyMeta:
 		it.value.Meta = val
 		return true
@@ -191,14 +170,6 @@ func (it *lazyNode) Keys() []string {
 		}
 	} else if !it.proto.UUID.IsZero() {
 		keys = append(keys, uuidKey)
-	}
-
-	if it.value.Kind != nil {
-		if !goja.IsUndefined(it.value.Kind) {
-			keys = append(keys, keyKind)
-		}
-	} else if !it.proto.Kind.IsZero() {
-		keys = append(keys, keyKind)
 	}
 
 	if it.value.Meta != nil {

@@ -43,9 +43,6 @@ func New(o ...Option) *Flow {
 		if pipe.When.IsSome() {
 			v, _ := priority[name]
 			if pipe.When.Get().UUID.IsSome() {
-				v += 1000_000
-			}
-			if pipe.When.Get().Kind.IsSome() {
 				v += 100_000
 			}
 			if pipe.When.Get().Hook.IsSome() {

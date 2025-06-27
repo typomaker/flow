@@ -51,18 +51,18 @@ func TestCaseLog(t *testing.T) {
 	t.Run("some", func(t *testing.T) {
 		l := slog.New(h)
 		v := Case{
-			When: option.Some(When{Kind: option.Some([]Kind{"foo"})}),
+			When: option.Some(When{UUID: option.Some([]UUID{MustUUID("eaeb5a25-21e5-47ff-a142-7a9987f2e3f0")})}),
 			Then: option.Some(Then{Kind: option.Some("foo")}),
 		}
 		l.Info("foo", slog.Any("v", v), v.LogAttr())
 		require.JSONEq(t,
 			`{
 				"v":{
-					"when":{"kind":["foo"]},
+					"when":{"uuid":["eaeb5a25-21e5-47ff-a142-7a9987f2e3f0"]},
 					"then":{"kind":"foo"}
 				},
 				"case":{
-					"when":{"kind":["foo"]},
+					"when":{"uuid":["eaeb5a25-21e5-47ff-a142-7a9987f2e3f0"]},
 					"then":{"kind":"foo"}
 				}
 			}`,

@@ -32,7 +32,6 @@ func TestWhenLog(t *testing.T) {
 		l := slog.New(h)
 		v := When{
 			UUID: option.None[[]UUID](),
-			Kind: option.None[[]Kind](),
 			Hook: option.None[[]Hook](),
 			Live: option.None[[]Live](),
 		}
@@ -40,13 +39,11 @@ func TestWhenLog(t *testing.T) {
 		require.JSONEq(t, `{
 				"v":{
 					"uuid":null,
-					"kind":null,
 					"hook":null,
 					"live":null
 				},
 				"when":{
 					"uuid":null,
-					"kind":null,
 					"hook":null,
 					"live":null
 				}
@@ -59,7 +56,6 @@ func TestWhenLog(t *testing.T) {
 		l := slog.New(h)
 		v := When{
 			UUID: option.Some([]UUID{MustUUID("1f3219bb-9577-4504-90da-305772121e18")}),
-			Kind: option.Some([]Kind{"foo"}),
 			Hook: option.Some([]Hook{{"a": "1"}}),
 			Live: option.Some([]Live{{Since: option.Some(time.Unix(0, 0).UTC())}}),
 		}
@@ -68,13 +64,11 @@ func TestWhenLog(t *testing.T) {
 			`{
 				"v":{
 					"uuid":["1f3219bb-9577-4504-90da-305772121e18"],
-					"kind":["foo"],
 					"hook":[{"a":"1"}],
 					"live":[{"since":"1970-01-01T00:00:00Z"}]
 				},
 				"when":{
 					"uuid":["1f3219bb-9577-4504-90da-305772121e18"],
-					"kind":["foo"],
 					"hook":[{"a":"1"}],
 					"live":[{"since":"1970-01-01T00:00:00Z"}]
 				}

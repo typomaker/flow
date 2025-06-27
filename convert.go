@@ -240,20 +240,6 @@ func convert_GojaValue_When(rm *goja.Runtime, src goja.Value, dst *When) (err er
 			dst.UUID = option.Some(goUUID)
 		}
 	}
-	if jsKind := jsWhen.Get(keyKind); jsKind != nil {
-		var goKind []string
-		switch {
-		case goja.IsUndefined(jsKind):
-			dst.Kind = option.Option[[]string]{}
-		case goja.IsNull(jsKind):
-			dst.Kind = option.None[[]string]()
-		default:
-			if err = rm.ExportTo(jsKind, &goKind); err != nil {
-				return fmt.Errorf(`kind %w`, err)
-			}
-			dst.Kind = option.Some(goKind)
-		}
-	}
 	if jsHook := jsWhen.Get(keyHook); jsHook != nil {
 		var goHook []Hook
 		switch {
@@ -302,20 +288,6 @@ func convert_GojaValue_Then(rm *goja.Runtime, src goja.Value, dst *Then) (err er
 	var jsThen, ok = src.(*goja.Object)
 	if !ok {
 		return fmt.Errorf(`must be "Object"`)
-	}
-	if jsKind := jsThen.Get(keyKind); jsKind != nil {
-		var goKind string
-		switch {
-		case goja.IsUndefined(jsKind):
-			dst.Kind = option.Option[string]{}
-		case goja.IsNull(jsKind):
-			dst.Kind = option.None[string]()
-		default:
-			if err = rm.ExportTo(jsKind, &goKind); err != nil {
-				return fmt.Errorf(`kind %w`, err)
-			}
-			dst.Kind = option.Some(goKind)
-		}
 	}
 	if jsMeta := jsThen.Get(keyMeta); jsMeta != nil {
 		var goMeta Meta
@@ -691,25 +663,6 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyNode, dst *any) (err error)
 	}
 
 	switch {
-	case goja.IsUndefined(src.value.Kind):
-		delete(d, "kind")
-	case goja.IsNull(src.value.Kind):
-		d["kind"] = nil
-	case src.value.Kind != nil:
-		var goKind string
-		if err = rm.ExportTo(src.value.Kind, &goKind); err != nil {
-			return fmt.Errorf("kind %w", err)
-		}
-		d["kind"] = goKind
-	case src.proto.Kind.IsZero():
-		delete(d, "kind")
-	case src.proto.Kind.IsNone():
-		d["kind"] = nil
-	case src.proto.Kind.IsSome():
-		d["kind"] = src.proto.Kind.Get()
-	}
-
-	switch {
 	case goja.IsUndefined(src.value.Meta):
 		delete(d, "meta")
 	case goja.IsNull(src.value.Meta):
@@ -822,20 +775,6 @@ func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNode, dst *Node) (err erro
 				return fmt.Errorf("uuid %w", err)
 			}
 			dst.UUID = option.Some(goUUID)
-		}
-	}
-	if jsKind := src.value.Kind; jsKind != nil {
-		switch {
-		case goja.IsUndefined(jsKind):
-			dst.Kind = option.Option[string]{}
-		case goja.IsNull(jsKind):
-			dst.Kind = option.None[string]()
-		default:
-			var goKind string
-			if err = rm.ExportTo(jsKind, &goKind); err != nil {
-				return fmt.Errorf("kind %w", err)
-			}
-			dst.Kind = option.Some(goKind)
 		}
 	}
 	if jsMeta := src.value.Meta; jsMeta != nil {

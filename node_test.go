@@ -32,7 +32,6 @@ func TestNodeLog(t *testing.T) {
 		l := slog.New(h)
 		v := Node{
 			UUID: option.None[UUID](),
-			Kind: option.None[Kind](),
 			Meta: option.None[Meta](),
 			Hook: option.None[Hook](),
 			Live: option.None[Live](),
@@ -42,14 +41,12 @@ func TestNodeLog(t *testing.T) {
 		require.JSONEq(t, `{
 				"v":{
 					"uuid":null,
-					"kind":null,
 					"meta":null,
 					"hook":null,
 					"live":null
 				},
 				"node":{
 					"uuid":null,
-					"kind":null,
 					"meta":null,
 					"hook":null,
 					"live":null
@@ -63,7 +60,6 @@ func TestNodeLog(t *testing.T) {
 		l := slog.New(h)
 		v := Node{
 			UUID: option.Some(MustUUID("85432856-ba6c-46d3-9fcf-05650bfd5814")),
-			Kind: option.Some("foo"),
 			Meta: option.Some(Meta{"b": "2"}),
 			Hook: option.Some(Hook{"a": "1"}),
 			Live: option.Some(Live{Since: option.Some(time.Unix(0, 0).UTC())}),
@@ -75,13 +71,11 @@ func TestNodeLog(t *testing.T) {
 			`{
 				"v":{
 					"uuid":"85432856-ba6c-46d3-9fcf-05650bfd5814",
-					"kind":"foo",
 					"meta":{"b":"2"},
 					"hook":{"a":"1"},
 					"live":{"since":"1970-01-01T00:00:00Z"},
 					"origin":{
 						"uuid":"85432856-ba6c-46d3-9fcf-05650bfd5814",
-						"kind":"foo",
 						"meta":{"b":"2"},
 						"hook":{"a":"1"},
 						"live":{"since":"1970-01-01T00:00:00Z"}
@@ -89,13 +83,11 @@ func TestNodeLog(t *testing.T) {
 				},
 				"node":{
 					"uuid":"85432856-ba6c-46d3-9fcf-05650bfd5814",
-					"kind":"foo",
 					"meta":{"b":"2"},
 					"hook":{"a":"1"},
 					"live":{"since":"1970-01-01T00:00:00Z"},
 					"origin":{
 						"uuid":"85432856-ba6c-46d3-9fcf-05650bfd5814",
-						"kind":"foo",
 						"meta":{"b":"2"},
 						"hook":{"a":"1"},
 						"live":{"since":"1970-01-01T00:00:00Z"}
