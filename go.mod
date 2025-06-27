@@ -2,7 +2,7 @@ module github.com/typomaker/flow
 
 go 1.23.4
 
-require github.com/typomaker/option v1.0.4
+require github.com/typomaker/option v1.0.6
 
 require (
 	github.com/kr/text v0.2.0 // indirect
