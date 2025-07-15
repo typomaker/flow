@@ -6,21 +6,39 @@ import (
 	"sync"
 )
 
-var reuse struct {
-	SliceSliceNode  sync.Pool
-	SliceSlicePipe  sync.Pool
-	SlicePipe       sync.Pool
-	MapStringStruct sync.Pool
-	StringsBuilder  sync.Pool
-	SliceSlogAttr   sync.Pool
-	SliceError      sync.Pool
+var syncpool struct {
+	sliceNode       sync.Pool
+	sliceSliceNode  sync.Pool
+	sliceSlicePipe  sync.Pool
+	slicePipe       sync.Pool
+	mapStringStruct sync.Pool
+	stringsBuilder  sync.Pool
+	sliceSlogAttr   sync.Pool
+	sliceError      sync.Pool
 }
 
-func reuseSliceSliceNode(v *[][]Node) (closer func()) {
+func getSliceNode(v *[]Node) (put func()) {
 	if *v != nil {
 		return
 	}
-	var x, _ = reuse.SliceSliceNode.Get().(*[][]Node)
+	var x, _ = syncpool.sliceNode.Get().(*[]Node)
+	if x == nil {
+		var a = make([]Node, 0, 8)
+		x = &a
+	}
+	*v = *x
+
+	return func() {
+		clear(*v)
+		*v = (*v)[:0]
+		syncpool.sliceNode.Put(v)
+	}
+}
+func getSliceSliceNode(v *[][]Node) (put func()) {
+	if *v != nil {
+		return
+	}
+	var x, _ = syncpool.sliceSliceNode.Get().(*[][]Node)
 	if x == nil {
 		var a = make([][]Node, 0, 8)
 		x = &a
@@ -30,14 +48,14 @@ func reuseSliceSliceNode(v *[][]Node) (closer func()) {
 	return func() {
 		clear(*v)
 		*v = (*v)[:0]
-		reuse.SliceSliceNode.Put(v)
+		syncpool.sliceSliceNode.Put(v)
 	}
 }
-func reuseSlicePipe(v *[]Pipe) (closer func()) {
+func getSlicePipe(v *[]Pipe) (put func()) {
 	if *v != nil {
 		return
 	}
-	var x, _ = reuse.SlicePipe.Get().(*[]Pipe)
+	var x, _ = syncpool.slicePipe.Get().(*[]Pipe)
 	if x == nil {
 		var a = make([]Pipe, 0, 8)
 		x = &a
@@ -47,14 +65,14 @@ func reuseSlicePipe(v *[]Pipe) (closer func()) {
 	return func() {
 		clear(*v)
 		*v = (*v)[:0]
-		reuse.SlicePipe.Put(v)
+		syncpool.slicePipe.Put(v)
 	}
 }
-func reuseMapStringSrtuct(v *map[string]struct{}) (closer func()) {
+func getMapStringSrtuct(v *map[string]struct{}) (put func()) {
 	if *v != nil {
 		return
 	}
-	var x, _ = reuse.MapStringStruct.Get().(*map[string]struct{})
+	var x, _ = syncpool.mapStringStruct.Get().(*map[string]struct{})
 	if x == nil {
 		var a = make(map[string]struct{}, 8)
 		x = &a
@@ -63,25 +81,25 @@ func reuseMapStringSrtuct(v *map[string]struct{}) (closer func()) {
 
 	return func() {
 		clear(*v)
-		reuse.MapStringStruct.Put(v)
+		syncpool.mapStringStruct.Put(v)
 	}
 }
-func reuseStringBuilder(v *strings.Builder) (closer func()) {
-	if x, _ := reuse.StringsBuilder.Get().(*strings.Builder); x != nil {
+func getStringBuilder(v *strings.Builder) (put func()) {
+	if x, _ := syncpool.stringsBuilder.Get().(*strings.Builder); x != nil {
 		*v = *x
 	} else {
 		*v = strings.Builder{}
 	}
 	return func() {
 		v.Reset()
-		reuse.StringsBuilder.Put(v)
+		syncpool.stringsBuilder.Put(v)
 	}
 }
-func reuseSliceSlogAttr(v *[]slog.Attr) (closer func()) {
+func getSliceSlogAttr(v *[]slog.Attr) (put func()) {
 	if *v != nil {
 		return
 	}
-	var x, _ = reuse.SliceSlogAttr.Get().(*[]slog.Attr)
+	var x, _ = syncpool.sliceSlogAttr.Get().(*[]slog.Attr)
 	if x == nil {
 		var a = make([]slog.Attr, 0, 8)
 		x = &a
@@ -91,14 +109,14 @@ func reuseSliceSlogAttr(v *[]slog.Attr) (closer func()) {
 	return func() {
 		clear(*v)
 		*v = (*v)[:0]
-		reuse.SliceSlogAttr.Put(v)
+		syncpool.sliceSlogAttr.Put(v)
 	}
 }
-func reuseSliceError(v *[]error) (closer func()) {
+func getSliceError(v *[]error) (put func()) {
 	if *v != nil {
 		return
 	}
-	var x, _ = reuse.SliceError.Get().(*[]error)
+	var x, _ = syncpool.sliceError.Get().(*[]error)
 	if x == nil {
 		var a = make([]error, 0, 8)
 		x = &a
@@ -108,6 +126,6 @@ func reuseSliceError(v *[]error) (closer func()) {
 	return func() {
 		clear(*v)
 		*v = (*v)[:0]
-		reuse.SliceError.Put(v)
+		syncpool.sliceError.Put(v)
 	}
 }

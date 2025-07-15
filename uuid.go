@@ -2,6 +2,7 @@ package flow
 
 import (
 	"log/slog"
+	"slices"
 
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
@@ -39,4 +40,30 @@ func (it UUID) MarshalJSON() ([]byte, error) {
 }
 func (it UUID) String() string {
 	return uuid.UUID(it).String()
+}
+func (it UUID) In(u ...UUID) Statement {
+	u = append(u, it)
+	slices.SortFunc(u, UUID.Compare)
+	var fit = func(n Node) bool {
+		if !n.UUID.IsSome() {
+			return false
+		}
+		var ok bool
+		_, ok = slices.BinarySearchFunc(u, n.UUID.Get(), UUID.Compare)
+		return ok
+	}
+	return func(ctx Context, target []Node, next Next) (err error) {
+		return fitnext(target, fit, next)
+	}
+}
+func (it UUID) Compare(t UUID) int {
+	for i := range it {
+		switch {
+		case it[i] < t[i]:
+			return -1
+		case it[i] > t[i]:
+			return 1
+		}
+	}
+	return 0
 }

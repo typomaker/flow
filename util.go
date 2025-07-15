@@ -2,10 +2,35 @@ package flow
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"time"
 )
 
+func fitnext(target []Node, fit func(Node) bool, next Next) (err error) {
+	var errs []error
+	defer getSliceError(&errs)
+	var min, max int
+	for {
+		if max < len(target) && fit(target[max]) {
+			max++
+			continue
+		}
+		if min < max {
+			if err = next(target[min:max]); err != nil {
+				errs = append(errs, err)
+			}
+			min = max
+		} else {
+			min++
+			max++
+		}
+		if min == len(target) {
+			break
+		}
+	}
+	return errors.Join(errs...)
+}
 func deepCopy(v any) any {
 	switch v := v.(type) {
 	case int, int8, int16, int32, int64,
@@ -56,12 +81,12 @@ func deepWith(l, r any, merge bool) any {
 		return r
 	}
 }
-func deepHave(l, r any) bool {
+func deepContains(l, r any) bool {
 	switch source := l.(type) {
 	case map[string]any:
 		if part, ok := r.(map[string]any); ok {
 			for k := range part {
-				if !deepHave(source[k], part[k]) {
+				if !deepContains(source[k], part[k]) {
 					return false
 				}
 			}
@@ -72,7 +97,7 @@ func deepHave(l, r any) bool {
 			for i := range part {
 				var ok bool
 				for j := range source {
-					if ok = deepHave(source[j], part[i]); ok {
+					if ok = deepContains(source[j], part[i]); ok {
 						break
 					}
 				}
@@ -83,11 +108,11 @@ func deepHave(l, r any) bool {
 			return true
 		}
 	default:
-		return equal(source, r)
+		return deepEqual(source, r)
 	}
 	return false
 }
-func equal[T1, T2 any](l T1, r T2) bool {
+func deepEqual[T1, T2 any](l T1, r T2) bool {
 	switch l := any(l).(type) {
 	case interface{ Equal(T2) bool }:
 		if r, ok := any(r).(T2); ok && l.Equal(r) {
@@ -147,7 +172,7 @@ func equal[T1, T2 any](l T1, r T2) bool {
 				return false
 			}
 			for k := range r {
-				if !equal(l[k], r[k]) {
+				if !deepEqual(l[k], r[k]) {
 					return false
 				}
 			}
@@ -159,7 +184,7 @@ func equal[T1, T2 any](l T1, r T2) bool {
 				return false
 			}
 			for i := range l {
-				if !equal(l[i], r[i]) {
+				if !deepEqual(l[i], r[i]) {
 					return false
 				}
 			}

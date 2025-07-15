@@ -35,7 +35,7 @@ func (it Pipe) LogAttr() slog.Attr {
 }
 func (it Pipe) LogValue() slog.Value {
 	var attrs []slog.Attr
-	defer reuseSliceSlogAttr(&attrs)()
+	defer getSliceSlogAttr(&attrs)()
 
 	switch {
 	case it.Name.IsNone():

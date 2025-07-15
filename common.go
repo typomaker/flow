@@ -46,7 +46,7 @@ var tmpl = template.Must(template.New("").ParseFS(tmplFS, "*"))
 
 func renderSkipJS() string {
 	var wr strings.Builder
-	defer reuseStringBuilder(&wr)()
+	defer getStringBuilder(&wr)()
 	var err = tmpl.ExecuteTemplate(&wr, "skip.js.go.tpl", nil)
 	if err != nil {
 		panic(err)
@@ -55,7 +55,7 @@ func renderSkipJS() string {
 }
 func renderWalkJS(next []Pipe) string {
 	var wr strings.Builder
-	defer reuseStringBuilder(&wr)()
+	defer getStringBuilder(&wr)()
 	var err = tmpl.ExecuteTemplate(&wr, "walk.js.go.tpl", next)
 	if err != nil {
 		panic(err)

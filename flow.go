@@ -126,10 +126,10 @@ func (it *Flow) Work(ctx context.Context, nn []Node) (err error) {
 
 	// pipe to node matching
 	var chain []Pipe
-	defer reuseSlicePipe(&chain)()
+	defer getSlicePipe(&chain)()
 
 	var group [][]Node
-	defer reuseSliceSliceNode(&group)()
+	defer getSliceSliceNode(&group)()
 
 	var head int
 	var prev Pipe

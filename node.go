@@ -108,7 +108,7 @@ func (it Node) When(w When) bool {
 		w.Hook.IsSome() && !it.Hook.IsSome(),
 		w.Hook.IsSome() &&
 			!slices.ContainsFunc(w.Hook.Get(), func(h Hook) bool {
-				return deepHave(map[string]any(it.Hook.Get()), map[string]any(h))
+				return deepContains(map[string]any(it.Hook.Get()), map[string]any(h))
 			}):
 		return false
 	case

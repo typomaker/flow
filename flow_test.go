@@ -8,6 +8,98 @@ import (
 	"github.com/typomaker/option"
 )
 
+func TestComposeAppend(t *testing.T) {
+	c := []int{}
+	f := Compose(
+		func(ctx Context, target []Node, next Next) (err error) {
+			c = append(c, 0)
+			next(target)
+			return nil
+		},
+		func(ctx Context, target []Node, next Next) (err error) {
+			c = append(c, 1)
+			next(target)
+			return nil
+		},
+		func(ctx Context, target []Node, next Next) (err error) {
+			c = append(c, 2)
+			next(target)
+			return nil
+		},
+	)
+	next := Next(func(target []Node) error {
+		c = append(c, 3)
+		return nil
+	})
+	ctx := Context{}
+	target := []Node{}
+	err := f(ctx, target, next)
+	require.NoError(t, err)
+	require.Equal(t, []int{0, 1, 2, 3}, c)
+}
+func TestComposePrepend(t *testing.T) {
+	c := []int{}
+	f := Compose(
+		func(ctx Context, target []Node, next Next) (err error) {
+			next(target)
+			c = append(c, 3)
+			return nil
+		},
+		func(ctx Context, target []Node, next Next) (err error) {
+			next(target)
+			c = append(c, 2)
+			return nil
+		},
+		func(ctx Context, target []Node, next Next) (err error) {
+			next(target)
+			c = append(c, 1)
+			return nil
+		},
+	)
+	next := Next(func(target []Node) error {
+		c = append(c, 0)
+		return nil
+	})
+	ctx := Context{}
+	target := []Node{}
+	err := f(ctx, target, next)
+	require.NoError(t, err)
+	require.Equal(t, []int{0, 1, 2, 3}, c)
+}
+func TestCompose123(t *testing.T) {
+	c := []int{}
+	f := Compose(
+		If(
+			Not(UUID.In(MustUUID("e42e04d7-d016-4175-bf3a-e0201ff9f6a7"))),
+			func(ctx Context, target []Node, next Next) (err error) {
+				next(target)
+				c = append(c, 3)
+				return nil
+			},
+		),
+		func(ctx Context, target []Node, next Next) (err error) {
+			next(target)
+			c = append(c, 2)
+			return nil
+		},
+		func(ctx Context, target []Node, next Next) (err error) {
+			next(target)
+			c = append(c, 1)
+			return nil
+		},
+	)
+	next := Next(func(target []Node) error {
+		c = append(c, 0)
+		return nil
+	})
+	ctx := Context{}
+	target := []Node{
+		{UUID: option.Some(MustUUID("e42e04d7-d016-4175-bf3a-e0201ff9f6a7"))},
+	}
+	err := f(ctx, target, next)
+	require.NoError(t, err)
+	require.Equal(t, []int{0, 1, 2, 3}, c)
+}
 func TestNil(t *testing.T) {
 	ctx := context.Background()
 	f := New()

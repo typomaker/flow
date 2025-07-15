@@ -2,6 +2,7 @@ package flow
 
 import (
 	"log/slog"
+	"slices"
 
 	jsoniter "github.com/json-iterator/go"
 )
@@ -9,7 +10,7 @@ import (
 type Hook map[string]any
 
 func (it Hook) Equal(t Hook) bool {
-	return equal(it, t)
+	return deepEqual(it, t)
 }
 func (it Hook) With(pp Hook) Hook {
 	if len(it) == 0 {
@@ -22,6 +23,20 @@ func (it Hook) With(pp Hook) Hook {
 		it[k] = deepWith(it[k], pp[k], k[0] == '$')
 	}
 	return it
+}
+func (it Hook) In(s ...Hook) Statement {
+	s = append(s, it)
+	var fit = func(n Node) bool {
+		if !n.Hook.IsSome() {
+			return false
+		}
+		return slices.ContainsFunc(s, func(h Hook) bool {
+			return deepContains(map[string]any(n.Hook.Get()), map[string]any(h))
+		})
+	}
+	return func(ctx Context, target []Node, next Next) (err error) {
+		return fitnext(target, fit, next)
+	}
 }
 func (it Hook) LogAttr() slog.Attr {
 	return slog.Any("hook", it.LogValue())
