@@ -2,20 +2,18 @@ package flow
 
 import (
 	"log/slog"
-
-	"github.com/typomaker/option"
 )
 
 type Case struct {
-	When option.Option[When]
-	Then option.Option[Then]
+	When When
+	Then Then
 }
 
 func (it Case) Equal(t Case) bool {
 	switch {
-	case !it.When.GetOrZero().Equal(t.When.GetOrZero()):
+	case !it.When.Equal(t.When):
 		return false
-	case !it.Then.GetOrZero().Equal(t.Then.GetOrZero()):
+	case !it.Then.Equal(t.Then):
 		return false
 	default:
 		return true

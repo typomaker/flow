@@ -1,6 +1,7 @@
 package flow
 
 import (
+	"context"
 	"log/slog"
 	"slices"
 
@@ -41,10 +42,10 @@ func (it UUID) MarshalJSON() ([]byte, error) {
 func (it UUID) String() string {
 	return uuid.UUID(it).String()
 }
-func (it UUID) In(u ...UUID) Statement {
+func (it UUID) In(u ...UUID) Handler {
 	u = append(u, it)
 	slices.SortFunc(u, UUID.Compare)
-	var fit = func(n Node) bool {
+	var predicat = func(n Node) bool {
 		if !n.UUID.IsSome() {
 			return false
 		}
@@ -52,8 +53,8 @@ func (it UUID) In(u ...UUID) Statement {
 		_, ok = slices.BinarySearchFunc(u, n.UUID.Get(), UUID.Compare)
 		return ok
 	}
-	return func(ctx Context, target []Node, next Next) (err error) {
-		return fitnext(target, fit, next)
+	return func(ctx context.Context, target []Node, next Next) (err error) {
+		return nextIf(target, next, predicat)
 	}
 }
 func (it UUID) Compare(t UUID) int {

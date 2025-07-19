@@ -7,8 +7,8 @@ import (
 	"github.com/evanw/esbuild/pkg/api"
 )
 
-func matchLoader(name string) (api.Loader, error) {
-	var ext = filepath.Ext(name)
+func matchLoader(path string) (api.Loader, error) {
+	var ext = filepath.Ext(path)
 	switch ext {
 	case ".js":
 		return api.LoaderJS, nil

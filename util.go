@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-func fitnext(target []Node, fit func(Node) bool, next Next) (err error) {
+func nextIf(target []Node, next Next, predicat func(Node) bool) (err error) {
 	var errs []error
 	defer getSliceError(&errs)
 	var min, max int
 	for {
-		if max < len(target) && fit(target[max]) {
+		if max < len(target) && predicat(target[max]) {
 			max++
 			continue
 		}

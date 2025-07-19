@@ -1,4 +1,4 @@
-package gojaflow
+package goja
 
 import (
 	"slices"

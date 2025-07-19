@@ -70,12 +70,12 @@ var httpPlugin = api.Plugin{
 					}
 					res, err := http.Get(args.Path)
 					if err != nil {
-						return api.OnLoadResult{}, fmt.Errorf("%s: load http %w", HTTPName, err)
+						return api.OnLoadResult{}, fmt.Errorf("%s: load data %w", HTTPName, err)
 					}
 					defer res.Body.Close()
 
 					if content, err = io.ReadAll(res.Body); err != nil {
-						return r, fmt.Errorf("%s: read http %w", HTTPName, err)
+						return r, fmt.Errorf("%s: read body %w", HTTPName, err)
 					}
 					if err = os.MkdirAll(filepath.Dir(tmpname), os.ModePerm); err != nil {
 						return r, fmt.Errorf("%s: mkdir temp %w", HTTPName, err)

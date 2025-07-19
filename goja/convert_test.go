@@ -1,4 +1,4 @@
-package flow
+package goja
 
 import (
 	"testing"
@@ -6,13 +6,14 @@ import (
 
 	"github.com/dop251/goja"
 	"github.com/stretchr/testify/require"
+	"github.com/typomaker/flow"
 	"github.com/typomaker/option"
 )
 
 func TestGetNodeUUID(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		UUID: option.Some(MustUUID("84d835bf-ccca-42ca-90aa-2207372f33dd")),
+	node := flow.Node{
+		UUID: option.Some(flow.MustUUID("84d835bf-ccca-42ca-90aa-2207372f33dd")),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -30,12 +31,12 @@ func TestGetNodeUUID(t *testing.T) {
 	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
-	require.Equal(t, MustUUID("84d835bf-ccca-42ca-90aa-2207372f33dd"), node.UUID.Get())
+	require.Equal(t, flow.MustUUID("84d835bf-ccca-42ca-90aa-2207372f33dd"), node.UUID.Get())
 }
 func TestGetNodeUUIDNull(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		UUID: option.None[UUID](),
+	node := flow.Node{
+		UUID: option.None[flow.UUID](),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -57,8 +58,8 @@ func TestGetNodeUUIDNull(t *testing.T) {
 }
 func TestGetNodeUUIDUndefined(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		UUID: option.Option[UUID]{},
+	node := flow.Node{
+		UUID: option.Option[flow.UUID]{},
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -80,7 +81,7 @@ func TestGetNodeUUIDUndefined(t *testing.T) {
 }
 func TestSetNodeUUID(t *testing.T) {
 	rm := goja.New()
-	node := Node{}
+	node := flow.Node{}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
@@ -97,12 +98,12 @@ func TestSetNodeUUID(t *testing.T) {
 	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
-	require.Equal(t, MustUUID("2bd42b00-d96d-4360-b767-ca4bd8279576"), node.UUID.Get())
+	require.Equal(t, flow.MustUUID("2bd42b00-d96d-4360-b767-ca4bd8279576"), node.UUID.Get())
 }
 func TestSetNodeUUIDNull(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		UUID: option.Some(MustUUID("094db975-1196-45f0-9e32-d96497507a2d")),
+	node := flow.Node{
+		UUID: option.Some(flow.MustUUID("094db975-1196-45f0-9e32-d96497507a2d")),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -124,8 +125,8 @@ func TestSetNodeUUIDNull(t *testing.T) {
 }
 func TestSetNodeUUIDUndefined(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		UUID: option.Some(MustUUID("094db975-1196-45f0-9e32-d96497507a2d")),
+	node := flow.Node{
+		UUID: option.Some(flow.MustUUID("094db975-1196-45f0-9e32-d96497507a2d")),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -147,8 +148,8 @@ func TestSetNodeUUIDUndefined(t *testing.T) {
 
 func TestGetNodeMeta(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Meta: option.Some(Meta{}),
+	node := flow.Node{
+		Meta: option.Some(flow.Meta{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -166,12 +167,12 @@ func TestGetNodeMeta(t *testing.T) {
 	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
-	require.Equal(t, Meta{}, node.Meta.Get())
+	require.Equal(t, flow.Meta{}, node.Meta.Get())
 }
 func TestGetNodeMetaNull(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Meta: option.None[Meta](),
+	node := flow.Node{
+		Meta: option.None[flow.Meta](),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -193,8 +194,8 @@ func TestGetNodeMetaNull(t *testing.T) {
 }
 func TestGetNodeMetaUndefined(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Meta: option.Option[Meta]{},
+	node := flow.Node{
+		Meta: option.Option[flow.Meta]{},
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -216,7 +217,7 @@ func TestGetNodeMetaUndefined(t *testing.T) {
 }
 func TestSetNodeMeta(t *testing.T) {
 	rm := goja.New()
-	node := Node{}
+	node := flow.Node{}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
@@ -233,12 +234,12 @@ func TestSetNodeMeta(t *testing.T) {
 	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
-	require.Equal(t, Meta{}, node.Meta.Get())
+	require.Equal(t, flow.Meta{}, node.Meta.Get())
 }
 func TestSetNodeMetaNull(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Meta: option.Some(Meta{}),
+	node := flow.Node{
+		Meta: option.Some(flow.Meta{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -260,8 +261,8 @@ func TestSetNodeMetaNull(t *testing.T) {
 }
 func TestSetNodeMetaUndefined(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Meta: option.Some(Meta{}),
+	node := flow.Node{
+		Meta: option.Some(flow.Meta{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -283,8 +284,8 @@ func TestSetNodeMetaUndefined(t *testing.T) {
 
 func TestGetNodeHook(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Hook: option.Some(Hook{}),
+	node := flow.Node{
+		Hook: option.Some(flow.Hook{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -302,12 +303,12 @@ func TestGetNodeHook(t *testing.T) {
 	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
-	require.Equal(t, Hook{}, node.Hook.Get())
+	require.Equal(t, flow.Hook{}, node.Hook.Get())
 }
 func TestGetNodeHookNull(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Hook: option.None[Hook](),
+	node := flow.Node{
+		Hook: option.None[flow.Hook](),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -329,8 +330,8 @@ func TestGetNodeHookNull(t *testing.T) {
 }
 func TestGetFlowHookUndefined(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Hook: option.Option[Hook]{},
+	node := flow.Node{
+		Hook: option.Option[flow.Hook]{},
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -352,7 +353,7 @@ func TestGetFlowHookUndefined(t *testing.T) {
 }
 func TestSetNodeHook(t *testing.T) {
 	rm := goja.New()
-	node := Node{}
+	node := flow.Node{}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
@@ -369,12 +370,12 @@ func TestSetNodeHook(t *testing.T) {
 	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
-	require.Equal(t, Hook{}, node.Hook.Get())
+	require.Equal(t, flow.Hook{}, node.Hook.Get())
 }
 func TestSetNodeHookNull(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Hook: option.Some(Hook{}),
+	node := flow.Node{
+		Hook: option.Some(flow.Hook{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -396,8 +397,8 @@ func TestSetNodeHookNull(t *testing.T) {
 }
 func TestSetNodeHookUndefined(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Hook: option.Some(Hook{}),
+	node := flow.Node{
+		Hook: option.Some(flow.Hook{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -419,8 +420,8 @@ func TestSetNodeHookUndefined(t *testing.T) {
 
 func TestGetNodeLive(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Live: option.Some(Live{}),
+	node := flow.Node{
+		Live: option.Some(flow.Live{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -438,12 +439,12 @@ func TestGetNodeLive(t *testing.T) {
 	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
-	require.Equal(t, Live{}, node.Live.Get())
+	require.Equal(t, flow.Live{}, node.Live.Get())
 }
 func TestGetNodeLiveNull(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Live: option.None[Live](),
+	node := flow.Node{
+		Live: option.None[flow.Live](),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -465,8 +466,8 @@ func TestGetNodeLiveNull(t *testing.T) {
 }
 func TestGetNodeLiveUndefined(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Live: option.Option[Live]{},
+	node := flow.Node{
+		Live: option.Option[flow.Live]{},
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -488,7 +489,7 @@ func TestGetNodeLiveUndefined(t *testing.T) {
 }
 func TestSetNodeLive(t *testing.T) {
 	rm := goja.New()
-	node := Node{}
+	node := flow.Node{}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
 	require.NoError(t, err)
@@ -505,12 +506,12 @@ func TestSetNodeLive(t *testing.T) {
 	err = convert(rm, gojaValue, &node)
 	require.NoError(t, err)
 
-	require.Equal(t, Live{}, node.Live.Get())
+	require.Equal(t, flow.Live{}, node.Live.Get())
 }
 func TestSetNodeLiveNull(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Live: option.Some(Live{}),
+	node := flow.Node{
+		Live: option.Some(flow.Live{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -532,8 +533,8 @@ func TestSetNodeLiveNull(t *testing.T) {
 }
 func TestSetNodeLiveUndefined(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Live: option.Some(Live{}),
+	node := flow.Node{
+		Live: option.Some(flow.Live{}),
 	}
 	var gojaValue goja.Value
 	err := convert(rm, node, &gojaValue)
@@ -556,7 +557,7 @@ func TestSetNodeLiveUndefined(t *testing.T) {
 func TestGetLiveSince(t *testing.T) {
 	rm := goja.New()
 	now := time.Date(2021, 11, 16, 6, 0, 0, 0, time.UTC)
-	live := Live{
+	live := flow.Live{
 		Since: option.Some(now),
 	}
 	var gojaValue goja.Value
@@ -579,7 +580,7 @@ func TestGetLiveSince(t *testing.T) {
 }
 func TestGetLiveSinceNull(t *testing.T) {
 	rm := goja.New()
-	live := Live{
+	live := flow.Live{
 		Since: option.None[time.Time](),
 	}
 	var gojaValue goja.Value
@@ -602,7 +603,7 @@ func TestGetLiveSinceNull(t *testing.T) {
 }
 func TestGetLiveSinceUndefined(t *testing.T) {
 	rm := goja.New()
-	live := Live{
+	live := flow.Live{
 		Since: option.Option[time.Time]{},
 	}
 	var gojaValue goja.Value
@@ -625,7 +626,7 @@ func TestGetLiveSinceUndefined(t *testing.T) {
 }
 func TestSetLiveSince(t *testing.T) {
 	rm := goja.New()
-	live := Live{}
+	live := flow.Live{}
 	var gojaValue goja.Value
 	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
@@ -648,7 +649,7 @@ func TestSetLiveSince(t *testing.T) {
 func TestSetLiveSinceNull(t *testing.T) {
 	rm := goja.New()
 	now := time.Date(2021, 11, 16, 6, 0, 0, 0, time.UTC)
-	live := Live{
+	live := flow.Live{
 		Since: option.Some(now),
 	}
 	var gojaValue goja.Value
@@ -672,7 +673,7 @@ func TestSetLiveSinceNull(t *testing.T) {
 func TestSetLiveSinceUndefined(t *testing.T) {
 	rm := goja.New()
 	now := time.Date(2021, 11, 16, 6, 0, 0, 0, time.UTC)
-	live := Live{
+	live := flow.Live{
 		Since: option.Some(now),
 	}
 	var gojaValue goja.Value
@@ -697,7 +698,7 @@ func TestSetLiveSinceUndefined(t *testing.T) {
 func TestGetLiveUntil(t *testing.T) {
 	rm := goja.New()
 	now := time.Date(2021, 11, 16, 6, 0, 0, 0, time.UTC)
-	live := Live{
+	live := flow.Live{
 		Until: option.Some(now),
 	}
 	var gojaValue goja.Value
@@ -720,7 +721,7 @@ func TestGetLiveUntil(t *testing.T) {
 }
 func TestGetLiveUntilNull(t *testing.T) {
 	rm := goja.New()
-	live := Live{
+	live := flow.Live{
 		Until: option.None[time.Time](),
 	}
 	var gojaValue goja.Value
@@ -743,7 +744,7 @@ func TestGetLiveUntilNull(t *testing.T) {
 }
 func TestGetLiveUntilUndefined(t *testing.T) {
 	rm := goja.New()
-	live := Live{
+	live := flow.Live{
 		Until: option.Option[time.Time]{},
 	}
 	var gojaValue goja.Value
@@ -766,7 +767,7 @@ func TestGetLiveUntilUndefined(t *testing.T) {
 }
 func TestSetLiveUntil(t *testing.T) {
 	rm := goja.New()
-	live := Live{}
+	live := flow.Live{}
 	var gojaValue goja.Value
 	err := convert(rm, live, &gojaValue)
 	require.NoError(t, err)
@@ -789,7 +790,7 @@ func TestSetLiveUntil(t *testing.T) {
 func TestSetLiveUntilNull(t *testing.T) {
 	rm := goja.New()
 	now := time.Date(2021, 11, 16, 6, 0, 0, 0, time.UTC)
-	live := Live{
+	live := flow.Live{
 		Until: option.Some(now),
 	}
 	var gojaValue goja.Value
@@ -813,7 +814,7 @@ func TestSetLiveUntilNull(t *testing.T) {
 func TestSetLiveUntilUndefined(t *testing.T) {
 	rm := goja.New()
 	now := time.Date(2021, 11, 16, 6, 0, 0, 0, time.UTC)
-	live := Live{
+	live := flow.Live{
 		Until: option.Some(now),
 	}
 	var gojaValue goja.Value
@@ -836,7 +837,7 @@ func TestSetLiveUntilUndefined(t *testing.T) {
 }
 func TestGetMetaUndefined(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -856,7 +857,7 @@ func TestGetMetaUndefined(t *testing.T) {
 }
 func TestSetMetaUndefined(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -877,7 +878,7 @@ func TestSetMetaUndefined(t *testing.T) {
 }
 func TestGetMetaNull(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{
+	meta := flow.Meta{
 		"value": nil,
 	}
 	var gojaValue goja.Value
@@ -900,7 +901,7 @@ func TestGetMetaNull(t *testing.T) {
 }
 func TestSetMetaNull(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -922,7 +923,7 @@ func TestSetMetaNull(t *testing.T) {
 }
 func TestGetMetaString(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{
+	meta := flow.Meta{
 		"value": "foo",
 	}
 	var gojaValue goja.Value
@@ -944,7 +945,7 @@ func TestGetMetaString(t *testing.T) {
 }
 func TestSetMetaString(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -965,7 +966,7 @@ func TestSetMetaString(t *testing.T) {
 }
 func TestGetMetaNumber(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{
+	meta := flow.Meta{
 		"value": 5,
 	}
 	var gojaValue goja.Value
@@ -988,7 +989,7 @@ func TestGetMetaNumber(t *testing.T) {
 }
 func TestSetMetaNumber(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -1009,7 +1010,7 @@ func TestSetMetaNumber(t *testing.T) {
 }
 func TestGetMetaBoolean(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{
+	meta := flow.Meta{
 		"value": true,
 	}
 	var gojaValue goja.Value
@@ -1032,7 +1033,7 @@ func TestGetMetaBoolean(t *testing.T) {
 }
 func TestSetMetaBoolean(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -1053,7 +1054,7 @@ func TestSetMetaBoolean(t *testing.T) {
 }
 func TestGetMetaArray(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{
+	meta := flow.Meta{
 		"value": []any{"foo", 1, false, []any{}, map[string]any{}},
 	}
 	var gojaValue goja.Value
@@ -1081,7 +1082,7 @@ func TestGetMetaArray(t *testing.T) {
 }
 func TestSetMetaArray(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -1108,7 +1109,7 @@ func TestSetMetaArray(t *testing.T) {
 }
 func TestGetMetaObject(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{
+	meta := flow.Meta{
 		"value": map[string]any{"a": "foo", "b": 1, "c": false, "d": []any{}, "e": map[string]any{}},
 	}
 	var gojaValue goja.Value
@@ -1136,7 +1137,7 @@ func TestGetMetaObject(t *testing.T) {
 }
 func TestSetMetaObject(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -1165,41 +1166,42 @@ func TestSetMetaLazyList(t *testing.T) {
 	rm := goja.New()
 	t1 := time.Date(2021, 1, 2, 3, 4, 5, 9, time.UTC)
 	t2 := time.Date(2022, 1, 2, 3, 4, 5, 9, time.UTC)
-	goList := []Node{
+	goList := []flow.Node{
 		{
-			UUID: option.Some(MustUUID("a50507cf-5015-4685-8eab-6f03f6be59e8")),
-			Meta: option.Some(Meta{"a": "foo", "b": 1, "c": false, "d": []any{}, "e": map[string]any{}}),
-			Hook: option.Some(Hook{"a": "foo", "b": 1, "c": false, "d": []any{}, "e": map[string]any{}}),
-			Live: option.Some(Live{
+			UUID: option.Some(flow.MustUUID("a50507cf-5015-4685-8eab-6f03f6be59e8")),
+			Meta: option.Some(flow.Meta{"a": "foo", "b": 1, "c": false, "d": []any{}, "e": map[string]any{}}),
+			Hook: option.Some(flow.Hook{"a": "foo", "b": 1, "c": false, "d": []any{}, "e": map[string]any{}}),
+			Live: option.Some(flow.Live{
 				Since: option.Some(t1),
 				Until: option.Some(t2),
 			}),
-			origin: &Node{
-				UUID: option.None[UUID](),
-				Meta: option.None[Meta](),
-				Hook: option.None[Hook](),
-				Live: option.None[Live](),
-			},
 		},
 		{
-			UUID: option.None[UUID](),
-			Meta: option.None[Meta](),
-			Hook: option.None[Hook](),
-			Live: option.None[Live](),
+			UUID: option.None[flow.UUID](),
+			Meta: option.None[flow.Meta](),
+			Hook: option.None[flow.Hook](),
+			Live: option.None[flow.Live](),
 		},
 		{},
 	}
+	goList[0].SetOrigin(flow.Node{
+		UUID: option.None[flow.UUID](),
+		Meta: option.None[flow.Meta](),
+		Hook: option.None[flow.Hook](),
+		Live: option.None[flow.Live](),
+	})
 	jsList := goja.Value(nil)
 	err := convert(rm, goList, &jsList)
 	require.NoError(t, err)
-	require.IsType(t, (*lazyList)(nil), jsList.Export())
+	require.IsType(t, (*lazyFlowList)(nil), jsList.Export())
 
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err = convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 
 	err = rm.Set("list", jsList)
+	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
@@ -1241,7 +1243,7 @@ func TestSetMetaLazyList(t *testing.T) {
 }
 func TestSetMetaLazyLive(t *testing.T) {
 	rm := goja.New()
-	meta := Meta{}
+	meta := flow.Meta{}
 	var gojaValue goja.Value
 	err := convert(rm, meta, &gojaValue)
 	require.NoError(t, err)
@@ -1270,8 +1272,8 @@ func TestSetMetaLazyLive(t *testing.T) {
 // todo: the tests listed below need to be revised
 func TestExportFlowMeta(t *testing.T) {
 	rm := goja.New()
-	src := Node{
-		Meta: option.Some(Meta{
+	src := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"value": "foo",
 		}),
 	}
@@ -1285,8 +1287,8 @@ func TestExportFlowMeta(t *testing.T) {
 }
 func TestGetFlowMetaString(t *testing.T) {
 	rm := goja.New()
-	node := Node{
-		Meta: option.Some(Meta{
+	node := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"value": "foo",
 		}),
 	}
@@ -1297,8 +1299,8 @@ func TestGetFlowMetaString(t *testing.T) {
 }
 func TestGetFlowMetaBoolean(t *testing.T) {
 	rm := goja.New()
-	src := Node{
-		Meta: option.Some(Meta{
+	src := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"value": true,
 		}),
 	}
@@ -1310,8 +1312,8 @@ func TestGetFlowMetaBoolean(t *testing.T) {
 }
 func TestGetFlowMetaInteger(t *testing.T) {
 	rm := goja.New()
-	src := Node{
-		Meta: option.Some(Meta{
+	src := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"value": 1,
 		}),
 	}
@@ -1323,8 +1325,8 @@ func TestGetFlowMetaInteger(t *testing.T) {
 }
 func TestGetFlowMetaFloat(t *testing.T) {
 	rm := goja.New()
-	src := Node{
-		Meta: option.Some(Meta{
+	src := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"value": 1.1,
 		}),
 	}
@@ -1336,8 +1338,8 @@ func TestGetFlowMetaFloat(t *testing.T) {
 }
 func TestExportFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	src := Node{
-		Meta: option.Some(Meta{
+	src := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"value": []any{
 				1,
 				true,
@@ -1358,8 +1360,8 @@ func TestExportFlowMetaArray(t *testing.T) {
 }
 func TestUnchangeFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Meta: option.Some(Meta{
+	flowItem := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"value": []any{
 				1,
 				true,
@@ -1393,8 +1395,8 @@ func TestUnchangeFlowMetaArray(t *testing.T) {
 }
 func TestDeleteFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Meta: option.Some(Meta{
+	flowItem := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"value": []any{
 				1,
 				true,
@@ -1423,7 +1425,7 @@ func TestDeleteFlowMetaArray(t *testing.T) {
 }
 func TestCreateEmptyFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{}
+	flowItem := flow.Node{}
 	var jsval goja.Value
 	_ = convert(rm, flowItem, &jsval)
 	err := rm.Set("node", jsval)
@@ -1439,7 +1441,7 @@ func TestCreateEmptyFlowMetaArray(t *testing.T) {
 }
 func TestCreateFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	inval := Meta{}
+	inval := flow.Meta{}
 	var jsval goja.Value
 	_ = convert(rm, inval, &jsval)
 	err := rm.Set("meta", jsval)
@@ -1448,7 +1450,7 @@ func TestCreateFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`meta = {value: [1]}`)
 	require.NoError(t, err)
 
-	outval := Meta{}
+	outval := flow.Meta{}
 	err = convert(rm, rm.Get("meta"), &outval)
 	require.NoError(t, err)
 
@@ -1456,7 +1458,7 @@ func TestCreateFlowMetaArray(t *testing.T) {
 }
 func TestPushFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	inval := Meta{"value": []any{1}}
+	inval := flow.Meta{"value": []any{1}}
 	var jsval goja.Value
 	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
@@ -1465,14 +1467,14 @@ func TestPushFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`flow.value.push(2)`)
 	require.NoError(t, err)
 
-	outval := Meta{}
+	outval := flow.Meta{}
 	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{1, 2.}, outval["value"])
 }
 func TestSetValueFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	inval := Meta{"value": []any{1}}
+	inval := flow.Meta{"value": []any{1}}
 	var jsval goja.Value
 	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
@@ -1481,14 +1483,14 @@ func TestSetValueFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`flow.value[0] = [true]`)
 	require.NoError(t, err)
 
-	outval := Meta{}
+	outval := flow.Meta{}
 	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{[]any{true}}, outval["value"])
 }
 func TestSetNullFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	inval := Meta{"value": []any{1}}
+	inval := flow.Meta{"value": []any{1}}
 	var jsval goja.Value
 	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
@@ -1497,14 +1499,14 @@ func TestSetNullFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`flow.value[0] = null`)
 	require.NoError(t, err)
 
-	outval := Meta{}
+	outval := flow.Meta{}
 	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{nil}, outval["value"])
 }
 func TestSetUndefinedFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	inval := Meta{"value": []any{1}}
+	inval := flow.Meta{"value": []any{1}}
 	var jsval goja.Value
 	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
@@ -1513,14 +1515,14 @@ func TestSetUndefinedFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`flow.value[0] = undefined`)
 	require.NoError(t, err)
 
-	outval := Meta{}
+	outval := flow.Meta{}
 	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{}, outval["value"])
 }
 func TestGetFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	inval := Meta{"value": []any{1}}
+	inval := flow.Meta{"value": []any{1}}
 	var jsval goja.Value
 	_ = convert(rm, inval, &jsval)
 	err := rm.Set("flow", jsval)
@@ -1529,15 +1531,15 @@ func TestGetFlowMetaArray(t *testing.T) {
 	_, err = rm.RunString(`if (flow.value[0] !== 1) throw "invalid value"`)
 	require.NoError(t, err)
 
-	outval := Meta{}
+	outval := flow.Meta{}
 	err = convert(rm, rm.Get("flow"), &outval)
 	require.NoError(t, err)
 	require.Equal(t, []any{1.}, outval["value"])
 }
 func TestReferenceFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Meta: option.Some(Meta{"value": []any{1}}),
+	flowItem := flow.Node{
+		Meta: option.Some(flow.Meta{"value": []any{1}}),
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowItem, &gojaValue)
@@ -1559,8 +1561,8 @@ func TestReferenceFlowMetaArray(t *testing.T) {
 }
 func TestLengthFlowMetaArray(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Meta: option.Some(Meta{"value": []any{1}}),
+	flowItem := flow.Node{
+		Meta: option.Some(flow.Meta{"value": []any{1}}),
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowItem, &gojaValue)
@@ -1589,8 +1591,8 @@ func TestLengthFlowMetaArray(t *testing.T) {
 
 func TestGetFlowHookObject(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Hook: option.Some(Hook{
+	flowItem := flow.Node{
+		Hook: option.Some(flow.Hook{
 			"bool":   true,
 			"number": 1,
 			"object": map[string]any{"foo": []any{nil}},
@@ -1612,7 +1614,7 @@ func TestGetFlowHookObject(t *testing.T) {
 	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
-		Hook{
+		flow.Hook{
 			"bool":   true,
 			"number": 1.,
 			"object": map[string]any{"foo": []any{nil}},
@@ -1622,8 +1624,8 @@ func TestGetFlowHookObject(t *testing.T) {
 }
 func TestSetFlowHookObject(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Hook: option.Some(Hook{
+	flowItem := flow.Node{
+		Hook: option.Some(flow.Hook{
 			"bool":   true,
 			"number": 1,
 			"object": map[string]any{"foo": []any{nil}},
@@ -1649,7 +1651,7 @@ func TestSetFlowHookObject(t *testing.T) {
 	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
-		Hook{
+		flow.Hook{
 			"bool":   false,
 			"number": 2.,
 			"object": 3.,
@@ -1659,8 +1661,8 @@ func TestSetFlowHookObject(t *testing.T) {
 }
 func TestDeleteFlowHookObject(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Hook: option.Some(Hook{
+	flowItem := flow.Node{
+		Hook: option.Some(flow.Hook{
 			"bool":   true,
 			"number": 1,
 			"object": map[string]any{"foo": []any{nil}},
@@ -1681,14 +1683,14 @@ func TestDeleteFlowHookObject(t *testing.T) {
 	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
-		Hook{},
+		flow.Hook{},
 		flowItem.Hook.Get(),
 	)
 }
 func TestKeysFlowHookObject(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Hook: option.Some(Hook{
+	flowItem := flow.Node{
+		Hook: option.Some(flow.Hook{
 			"bool":   true,
 			"number": 1,
 			"object": map[string]any{"foo": []any{nil}},
@@ -1713,8 +1715,8 @@ func TestKeysFlowHookObject(t *testing.T) {
 }
 func TestGetFlowHookUnused(t *testing.T) {
 	rm := goja.New()
-	flowItem := Node{
-		Hook: option.Some(Hook{"0": "foo", "1": false, "2": 1, "3": nil}),
+	flowItem := flow.Node{
+		Hook: option.Some(flow.Hook{"0": "foo", "1": false, "2": 1, "3": nil}),
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowItem, &gojaValue)
@@ -1728,14 +1730,14 @@ func TestGetFlowHookUnused(t *testing.T) {
 
 	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
-	require.Equal(t, Hook{"0": "foo", "1": false, "2": 1, "3": nil, "4": 12.}, flowItem.Hook.Get())
+	require.Equal(t, flow.Hook{"0": "foo", "1": false, "2": 1, "3": nil, "4": 12.}, flowItem.Hook.Get())
 }
 
 func TestGetFlowList(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
-		{UUID: option.Some(MustUUID("086a9b1f-6519-4cd2-ab32-2218184ef863"))},
-		{UUID: option.Some(MustUUID("df196843-7ba0-44d9-8c56-fadbbed6a4e3"))},
+	flowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("086a9b1f-6519-4cd2-ab32-2218184ef863"))},
+		{UUID: option.Some(flow.MustUUID("df196843-7ba0-44d9-8c56-fadbbed6a4e3"))},
 	}
 	var gojaValue goja.Value
 	err := convert(rm, flowList, &gojaValue)
@@ -1755,19 +1757,19 @@ func TestGetFlowList(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t,
-		[]Node{
-			{UUID: option.Some(MustUUID("086a9b1f-6519-4cd2-ab32-2218184ef863"))},
-			{UUID: option.Some(MustUUID("df196843-7ba0-44d9-8c56-fadbbed6a4e3"))},
+		[]flow.Node{
+			{UUID: option.Some(flow.MustUUID("086a9b1f-6519-4cd2-ab32-2218184ef863"))},
+			{UUID: option.Some(flow.MustUUID("df196843-7ba0-44d9-8c56-fadbbed6a4e3"))},
 		},
 		flowList,
 	)
 }
 func TestSetFlowList(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
-		{UUID: option.Some(MustUUID("086a9b1f-6519-4cd2-ab32-2218184ef863"))},
-		{UUID: option.Some(MustUUID("df196843-7ba0-44d9-8c56-fadbbed6a4e3"))},
-		{UUID: option.Some(MustUUID("31253d1d-1002-4f63-a97c-a19de970970f"))},
+	flowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("086a9b1f-6519-4cd2-ab32-2218184ef863"))},
+		{UUID: option.Some(flow.MustUUID("df196843-7ba0-44d9-8c56-fadbbed6a4e3"))},
+		{UUID: option.Some(flow.MustUUID("31253d1d-1002-4f63-a97c-a19de970970f"))},
 	}
 	var gojaValue goja.Value
 	err := convert(rm, flowList, &gojaValue)
@@ -1793,10 +1795,10 @@ func TestSetFlowList(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t,
-		[]Node{
+		[]flow.Node{
 			{},
-			{UUID: option.Some(MustUUID("0b101df0-b197-493d-9385-8eadca8d9a11"))},
-			{UUID: option.Some(MustUUID("65be679d-b665-4135-9230-bd580e815840"))},
+			{UUID: option.Some(flow.MustUUID("0b101df0-b197-493d-9385-8eadca8d9a11"))},
+			{UUID: option.Some(flow.MustUUID("65be679d-b665-4135-9230-bd580e815840"))},
 		},
 		flowList,
 	)
@@ -1804,18 +1806,18 @@ func TestSetFlowList(t *testing.T) {
 func TestUnchangeFlowList(t *testing.T) {
 	rm := goja.New()
 	now := time.Now()
-	inFlowList := []Node{
+	inFlowList := []flow.Node{
 		{
-			UUID: option.Some(MustUUID("fe355596-7105-419f-b766-8290c47e4988")),
-			Meta: option.Some(Meta{"key": "val"}),
-			Hook: option.Some(Hook{"k": "v"}),
-			Live: option.Some(Live{Since: option.Some(now), Until: option.None[time.Time]()}),
+			UUID: option.Some(flow.MustUUID("fe355596-7105-419f-b766-8290c47e4988")),
+			Meta: option.Some(flow.Meta{"key": "val"}),
+			Hook: option.Some(flow.Hook{"k": "v"}),
+			Live: option.Some(flow.Live{Since: option.Some(now), Until: option.None[time.Time]()}),
 		},
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, inFlowList, &gojaValue)
 
-	outFlowList := []Node{}
+	outFlowList := []flow.Node{}
 	err := convert(rm, gojaValue, &outFlowList)
 	require.NoError(t, err)
 	require.Equal(t,
@@ -1825,10 +1827,10 @@ func TestUnchangeFlowList(t *testing.T) {
 }
 func TestDeleteFlowList(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
-		{UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
-		{UUID: option.Some(MustUUID("1e355596-7105-419f-b766-8290c47e4988"))},
-		{UUID: option.Some(MustUUID("2e355596-7105-419f-b766-8290c47e4988"))},
+	flowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
+		{UUID: option.Some(flow.MustUUID("1e355596-7105-419f-b766-8290c47e4988"))},
+		{UUID: option.Some(flow.MustUUID("2e355596-7105-419f-b766-8290c47e4988"))},
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowList, &gojaValue)
@@ -1849,10 +1851,10 @@ func TestDeleteFlowList(t *testing.T) {
 }
 func TestUnchangeFirstFlowList(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
-		{UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
-		{UUID: option.Some(MustUUID("1e355596-7105-419f-b766-8290c47e4988"))},
-		{UUID: option.Some(MustUUID("2e355596-7105-419f-b766-8290c47e4988"))},
+	flowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
+		{UUID: option.Some(flow.MustUUID("1e355596-7105-419f-b766-8290c47e4988"))},
+		{UUID: option.Some(flow.MustUUID("2e355596-7105-419f-b766-8290c47e4988"))},
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowList, &gojaValue)
@@ -1867,18 +1869,18 @@ func TestUnchangeFirstFlowList(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
-			{UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
-			{UUID: option.Some(MustUUID("1e355596-7105-419f-b766-8290c47e4988"))},
-			{UUID: option.Some(MustUUID("e0969f35-1aaa-49a6-b353-be23da2c5c57"))},
+		[]flow.Node{
+			{UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
+			{UUID: option.Some(flow.MustUUID("1e355596-7105-419f-b766-8290c47e4988"))},
+			{UUID: option.Some(flow.MustUUID("e0969f35-1aaa-49a6-b353-be23da2c5c57"))},
 		},
 		flowList,
 	)
 }
 func TestSetOriginflowFirstFlowList(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
-		{UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
+	flowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowList, &gojaValue)
@@ -1895,10 +1897,10 @@ func TestSetOriginflowFirstFlowList(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
-			{UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
+		[]flow.Node{
+			{UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988"))},
 			{},
-			{UUID: option.Some(MustUUID("e0969f35-1aaa-49a6-b353-be23da2c5c57"))},
+			{UUID: option.Some(flow.MustUUID("e0969f35-1aaa-49a6-b353-be23da2c5c57"))},
 		},
 		flowList,
 	)
@@ -1906,10 +1908,10 @@ func TestSetOriginflowFirstFlowList(t *testing.T) {
 func TestGetFlowMetaTime(t *testing.T) {
 	rm := goja.New()
 	now := time.Date(2021, 1, 1, 17, 0, 0, 0, time.UTC)
-	flowList := []Node{
+	flowList := []flow.Node{
 		{
-			UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
-			Meta: option.Some(Meta{
+			UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
+			Meta: option.Some(flow.Meta{
 				"time": now,
 			}),
 		},
@@ -1928,10 +1930,10 @@ func TestGetFlowMetaTime(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
+		[]flow.Node{
 			{
-				UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
-				Meta: option.Some(Meta{
+				UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
+				Meta: option.Some(flow.Meta{
 					"time": "2021-01-01T17:00:00Z",
 				}),
 			},
@@ -1941,10 +1943,10 @@ func TestGetFlowMetaTime(t *testing.T) {
 }
 func TestSetFlowMetaTime(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
+	flowList := []flow.Node{
 		{
-			UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
-			Meta: option.Some(Meta{}),
+			UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
+			Meta: option.Some(flow.Meta{}),
 		},
 	}
 	var gojaValue goja.Value
@@ -1960,10 +1962,10 @@ func TestSetFlowMetaTime(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
+		[]flow.Node{
 			{
-				UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
-				Meta: option.Some(Meta{
+				UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
+				Meta: option.Some(flow.Meta{
 					"time": "2021-01-01T17:00:00Z",
 				}),
 			},
@@ -1973,10 +1975,10 @@ func TestSetFlowMetaTime(t *testing.T) {
 }
 func TestGetFlowMetaTimeNull(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
+	flowList := []flow.Node{
 		{
-			UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
-			Meta: option.Some(Meta{
+			UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
+			Meta: option.Some(flow.Meta{
 				"time": nil,
 			}),
 		},
@@ -1995,10 +1997,10 @@ func TestGetFlowMetaTimeNull(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
+		[]flow.Node{
 			{
-				UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
-				Meta: option.Some(Meta{
+				UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
+				Meta: option.Some(flow.Meta{
 					"time": nil,
 				}),
 			},
@@ -2008,10 +2010,10 @@ func TestGetFlowMetaTimeNull(t *testing.T) {
 }
 func TestSetFlowMetaTimeNull(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
+	flowList := []flow.Node{
 		{
-			UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
-			Meta: option.Some(Meta{
+			UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
+			Meta: option.Some(flow.Meta{
 				"time": time.Date(2021, 1, 1, 17, 0, 0, 0, time.UTC),
 			}),
 		},
@@ -2029,10 +2031,10 @@ func TestSetFlowMetaTimeNull(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
+		[]flow.Node{
 			{
-				UUID: option.Some(MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
-				Meta: option.Some(Meta{
+				UUID: option.Some(flow.MustUUID("0e355596-7105-419f-b766-8290c47e4988")),
+				Meta: option.Some(flow.Meta{
 					"time": nil,
 				}),
 			},
@@ -2043,8 +2045,8 @@ func TestSetFlowMetaTimeNull(t *testing.T) {
 func TestSetFlowMetaTimeInvalidDate(t *testing.T) {
 	rm := goja.New()
 
-	flowItem := Node{
-		Meta: option.Some(Meta{
+	flowItem := flow.Node{
+		Meta: option.Some(flow.Meta{
 			"time": time.Now(),
 		}),
 	}
@@ -2064,8 +2066,8 @@ func TestSetFlowMetaTimeInvalidDate(t *testing.T) {
 	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 	require.Equal(t,
-		Node{
-			Meta: option.Some(Meta{
+		flow.Node{
+			Meta: option.Some(flow.Meta{
 				"time": nil,
 			}),
 		},
@@ -2075,16 +2077,16 @@ func TestSetFlowMetaTimeInvalidDate(t *testing.T) {
 func TestGetFlowOrigin(t *testing.T) {
 	rm := goja.New()
 
-	flowItem := Node{
-		UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-		Meta: option.Some(Meta{
+	flowItem := flow.Node{
+		UUID: option.Some(flow.MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
+		Meta: option.Some(flow.Meta{
 			"a": []any{
 				map[string]any{
 					"b": 1,
 				},
 			},
 		}),
-		Hook: option.Some(Hook{
+		Hook: option.Some(flow.Hook{
 			"a": []any{
 				map[string]any{
 					"b": 1,
@@ -2119,16 +2121,16 @@ func TestGetFlowOrigin(t *testing.T) {
 func TestSetFlowOrigin(t *testing.T) {
 	rm := goja.New()
 
-	flowItem := Node{
-		UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-		Meta: option.Some(Meta{
+	flowItem := flow.Node{
+		UUID: option.Some(flow.MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
+		Meta: option.Some(flow.Meta{
 			"a": []any{
 				map[string]any{
 					"b": 1,
 				},
 			},
 		}),
-		Hook: option.Some(Hook{
+		Hook: option.Some(flow.Hook{
 			"a": []any{
 				map[string]any{
 					"b": 1,
@@ -2157,16 +2159,16 @@ func TestSetFlowOrigin(t *testing.T) {
 	err = convert(rm, gojaValue, &flowItem)
 	require.NoError(t, err)
 
-	expected := Node{
-		UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-		Meta: option.Some(Meta{
+	expected := flow.Node{
+		UUID: option.Some(flow.MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
+		Meta: option.Some(flow.Meta{
 			"a": []any{
 				map[string]any{
 					"b": 1,
 				},
 			},
 		}),
-		Hook: option.Some(Hook{
+		Hook: option.Some(flow.Hook{
 			"a": []any{
 				map[string]any{
 					"b": 1,
@@ -2174,9 +2176,9 @@ func TestSetFlowOrigin(t *testing.T) {
 			},
 		}),
 	}
-	expected.SetOrigin(Node{
-		UUID: option.Some(MustUUID("d04e0183-e84a-427f-b14e-a7523e5885d0")),
-		Meta: option.Some(Meta{
+	expected.SetOrigin(flow.Node{
+		UUID: option.Some(flow.MustUUID("d04e0183-e84a-427f-b14e-a7523e5885d0")),
+		Meta: option.Some(flow.Meta{
 			"a": []any{
 				map[string]any{
 					"b": "2",
@@ -2184,7 +2186,7 @@ func TestSetFlowOrigin(t *testing.T) {
 				},
 			},
 		}),
-		Hook: option.Some(Hook{
+		Hook: option.Some(flow.Hook{
 			"a": []any{
 				map[string]any{
 					"b": "2",
@@ -2201,16 +2203,16 @@ func TestSetFlowOrigin(t *testing.T) {
 func TestSetFlowOriginNull(t *testing.T) {
 	rm := goja.New()
 
-	flowItem := Node{
-		UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-		Meta: option.Some(Meta{
+	flowItem := flow.Node{
+		UUID: option.Some(flow.MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
+		Meta: option.Some(flow.Meta{
 			"a": []any{
 				map[string]any{
 					"b": 1,
 				},
 			},
 		}),
-		Hook: option.Some(Hook{
+		Hook: option.Some(flow.Hook{
 			"a": []any{
 				map[string]any{
 					"b": 1,
@@ -2236,16 +2238,16 @@ func TestSetFlowOriginNull(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t,
-		Node{
-			UUID: option.Some(MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
-			Meta: option.Some(Meta{
+		flow.Node{
+			UUID: option.Some(flow.MustUUID("9e2e7f50-9885-4fcf-b78e-804c8a6d8740")),
+			Meta: option.Some(flow.Meta{
 				"a": []any{
 					map[string]any{
 						"b": 1,
 					},
 				},
 			}),
-			Hook: option.Some(Hook{
+			Hook: option.Some(flow.Hook{
 				"a": []any{
 					map[string]any{
 						"b": 1,
@@ -2258,14 +2260,14 @@ func TestSetFlowOriginNull(t *testing.T) {
 }
 func TestGetMetaWithLive(t *testing.T) {
 	rm := goja.New()
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
-	goLiveSome := Live{Since: option.Some(time.Date(2021, 2, 3, 4, 5, 6, 0, time.UTC)), Until: option.Some(time.Date(2022, 2, 3, 4, 5, 6, 0, time.UTC))}
+	goLiveSome := flow.Live{Since: option.Some(time.Date(2021, 2, 3, 4, 5, 6, 0, time.UTC)), Until: option.Some(time.Date(2022, 2, 3, 4, 5, 6, 0, time.UTC))}
 	jsLiveSome := goja.Value(nil)
 	err = convert(rm, goLiveSome, &jsLiveSome)
 	require.NoError(t, err)
@@ -2274,7 +2276,7 @@ func TestGetMetaWithLive(t *testing.T) {
 	_, err = rm.RunString(`meta.liveSome = liveSome`)
 	require.NoError(t, err)
 
-	goLiveNone := Live{Since: option.None[time.Time](), Until: option.None[time.Time]()}
+	goLiveNone := flow.Live{Since: option.None[time.Time](), Until: option.None[time.Time]()}
 	jsLiveNone := goja.Value(nil)
 	err = convert(rm, goLiveNone, &jsLiveNone)
 	require.NoError(t, err)
@@ -2283,7 +2285,7 @@ func TestGetMetaWithLive(t *testing.T) {
 	_, err = rm.RunString(`meta.liveNone = liveNone`)
 	require.NoError(t, err)
 
-	goLiveZero := Live{}
+	goLiveZero := flow.Live{}
 	jsLiveZero := goja.Value(nil)
 	err = convert(rm, goLiveZero, &jsLiveZero)
 	require.NoError(t, err)
@@ -2295,7 +2297,7 @@ func TestGetMetaWithLive(t *testing.T) {
 	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
-		Meta{
+		flow.Meta{
 			"liveSome": map[string]any{"since": "2021-02-03T04:05:06Z", "until": "2022-02-03T04:05:06Z"},
 			"liveNone": map[string]any{"since": nil, "until": nil},
 			"liveZero": map[string]any{},
@@ -2306,14 +2308,14 @@ func TestGetMetaWithLive(t *testing.T) {
 
 func TestSetMetaWithLive(t *testing.T) {
 	rm := goja.New()
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
-	goLiveSome := Live{Since: option.Some(time.Date(2021, 2, 3, 4, 5, 6, 0, time.UTC)), Until: option.Some(time.Date(2022, 2, 3, 4, 5, 6, 0, time.UTC))}
+	goLiveSome := flow.Live{Since: option.Some(time.Date(2021, 2, 3, 4, 5, 6, 0, time.UTC)), Until: option.Some(time.Date(2022, 2, 3, 4, 5, 6, 0, time.UTC))}
 	jsLiveSome := goja.Value(nil)
 	err = convert(rm, goLiveSome, &jsLiveSome)
 	require.NoError(t, err)
@@ -2324,7 +2326,7 @@ func TestSetMetaWithLive(t *testing.T) {
 	_, err = rm.RunString(`liveSome.since=undefined; delete liveSome.until`)
 	require.NoError(t, err)
 
-	goLiveNone := Live{Since: option.None[time.Time](), Until: option.None[time.Time]()}
+	goLiveNone := flow.Live{Since: option.None[time.Time](), Until: option.None[time.Time]()}
 	jsLiveNone := goja.Value(nil)
 	err = convert(rm, goLiveNone, &jsLiveNone)
 	require.NoError(t, err)
@@ -2335,7 +2337,7 @@ func TestSetMetaWithLive(t *testing.T) {
 	_, err = rm.RunString(`liveNone.since=new Date("2021-02-03T04:05:06Z"); liveNone.until=new Date("2022-02-03T04:05:06Z")`)
 	require.NoError(t, err)
 
-	goLiveZero := Live{}
+	goLiveZero := flow.Live{}
 	jsLiveZero := goja.Value(nil)
 	err = convert(rm, goLiveZero, &jsLiveZero)
 	require.NoError(t, err)
@@ -2349,7 +2351,7 @@ func TestSetMetaWithLive(t *testing.T) {
 	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
-		Meta{
+		flow.Meta{
 			"liveSome": map[string]any{},
 			"liveNone": map[string]any{"since": "2021-02-03T04:05:06Z", "until": "2022-02-03T04:05:06Z"},
 			"liveZero": map[string]any{"since": nil, "until": nil},
@@ -2359,14 +2361,14 @@ func TestSetMetaWithLive(t *testing.T) {
 }
 func TestGetMetaWithFlowMeta(t *testing.T) {
 	rm := goja.New()
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
-	goFlowMeta := Meta{"foo": 1.}
+	goFlowMeta := flow.Meta{"foo": 1.}
 	jsFlowMeta := goja.Value(nil)
 	err = convert(rm, goFlowMeta, &jsFlowMeta)
 	require.NoError(t, err)
@@ -2378,7 +2380,7 @@ func TestGetMetaWithFlowMeta(t *testing.T) {
 	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
-		Meta{
+		flow.Meta{
 			"flowMeta": map[string]any{"foo": 1.},
 		},
 		goMeta,
@@ -2386,14 +2388,14 @@ func TestGetMetaWithFlowMeta(t *testing.T) {
 }
 func TestSetMetaWithFlowMeta(t *testing.T) {
 	rm := goja.New()
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
-	goFlowMeta := Meta{"foo": 1}
+	goFlowMeta := flow.Meta{"foo": 1}
 	jsFlowMeta := goja.Value(nil)
 	err = convert(rm, goFlowMeta, &jsFlowMeta)
 	require.NoError(t, err)
@@ -2407,7 +2409,7 @@ func TestSetMetaWithFlowMeta(t *testing.T) {
 	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
-		Meta{
+		flow.Meta{
 			"flowMeta": map[string]any{"foo": 1., "bar": 2.},
 		},
 		goMeta,
@@ -2415,14 +2417,14 @@ func TestSetMetaWithFlowMeta(t *testing.T) {
 }
 func TestGetMetaWithFlowHook(t *testing.T) {
 	rm := goja.New()
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
-	goFlowHook := Hook{"foo": []any{1.}}
+	goFlowHook := flow.Hook{"foo": []any{1.}}
 	jsFlowHook := goja.Value(nil)
 	err = convert(rm, goFlowHook, &jsFlowHook)
 	require.NoError(t, err)
@@ -2434,7 +2436,7 @@ func TestGetMetaWithFlowHook(t *testing.T) {
 	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
-		Meta{
+		flow.Meta{
 			"flowHook": map[string]any{"foo": []any{1.}},
 		},
 		goMeta,
@@ -2442,14 +2444,14 @@ func TestGetMetaWithFlowHook(t *testing.T) {
 }
 func TestSetMetaWithFlowHook(t *testing.T) {
 	rm := goja.New()
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
-	goFlowHook := Hook{"foo": []any{1}}
+	goFlowHook := flow.Hook{"foo": []any{1}}
 	jsFlowHook := goja.Value(nil)
 	err = convert(rm, goFlowHook, &jsFlowHook)
 	require.NoError(t, err)
@@ -2463,7 +2465,7 @@ func TestSetMetaWithFlowHook(t *testing.T) {
 	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
-		Meta{
+		flow.Meta{
 			"flowHook": map[string]any{"foo": []any{2.}, "bar": 2.},
 		},
 		goMeta,
@@ -2471,21 +2473,21 @@ func TestSetMetaWithFlowHook(t *testing.T) {
 }
 func TestSetMetaWithFlowListProto(t *testing.T) {
 	rm := goja.New()
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
-	goFlowList := []Node{
-		{UUID: option.Some(MustUUID("1bbab2c0-38d7-4b25-81ec-ebca2291ce25"))},
-		{UUID: option.Some(MustUUID("2bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Hook: option.Some(Hook{"a": 1})},
-		{UUID: option.Some(MustUUID("3bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Meta: option.Some(Meta{"a": 1})},
-		{UUID: option.Some(MustUUID("5bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
-			Live: option.Some(Live{Since: option.Some(time.Date(2021, 1, 1, 1, 1, 1, 0, time.UTC)), Until: option.None[time.Time]()})},
-		{UUID: option.Some(MustUUID("6bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
-			Live: option.None[Live](), Hook: option.None[Hook](), Meta: option.None[Meta]()},
+	goFlowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("1bbab2c0-38d7-4b25-81ec-ebca2291ce25"))},
+		{UUID: option.Some(flow.MustUUID("2bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Hook: option.Some(flow.Hook{"a": 1})},
+		{UUID: option.Some(flow.MustUUID("3bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Meta: option.Some(flow.Meta{"a": 1})},
+		{UUID: option.Some(flow.MustUUID("5bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
+			Live: option.Some(flow.Live{Since: option.Some(time.Date(2021, 1, 1, 1, 1, 1, 0, time.UTC)), Until: option.None[time.Time]()})},
+		{UUID: option.Some(flow.MustUUID("6bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
+			Live: option.None[flow.Live](), Hook: option.None[flow.Hook](), Meta: option.None[flow.Meta]()},
 	}
 	jsFlowList := goja.Value(nil)
 	err = convert(rm, goFlowList, &jsFlowList)
@@ -2498,7 +2500,7 @@ func TestSetMetaWithFlowListProto(t *testing.T) {
 	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
-		Meta{
+		flow.Meta{
 			"flowList": []any{
 				map[string]any{"uuid": "1bbab2c0-38d7-4b25-81ec-ebca2291ce25"},
 				map[string]any{"uuid": "2bbab2c0-38d7-4b25-81ec-ebca2291ce25", "hook": map[string]any{"a": 1.}},
@@ -2512,21 +2514,21 @@ func TestSetMetaWithFlowListProto(t *testing.T) {
 }
 func TestSetMetaWithFlowList(t *testing.T) {
 	rm := goja.New()
-	goMeta := Meta{}
+	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
 	err := convert(rm, goMeta, &jsMeta)
 	require.NoError(t, err)
 	err = rm.Set("meta", jsMeta)
 	require.NoError(t, err)
 
-	goFlowList := []Node{
-		{UUID: option.Some(MustUUID("1bbab2c0-38d7-4b25-81ec-ebca2291ce25"))},
-		{UUID: option.Some(MustUUID("2bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Hook: option.Some(Hook{"a": 1})},
-		{UUID: option.Some(MustUUID("3bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Meta: option.Some(Meta{"a": 1})},
-		{UUID: option.Some(MustUUID("5bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
-			Live: option.Some(Live{Since: option.Some(time.Date(2021, 1, 1, 1, 1, 1, 0, time.UTC)), Until: option.None[time.Time]()})},
-		{UUID: option.Some(MustUUID("6bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
-			Live: option.None[Live](), Hook: option.None[Hook](), Meta: option.None[Meta]()},
+	goFlowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("1bbab2c0-38d7-4b25-81ec-ebca2291ce25"))},
+		{UUID: option.Some(flow.MustUUID("2bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Hook: option.Some(flow.Hook{"a": 1})},
+		{UUID: option.Some(flow.MustUUID("3bbab2c0-38d7-4b25-81ec-ebca2291ce25")), Meta: option.Some(flow.Meta{"a": 1})},
+		{UUID: option.Some(flow.MustUUID("5bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
+			Live: option.Some(flow.Live{Since: option.Some(time.Date(2021, 1, 1, 1, 1, 1, 0, time.UTC)), Until: option.None[time.Time]()})},
+		{UUID: option.Some(flow.MustUUID("6bbab2c0-38d7-4b25-81ec-ebca2291ce25")),
+			Live: option.None[flow.Live](), Hook: option.None[flow.Hook](), Meta: option.None[flow.Meta]()},
 	}
 	jsFlowList := goja.Value(nil)
 	err = convert(rm, goFlowList, &jsFlowList)
@@ -2549,7 +2551,7 @@ func TestSetMetaWithFlowList(t *testing.T) {
 	err = convert(rm, jsMeta, &goMeta)
 	require.NoError(t, err)
 	require.Equal(t,
-		Meta{
+		flow.Meta{
 			"flowList": []any{
 				map[string]any{"uuid": "1bbab2c0-38d7-4b25-81ec-ebca2291ce25"},
 				map[string]any{"uuid": "2bbab2c0-38d7-4b25-81ec-ebca2291ce25", "hook": map[string]any{"a": 1.}},
@@ -2642,7 +2644,7 @@ func TestSetArrayLenUnset(t *testing.T) {
 }
 func TestSetFlowListLenToZero(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))}}
+	flowList := []flow.Node{{UUID: option.Some(flow.MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))}}
 	var gojaValue goja.Value
 	_ = convert(rm, flowList, &gojaValue)
 
@@ -2654,16 +2656,16 @@ func TestSetFlowListLenToZero(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{},
+		[]flow.Node{},
 		flowList,
 	)
 }
 func TestSetFlowListLenToHalf(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
-		{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
-		{UUID: option.Some(MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
-		{UUID: option.Some(MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
+	flowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
+		{UUID: option.Some(flow.MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
+		{UUID: option.Some(flow.MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowList, &gojaValue)
@@ -2676,19 +2678,19 @@ func TestSetFlowListLenToHalf(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
-			{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
-			{UUID: option.Some(MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
+		[]flow.Node{
+			{UUID: option.Some(flow.MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
+			{UUID: option.Some(flow.MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
 		},
 		flowList,
 	)
 }
 func TestSetFlowListLenToOrigin(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
-		{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
-		{UUID: option.Some(MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
-		{UUID: option.Some(MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
+	flowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
+		{UUID: option.Some(flow.MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
+		{UUID: option.Some(flow.MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowList, &gojaValue)
@@ -2701,20 +2703,20 @@ func TestSetFlowListLenToOrigin(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
-			{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
-			{UUID: option.Some(MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
-			{UUID: option.Some(MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
+		[]flow.Node{
+			{UUID: option.Some(flow.MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
+			{UUID: option.Some(flow.MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
+			{UUID: option.Some(flow.MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
 		},
 		flowList,
 	)
 }
 func TestSetFlowListLenUnset(t *testing.T) {
 	rm := goja.New()
-	flowList := []Node{
-		{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
-		{UUID: option.Some(MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
-		{UUID: option.Some(MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
+	flowList := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
+		{UUID: option.Some(flow.MustUUID("d890e872-4655-4311-9f7c-31ecfc0fcc47"))},
+		{UUID: option.Some(flow.MustUUID("7bfc69d8-9947-4f01-8d56-cd0cccada87a"))},
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, flowList, &gojaValue)
@@ -2729,8 +2731,8 @@ func TestSetFlowListLenUnset(t *testing.T) {
 	err = convert(rm, gojaValue, &flowList)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{
-			{UUID: option.Some(MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
+		[]flow.Node{
+			{UUID: option.Some(flow.MustUUID("fa589db7-0347-4ece-b2d6-609d7d5b5d9c"))},
 		},
 		flowList,
 	)
@@ -2765,10 +2767,10 @@ func TestResetLenLazyArray(t *testing.T) {
 }
 func TestResetLenFlowList(t *testing.T) {
 	rm := goja.New()
-	val := []Node{
-		{UUID: option.Some(MustUUID("3d7f252c-404c-43dc-902c-7c548620f8b9"))},
-		{UUID: option.Some(MustUUID("4d7f252c-404c-43dc-902c-7c548620f8b9"))},
-		{UUID: option.Some(MustUUID("5d7f252c-404c-43dc-902c-7c548620f8b9"))},
+	val := []flow.Node{
+		{UUID: option.Some(flow.MustUUID("3d7f252c-404c-43dc-902c-7c548620f8b9"))},
+		{UUID: option.Some(flow.MustUUID("4d7f252c-404c-43dc-902c-7c548620f8b9"))},
+		{UUID: option.Some(flow.MustUUID("5d7f252c-404c-43dc-902c-7c548620f8b9"))},
 	}
 	var gojaValue goja.Value
 	_ = convert(rm, val, &gojaValue)
@@ -2791,7 +2793,7 @@ func TestResetLenFlowList(t *testing.T) {
 	err = convert(rm, gojaValue, &val)
 	require.NoError(t, err)
 	require.Equal(t,
-		[]Node{},
+		[]flow.Node{},
 		val,
 	)
 }
