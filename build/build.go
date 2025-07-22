@@ -12,10 +12,10 @@ import (
 	"github.com/typomaker/flow"
 )
 
-func Goja(ctx context.Context, name string) (content []byte, err error) {
+func Goja(ctx context.Context, path string) (content []byte, err error) {
 	var flowctx = flow.Context(ctx)
 	var file fs.File
-	if file, err = flowctx.FS().Open(name); err != nil {
+	if file, err = flowctx.FS().Open(path); err != nil {
 		return nil, fmt.Errorf("build.goja: %w", err)
 	}
 	var b []byte
@@ -24,14 +24,14 @@ func Goja(ctx context.Context, name string) (content []byte, err error) {
 	}
 
 	var loader api.Loader
-	if loader, err = matchLoader(name); err != nil {
+	if loader, err = matchLoader(path); err != nil {
 		return nil, fmt.Errorf("build.goja: %w", err)
 	}
 
 	var r = api.Build(api.BuildOptions{
 		Stdin: &api.StdinOptions{
+			Sourcefile: path,
 			Contents:   string(b),
-			Sourcefile: name,
 			ResolveDir: ".",
 			Loader:     loader,
 		},

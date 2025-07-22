@@ -28,7 +28,7 @@ func New(path string) flow.Handler {
 				if b, err = build.Goja(ctx, path); err != nil {
 					return fmt.Errorf("goja: %w", err)
 				}
-				if pm, err = goja.Compile(path, string(b), true); err != nil {
+				if pm, err = goja.Compile("", string(b), true); err != nil {
 					return fmt.Errorf("goja: %w", err)
 				}
 			} else {
@@ -199,7 +199,6 @@ func importNext(_ context.Context, rm *goja.Runtime, next flow.Next, jsNext *goj
 		}
 		var err error
 		var jsTarget = c.Arguments[0]
-		fmt.Printf("XXX 000 %p\n", jsTarget)
 		var target []flow.Node
 		if err = convert(rm, jsTarget, &target); err != nil {
 			err = fmt.Errorf("goja: %w", err)
@@ -213,9 +212,6 @@ func importNext(_ context.Context, rm *goja.Runtime, next flow.Next, jsNext *goj
 			err = fmt.Errorf("goja: %w", err)
 			panic(rm.NewGoError(err))
 		}
-		v, ok := c.Arguments[0].Export().(*lazyNodeArray)
-		v.value[0].Export().(*lazyNodeObject).value.Meta.Export().(*lazyObject).value["buba"] = rm.ToValue("dfdf")
-		fmt.Println("XXX4534", ok)
 		return goja.Undefined()
 	})
 	return nil

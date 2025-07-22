@@ -3,8 +3,6 @@ package goja
 
 import (
 	"fmt"
-	"reflect"
-	"slices"
 	"strconv"
 	"time"
 
@@ -446,27 +444,37 @@ func convert_FlowNodeArray(rm *goja.Runtime, src []flow.Node, dst any) (err erro
 	return err
 }
 func convert_FlowNodeArray_GojaValue(rm *goja.Runtime, src []flow.Node, dst *goja.Value) (err error) {
-	var d = *dst
-	var t reflect.Type
-	if d != nil {
-		t = d.ExportType()
-	}
-	switch t {
-	case reflectLazyNodeArray:
-		var s = d.Export().(*lazyNodeArray)
-		err = convert_FlowNodeArray_LazyNodeArray(rm, src, &s)
-	default: // todo nil?
+	if (*dst) == nil {
 		*dst = rm.NewDynamicArray(&lazyNodeArray{rm: rm, proto: src})
+		return
 	}
-	return err
+	if (*dst).ExportType() == reflectLazyNodeArray {
+		var s = (*dst).Export().(*lazyNodeArray)
+		return convert_FlowNodeArray_LazyNodeArray(rm, src, &s)
+	}
+	if !rm.InstanceOf((*dst), rm.Get("Array").(*goja.Object)) {
+		return newErrUnexpectedType(src, dst)
+	}
+	var dstO = (*dst).(*goja.Object)
+	for srcK, srcV := range src {
+		var dstK = strconv.Itoa(srcK)
+		var dstV = dstO.Get(dstK)
+		if err = convert_FlowNodeObject_GojaValue(rm, srcV, &dstV); err != nil {
+			return err
+		}
+		if err = dstO.Set(dstK, dstV); err != nil {
+			return err
+		}
+	}
+	*dst = dstO
+	return nil
 }
 func convert_FlowNodeArray_Array(rm *goja.Runtime, src []flow.Node, dst *any) (err error) {
 	var d, ok = (*dst).([]any)
 	if !ok {
 		d = make([]any, 0, len(src))
 	} else {
-		// todo: replace to [::]
-		d = slices.Grow(d[:0], len(src))[:0]
+		d = d[:0:len(src)]
 	}
 	for _, v := range src {
 		var src = &lazyNodeObject{rm: rm, proto: v}
@@ -502,18 +510,69 @@ func convert_FlowNodeObject(rm *goja.Runtime, src flow.Node, dst any) (err error
 	return err
 }
 func convert_FlowNodeObject_GojaValue(rm *goja.Runtime, src flow.Node, dst *goja.Value) (err error) {
-	var d = *dst
-	var t reflect.Type
-	if d != nil {
-		t = d.ExportType()
-	}
-	switch t {
-	case reflectLazyNodeObject:
-		var s = d.Export().(*lazyNodeObject)
-		err = convert_FlowNodeObject_LazyNodeObject(rm, src, &s)
-	default:
+	if (*dst) == nil {
 		*dst = rm.NewDynamicObject(&lazyNodeObject{rm: rm, proto: src})
+		return
 	}
+	if (*dst).ExportType() == reflectLazyNodeObject {
+		var dstV = (*dst).Export().(*lazyNodeObject)
+		err = convert_FlowNodeObject_LazyNodeObject(rm, src, &dstV)
+	}
+	if !rm.InstanceOf((*dst), rm.Get("Object").(*goja.Object)) {
+		return newErrUnexpectedType(src, (*dst))
+	}
+	var dstO = (*dst).(*goja.Object)
+	switch {
+	case src.UUID.IsZero():
+		dstO.Set(keyUUID, goja.Undefined())
+	case src.UUID.IsNone():
+		dstO.Set(keyUUID, goja.Null())
+	default:
+		dstO.Set(keyUUID, rm.ToValue(src.UUID.Get()))
+	}
+	switch {
+	case src.Meta.IsZero():
+		dstO.Set(keyMeta, goja.Undefined())
+	case src.Meta.IsNone():
+		dstO.Set(keyMeta, goja.Null())
+	default:
+		var dstV goja.Value
+		if err = convert_FlowMetaObject_GojaValue(rm, src.Meta.Get(), &dstV); err != nil {
+			return err
+		}
+		if err = dstO.Set(keyMeta, dstV); err != nil {
+			return err
+		}
+	}
+	switch {
+	case src.Hook.IsZero():
+		dstO.Set(keyHook, goja.Undefined())
+	case src.Hook.IsNone():
+		dstO.Set(keyHook, goja.Null())
+	default:
+		var dstV goja.Value
+		if err = convert_FlowHookObject_GojaValue(rm, src.Hook.Get(), &dstV); err != nil {
+			return err
+		}
+		if err = dstO.Set(keyHook, dstV); err != nil {
+			return err
+		}
+	}
+	switch {
+	case src.Live.IsZero():
+		dstO.Set(keyLive, goja.Undefined())
+	case src.Live.IsNone():
+		dstO.Set(keyLive, goja.Null())
+	default:
+		var dstV goja.Value
+		if err = convert_FlowLiveObject_GojaValue(rm, src.Live.Get(), &dstV); err != nil {
+			return err
+		}
+		if err = dstO.Set(keyLive, rm.ToValue(src.Live.Get())); err != nil {
+			return err
+		}
+	}
+	*dst = dstO
 	return err
 }
 func convert_FlowNodeObject_LazyNodeObject(rm *goja.Runtime, src flow.Node, dst **lazyNodeObject) (err error) {
@@ -696,8 +755,7 @@ func convert_LazyNodeArray_Array(rm *goja.Runtime, src *lazyNodeArray, dst *any)
 	if !ok {
 		d = make([]any, 0, src.Len())
 	} else {
-		// todo: replace to [::]
-		d = slices.Grow(d[:0], src.Len())[:0]
+		d = d[:0:src.Len()]
 	}
 	for i := 0; i < len(src.value); i++ {
 		if goja.IsUndefined(src.value[i]) {

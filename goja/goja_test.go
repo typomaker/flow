@@ -8,7 +8,7 @@ import (
 )
 
 func TestJS(t *testing.T) {
-	flowtest.TestJS(t, func(t *testing.T) flow.Handler {
-		return New(flowtest.JSFSPath)
+	flowtest.TestJS(t, func(t *testing.T, path string) flow.Handler {
+		return New(path)
 	})
 }

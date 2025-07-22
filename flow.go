@@ -2,7 +2,6 @@ package flow
 
 import (
 	"context"
-	"fmt"
 	"io/fs"
 	"log/slog"
 	"slices"
@@ -238,7 +237,6 @@ func (it Handler) setup(s *Setting) {
 type Next func(target []Node) error
 
 func noopNext(n []Node) error {
-	fmt.Println("XXX3 noopNext", n)
 	return nil
 }
 

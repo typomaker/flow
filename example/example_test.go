@@ -10,7 +10,7 @@ import (
 	"github.com/typomaker/option"
 )
 
-func Example_match_script_by_condition() {
+func Example_script_matching() {
 	var f = flow.New(
 		// you should provide then FS containing your scripts
 		flow.FS(fstest.MapFS{
@@ -71,7 +71,7 @@ func Example_match_script_by_condition() {
 	// target[1] kind is dog
 }
 
-func Example_combining_multiple_script_into_one() {
+func Example_script_pipelining() {
 	var f = flow.New(
 		// you should provide then FS containing your scripts
 		flow.FS(fstest.MapFS{
@@ -83,25 +83,20 @@ func Example_combining_multiple_script_into_one() {
 							node.uuid="f42c13e8-520e-41a3-afee-71a8622d2e3a"
 							node.meta.first=true
 							node.meta.caller.push("first");
-							}
-							console.log("XXX1 before", nodes[0].meta)
-							next(nodes)
-							console.log("XXX1 after", nodes[0].meta)
 						}
-							`),
+						next(nodes)
+					}
+				`),
 			},
 			"second.js": &fstest.MapFile{
 				Data: []byte(`
 					export default function main(nodes, next) {
-							for (const node of nodes) {
+						for (const node of nodes) {
 							node.uuid="d2fd3f06-827a-40e4-a56c-69a1083d4335"
 							node.meta.second=true
-							node.meta.caller[0]='123'
 							node.meta.caller.push("second");
 						}
-						console.log("XXX2 before", nodes[0].meta)
 						next(nodes)
-						console.log("XXX2 after", nodes[0].meta)
 					}
 				`),
 			},
@@ -127,4 +122,38 @@ func Example_combining_multiple_script_into_one() {
 	}
 	// Output:
 	// [first second]
+}
+func Example_typescript() {
+	var f = flow.New(
+		// you should provide then FS containing your scripts
+		flow.FS(fstest.MapFS{
+			"typescript.ts": &fstest.MapFile{
+				Data: []byte(`
+					type Next = (_: any[])=>void;
+					export default function main(nodes: any[], next: Next) {
+						for (const node of nodes) {
+							node.uuid="f42c13e8-520e-41a3-afee-71a8622d2e3a"
+						}
+						next(nodes)
+					}
+				`),
+			},
+		}),
+		goja.New("typescript.ts"),
+	)
+	// targets for processing, the only way to exchange data between runtimes
+	var target = []flow.Node{
+		{},
+	}
+	var ctx = context.Background()
+
+	// run processing
+	var err = f.Run(ctx, target)
+	if err != nil {
+		fmt.Println("handler error", err)
+	} else {
+		fmt.Println(target[0].UUID.Get())
+	}
+	// Output:
+	// f42c13e8-520e-41a3-afee-71a8622d2e3a
 }
