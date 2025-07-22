@@ -27,32 +27,11 @@ func TestCaseLog(t *testing.T) {
 		require.JSONEq(t, `{"v":{}, "case":{}}`, b.String())
 		b.Reset()
 	})
-	t.Run("none", func(t *testing.T) {
-		l := slog.New(h)
-		v := Case{
-			When: option.None[When](),
-			Then: option.None[Then](),
-		}
-		l.Info("foo", slog.Any("v", v), v.LogAttr())
-		require.JSONEq(t, `{
-				"v":{
-					"when":null,
-					"then":null
-				},
-				"case":{
-					"when":null,
-					"then":null
-				}
-			}`,
-			b.String(),
-		)
-		b.Reset()
-	})
 	t.Run("some", func(t *testing.T) {
 		l := slog.New(h)
 		v := Case{
-			When: option.Some(When{UUID: option.Some([]UUID{MustUUID("eaeb5a25-21e5-47ff-a142-7a9987f2e3f0")})}),
-			Then: option.Some(Then{Kind: option.Some("foo")}),
+			When: When{UUID: option.Some([]UUID{MustUUID("eaeb5a25-21e5-47ff-a142-7a9987f2e3f0")})},
+			Then: Then{Kind: option.Some("foo")},
 		}
 		l.Info("foo", slog.Any("v", v), v.LogAttr())
 		require.JSONEq(t,

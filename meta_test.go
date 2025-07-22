@@ -32,10 +32,10 @@ func TestMetaLog(t *testing.T) {
 		l.Info("foo", slog.Any("v", v), v.LogAttr())
 		require.JSONEq(t, `{
 				"v":{
-					"x":null
+					"x":"null"
 				},
 				"meta":{
-					"x":null
+					"x":"null"
 				}
 			}`,
 			b.String(),
@@ -51,10 +51,10 @@ func TestMetaLog(t *testing.T) {
 		require.JSONEq(t,
 			`{
 				"v":{
-					"x":1	
+					"x":"1"	
 				},
 				"meta":{
-					"x":1
+					"x":"1"
 				}
 			}`,
 			b.String(),

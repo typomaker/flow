@@ -32,10 +32,10 @@ func TestHookLog(t *testing.T) {
 		l.Info("foo", slog.Any("v", v), v.LogAttr())
 		require.JSONEq(t, `{
 				"v":{
-					"x":null
+					"x":"null"
 				},
 				"hook":{
-					"x":null
+					"x":"null"
 				}
 			}`,
 			b.String(),
@@ -51,10 +51,10 @@ func TestHookLog(t *testing.T) {
 		require.JSONEq(t,
 			`{
 				"v":{
-					"x":1	
+					"x":"1"	
 				},
 				"hook":{
-					"x":1
+					"x":"1"
 				}
 			}`,
 			b.String(),

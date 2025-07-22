@@ -1,14 +1,15 @@
-package flow
+package goja
 
 import (
 	"fmt"
 
 	"github.com/dop251/goja"
+	"github.com/typomaker/flow"
 )
 
-type lazyNode struct {
+type lazyNodeObject struct {
 	rm    *goja.Runtime
-	proto Node
+	proto flow.Node
 	value struct {
 		UUID   goja.Value
 		Kind   goja.Value
@@ -19,10 +20,10 @@ type lazyNode struct {
 	}
 }
 
-var _ goja.DynamicObject = (*lazyNode)(nil)
+var _ goja.DynamicObject = (*lazyNodeObject)(nil)
 
 // Delete implements goja.DynamicObject.
-func (it *lazyNode) Delete(key string) bool {
+func (it *lazyNodeObject) Delete(key string) bool {
 	switch key {
 	case keyUUID:
 		it.value.UUID = goja.Undefined()
@@ -42,7 +43,7 @@ func (it *lazyNode) Delete(key string) bool {
 }
 
 //nolint:gocognit,funlen // todo: отрефакторить
-func (it *lazyNode) Get(key string) (val goja.Value) {
+func (it *lazyNodeObject) Get(key string) (val goja.Value) {
 	var err error
 	switch key {
 	case keyUUID:
@@ -104,7 +105,7 @@ func (it *lazyNode) Get(key string) (val goja.Value) {
 }
 
 // Has implements goja.DynamicObject.
-func (it *lazyNode) Has(key string) bool {
+func (it *lazyNodeObject) Has(key string) bool {
 	switch key {
 	case keyUUID:
 		if it.value.UUID != nil {
@@ -137,7 +138,7 @@ func (it *lazyNode) Has(key string) bool {
 }
 
 // Set implements goja.DynamicObject.
-func (it *lazyNode) Set(key string, val goja.Value) bool {
+func (it *lazyNodeObject) Set(key string, val goja.Value) bool {
 	switch key {
 	case keyUUID:
 		it.value.UUID = val
@@ -160,7 +161,7 @@ func (it *lazyNode) Set(key string, val goja.Value) bool {
 }
 
 //nolint:gocognit // todo: отрефакторить
-func (it *lazyNode) Keys() []string {
+func (it *lazyNodeObject) Keys() []string {
 	var keys = make([]string, 0, 7)
 
 	const uuidKey = keyUUID

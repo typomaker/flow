@@ -1,4 +1,4 @@
-package flow
+package goja
 
 import (
 	"slices"
@@ -6,18 +6,16 @@ import (
 	"github.com/dop251/goja"
 )
 
-type lazyList struct {
+type lazyArray struct {
 	rm    *goja.Runtime
-	proto []Node
+	proto []any
 	value []goja.Value
 }
 
-var _ goja.DynamicArray = (*lazyList)(nil)
+var _ goja.DynamicArray = (*lazyArray)(nil)
 
 // Get implements goja.DynamicArray.
-
-// Get implements goja.DynamicArray.
-func (it *lazyList) Get(idx int) goja.Value {
+func (it *lazyArray) Get(idx int) goja.Value {
 	var jsVal goja.Value
 	if it.value != nil {
 		if idx >= len(it.value) {
@@ -42,7 +40,7 @@ func (it *lazyList) Get(idx int) goja.Value {
 }
 
 // Len implements goja.DynamicArray.
-func (it *lazyList) Len() int {
+func (it *lazyArray) Len() int {
 	if it.value != nil {
 		return len(it.value)
 	}
@@ -50,7 +48,7 @@ func (it *lazyList) Len() int {
 }
 
 // SetLen implements goja.DynamicArray.
-func (it *lazyList) SetLen(size int) bool {
+func (it *lazyArray) SetLen(size int) bool {
 	if it.value == nil {
 		it.value = make([]goja.Value, len(it.proto))
 	}
@@ -74,7 +72,7 @@ func (it *lazyList) SetLen(size int) bool {
 }
 
 // Set implements goja.DynamicArray.
-func (it *lazyList) Set(idx int, val goja.Value) bool {
+func (it *lazyArray) Set(idx int, val goja.Value) bool {
 	if it.value == nil {
 		it.value = make([]goja.Value, len(it.proto))
 	}

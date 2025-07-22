@@ -1,4 +1,4 @@
-package flow
+package goja
 
 import (
 	"github.com/dop251/goja"

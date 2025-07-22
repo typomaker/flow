@@ -9,7 +9,7 @@ import (
 type Meta map[string]any
 
 func (it Meta) Equal(t Meta) bool {
-	return equal(it, t)
+	return deepEqual(it, t)
 }
 func (it Meta) With(pp Meta) Meta {
 	if len(it) == 0 {
@@ -27,7 +27,18 @@ func (it Meta) LogAttr() slog.Attr {
 	return slog.Any("meta", it.LogValue())
 }
 func (it Meta) LogValue() slog.Value {
-	return slog.AnyValue(map[string]any(it))
+	if len(it) == 0 {
+		return slog.AnyValue(map[string]any(it))
+	}
+	var s = make([]slog.Attr, 0, len(it))
+	for k, v := range it {
+		if t, err := jsoniter.MarshalToString(v); err != nil {
+			s = append(s, slog.String(k+"Error", err.Error()))
+		} else {
+			s = append(s, slog.String(k, t))
+		}
+	}
+	return slog.GroupValue(s...)
 }
 func (it Meta) MarshalJSON() (b []byte, err error) {
 	var js = map[string]any(it)

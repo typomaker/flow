@@ -68,14 +68,14 @@ func TestThenLog(t *testing.T) {
 			`{
 				"v":{
 					"kind":"foo",
-					"meta":{"b":"2"},
-					"hook":{"a":"1"},
+					"meta":{"b":"\"2\""},
+					"hook":{"a":"\"1\""},
 					"live":{"since":"1970-01-01T00:00:00Z"}
 				},
 				"then":{
 					"kind":"foo",
-					"meta":{"b":"2"},
-					"hook":{"a":"1"},
+					"meta":{"b":"\"2\""},
+					"hook":{"a":"\"1\""},
 					"live":{"since":"1970-01-01T00:00:00Z"}
 				}
 			}`,
