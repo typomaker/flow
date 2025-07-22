@@ -25,7 +25,7 @@ func New(path string) flow.Handler {
 		if !ready {
 			if mu.TryLock() {
 				var b []byte
-				if b, err = build.Goja(ctx, path); err != nil {
+				if b, err = build.Build(ctx, path); err != nil {
 					return fmt.Errorf("goja: %w", err)
 				}
 				if pm, err = goja.Compile("", string(b), true); err != nil {

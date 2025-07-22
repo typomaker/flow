@@ -157,3 +157,38 @@ func Example_typescript() {
 	// Output:
 	// f42c13e8-520e-41a3-afee-71a8622d2e3a
 }
+func Example_import_unpkg() {
+	var f = flow.New(
+		// you should provide then FS containing your scripts
+		flow.FS(fstest.MapFS{
+			"script.js": &fstest.MapFile{
+				Data: []byte(`
+					import isSorted from "https://unpkg.com/is-sorted@1.0.5"
+					export default function main(nodes, next) {
+						for (const node of nodes) {
+							node.meta.sorted=isSorted([1,2,3])
+							node.meta.unsorted=isSorted([1,3,2])
+						}
+						next(nodes)
+					}
+				`),
+			},
+		}),
+		goja.New("script.js"),
+	)
+	// targets for processing, the only way to exchange data between runtimes
+	var target = []flow.Node{
+		{Meta: option.Some(flow.Meta{})},
+	}
+	var ctx = context.Background()
+
+	// run processing
+	var err = f.Run(ctx, target)
+	if err != nil {
+		fmt.Println("handler error", err)
+	} else {
+		fmt.Println(target[0].Meta.Get())
+	}
+	// Output:
+	// map[sorted:true unsorted:false]
+}

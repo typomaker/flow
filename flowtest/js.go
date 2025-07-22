@@ -3,7 +3,10 @@ package flowtest
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"log/slog"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"testing/fstest"
 	"time"
@@ -30,7 +33,7 @@ var jsCases = []struct {
 		test: func(t *testing.T, provide Provider) {
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main() {}
 						`),
@@ -47,7 +50,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							console.log("foo", {
 								node: {
@@ -67,7 +70,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 
 			err := f.Run(context.Background(), nil)
@@ -101,7 +104,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							console.log("foo")
 							export default function main() {}
@@ -111,7 +114,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			err := f.Run(context.Background(), nil)
 			require.NoError(t, err)
@@ -131,7 +134,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							console.log([1, true])
 							export default function main() {}
@@ -141,7 +144,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			err := f.Run(context.Background(), nil)
 			require.NoError(t, err)
@@ -164,7 +167,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							console.log([1, true], true, "buz")
 							export default function main() {}
@@ -174,7 +177,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			err := f.Run(context.Background(), nil)
 			require.NoError(t, err)
@@ -197,7 +200,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							console.log({"foo":"bar"}, true, "buz")
 							export default function main() {}
@@ -207,7 +210,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			err := f.Run(context.Background(), nil)
 			require.NoError(t, err)
@@ -231,7 +234,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								throw new Error("foo")
@@ -242,7 +245,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{},
@@ -257,7 +260,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								nodes[0].uuid = "e14492a1-8333-4439-ab2e-d211dc305734"
@@ -274,7 +277,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{},
@@ -299,7 +302,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								if (nodes[0].uuid == "e14492a1-8333-4439-ab2e-d211dc305734") {
@@ -312,7 +315,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{UUID: option.Some(flow.MustUUID("e14492a1-8333-4439-ab2e-d211dc305734"))},
@@ -328,7 +331,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								if (nodes[0].meta?.foo == "foo") {
@@ -343,7 +346,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{Meta: option.Some(flow.Meta{"foo": "foo"})},
@@ -362,7 +365,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								if (nodes[0].hook?.foo == "foo") {
@@ -377,7 +380,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{Hook: option.Some(flow.Hook{"foo": "foo"})},
@@ -396,7 +399,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								if (nodes[0].live.since?.getTime() == new Date("2021-01-01T00:00:00Z").getTime()) {
@@ -412,7 +415,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{
@@ -439,7 +442,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								this.modify()
@@ -450,7 +453,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{},
@@ -465,7 +468,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								this.modify({
@@ -484,7 +487,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{},
@@ -520,7 +523,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								this.notify()
@@ -531,7 +534,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{},
@@ -546,7 +549,7 @@ var jsCases = []struct {
 			b := bytes.Buffer{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes) {
 								this.notify({
@@ -574,7 +577,7 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
-				provide(t, fsPath1),
+				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{},
@@ -612,7 +615,7 @@ var jsCases = []struct {
 		test: func(t *testing.T, provide Provider) {
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes, next) {
 								for (const node of nodes) {
@@ -622,7 +625,7 @@ var jsCases = []struct {
 							}
 						`),
 					},
-					fsPath2: &fstest.MapFile{
+					"path2/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes, next) {
 								for (const node of nodes) {
@@ -634,8 +637,8 @@ var jsCases = []struct {
 					},
 				}),
 				flow.Pipe(
-					provide(t, fsPath1),
-					provide(t, fsPath2),
+					provide(t, "path1/index.js"),
+					provide(t, "path2/index.js"),
 				),
 			)
 			target := []flow.Node{
@@ -654,7 +657,7 @@ var jsCases = []struct {
 		test: func(t *testing.T, provide Provider) {
 			f := flow.New(
 				flow.FS(fstest.MapFS{
-					fsPath1: &fstest.MapFile{
+					"path1/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes, next) {
 								for (const node of nodes) {
@@ -670,7 +673,7 @@ var jsCases = []struct {
 							}
 						`),
 					},
-					fsPath2: &fstest.MapFile{
+					"path2/index.js": &fstest.MapFile{
 						Data: []byte(`
 							export default function main(nodes, next) {
 								for (const node of nodes) {
@@ -683,8 +686,8 @@ var jsCases = []struct {
 					},
 				}),
 				flow.Pipe(
-					provide(t, fsPath1),
-					provide(t, fsPath2),
+					provide(t, "path1/index.js"),
+					provide(t, "path2/index.js"),
 				),
 			)
 			target := []flow.Node{
@@ -695,6 +698,86 @@ var jsCases = []struct {
 			require.Equal(t,
 				flow.Meta{"first": true, "second": true},
 				target[0].Meta.GetOrZero(),
+			)
+		},
+	},
+	{
+		name: "import http",
+		test: func(t *testing.T, provide Provider) {
+			s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				_, _ = w.Write([]byte(`
+					export default function getFoo() {
+						return "foo"
+					}
+				`))
+			}))
+			defer s.Close()
+			f := flow.New(
+				flow.FS(fstest.MapFS{
+					"path1/index.js": &fstest.MapFile{
+						Data: fmt.Appendf(nil,
+							`
+							import getFoo from "%s"
+							export default function main(nodes) {
+								nodes[0].meta.foo=getFoo()
+							}
+							`,
+							s.URL,
+						),
+					},
+				}),
+				flow.Pipe(
+					provide(t, "path1/index.js"),
+				),
+			)
+			target := []flow.Node{
+				{Meta: option.Some(flow.Meta{})},
+			}
+			err := f.Run(context.Background(), target)
+			require.NoError(t, err)
+			require.Equal(t,
+				"foo",
+				target[0].Meta.GetOrZero()["foo"],
+			)
+		},
+	},
+	{
+		name: "import flow",
+		test: func(t *testing.T, provide Provider) {
+			f := flow.New(
+				flow.FS(fstest.MapFS{
+					"path1/index.js": &fstest.MapFile{
+						Data: []byte(
+							`
+							import getFoo from "flow:path2/index.js"
+							export default function main(nodes) {
+								nodes[0].meta.foo=getFoo()
+							}
+							`,
+						),
+					},
+					"path2/index.js": &fstest.MapFile{
+						Data: []byte(
+							`
+							export default function getFoo() {
+								return "foo";	
+							}
+							`,
+						),
+					},
+				}),
+				flow.Pipe(
+					provide(t, "path1/index.js"),
+				),
+			)
+			target := []flow.Node{
+				{Meta: option.Some(flow.Meta{})},
+			}
+			err := f.Run(context.Background(), target)
+			require.NoError(t, err)
+			require.Equal(t,
+				"foo",
+				target[0].Meta.GetOrZero()["foo"],
 			)
 		},
 	},
@@ -747,6 +830,3 @@ func (m *notifier) Notify(ctx context.Context, n flow.Case) error {
 func (m *notifier) LogAttr() slog.Attr {
 	return slog.Group("notifier", slog.String("foo", "bar"))
 }
-
-const fsPath1 = "path1/index.js"
-const fsPath2 = "path2/index.js"
