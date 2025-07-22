@@ -49,22 +49,26 @@ func New(path string) flow.Handler {
 		}
 		defer po.Put(rm)
 
-		var main goja.Callable
-		if err = exportMain(ctx, rm, &main); err != nil {
+		var jsMain goja.Callable
+		if err = exportMain(ctx, rm, &jsMain); err != nil {
 			return fmt.Errorf("goja: %w", err)
 		}
 		var jsTarget goja.Value
 		if err = convert(rm, target, &jsTarget); err != nil {
 			return fmt.Errorf("goja: %w", err)
 		}
-		var this = rm.NewObject()
-		if err = importModify(ctx, rm, this); err != nil {
+		var jsThis = rm.NewObject()
+		if err = importModify(ctx, rm, jsThis); err != nil {
 			return fmt.Errorf("goja: %w", err)
 		}
-		if err = importNotify(ctx, rm, this); err != nil {
+		if err = importNotify(ctx, rm, jsThis); err != nil {
 			return fmt.Errorf("goja: %w", err)
 		}
-		if _, err = main(this, jsTarget); err != nil {
+		var jsNext goja.Value
+		if err = importNext(ctx, rm, next, &jsNext); err != nil {
+			return fmt.Errorf("goja: %w", err)
+		}
+		if _, err = jsMain(jsThis, jsTarget, jsNext); err != nil {
 			return fmt.Errorf("goja: %w", err)
 		}
 		if err = convert(rm, jsTarget, &target); err != nil {
@@ -187,6 +191,34 @@ func importNotify(ctx context.Context, rm *goja.Runtime, this *goja.Object) (err
 
 		return goja.Undefined()
 	}))
+}
+func importNext(_ context.Context, rm *goja.Runtime, next flow.Next, jsNext *goja.Value) (err error) {
+	*jsNext = rm.ToValue(func(c goja.FunctionCall) goja.Value {
+		if len(c.Arguments) == 0 {
+			return goja.Undefined()
+		}
+		var err error
+		var jsTarget = c.Arguments[0]
+		fmt.Printf("XXX 000 %p\n", jsTarget)
+		var target []flow.Node
+		if err = convert(rm, jsTarget, &target); err != nil {
+			err = fmt.Errorf("goja: %w", err)
+			panic(rm.NewGoError(err))
+		}
+		if err = next(target); err != nil {
+			err = fmt.Errorf("goja: %w", err)
+			panic(rm.NewGoError(err))
+		}
+		if err = convert(rm, target, &jsTarget); err != nil {
+			err = fmt.Errorf("goja: %w", err)
+			panic(rm.NewGoError(err))
+		}
+		v, ok := c.Arguments[0].Export().(*lazyNodeArray)
+		v.value[0].Export().(*lazyNodeObject).value.Meta.Export().(*lazyObject).value["buba"] = rm.ToValue("dfdf")
+		fmt.Println("XXX4534", ok)
+		return goja.Undefined()
+	})
+	return nil
 }
 func newPrinter(ctx context.Context, rm *goja.Runtime, printer func(context.Context, string, ...any)) goja.Value {
 	var err error

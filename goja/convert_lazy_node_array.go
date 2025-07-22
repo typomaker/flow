@@ -7,18 +7,18 @@ import (
 	"github.com/typomaker/flow"
 )
 
-type lazyFlowList struct {
+type lazyNodeArray struct {
 	rm    *goja.Runtime
 	proto []flow.Node
 	value []goja.Value
 }
 
-var _ goja.DynamicArray = (*lazyFlowList)(nil)
+var _ goja.DynamicArray = (*lazyNodeArray)(nil)
 
 // Get implements goja.DynamicArray.
 
 // Get implements goja.DynamicArray.
-func (it *lazyFlowList) Get(idx int) goja.Value {
+func (it *lazyNodeArray) Get(idx int) goja.Value {
 	var jsVal goja.Value
 	if it.value != nil {
 		if idx >= len(it.value) {
@@ -43,7 +43,7 @@ func (it *lazyFlowList) Get(idx int) goja.Value {
 }
 
 // Len implements goja.DynamicArray.
-func (it *lazyFlowList) Len() int {
+func (it *lazyNodeArray) Len() int {
 	if it.value != nil {
 		return len(it.value)
 	}
@@ -51,7 +51,7 @@ func (it *lazyFlowList) Len() int {
 }
 
 // SetLen implements goja.DynamicArray.
-func (it *lazyFlowList) SetLen(size int) bool {
+func (it *lazyNodeArray) SetLen(size int) bool {
 	if it.value == nil {
 		it.value = make([]goja.Value, len(it.proto))
 	}
@@ -75,7 +75,7 @@ func (it *lazyFlowList) SetLen(size int) bool {
 }
 
 // Set implements goja.DynamicArray.
-func (it *lazyFlowList) Set(idx int, val goja.Value) bool {
+func (it *lazyNodeArray) Set(idx int, val goja.Value) bool {
 	if it.value == nil {
 		it.value = make([]goja.Value, len(it.proto))
 	}

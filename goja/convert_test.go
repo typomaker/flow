@@ -1193,7 +1193,7 @@ func TestSetMetaLazyList(t *testing.T) {
 	jsList := goja.Value(nil)
 	err := convert(rm, goList, &jsList)
 	require.NoError(t, err)
-	require.IsType(t, (*lazyFlowList)(nil), jsList.Export())
+	require.IsType(t, (*lazyNodeArray)(nil), jsList.Export())
 
 	goMeta := flow.Meta{}
 	jsMeta := goja.Value(nil)
@@ -2795,5 +2795,45 @@ func TestResetLenFlowList(t *testing.T) {
 	require.Equal(t,
 		[]flow.Node{},
 		val,
+	)
+}
+func TestMetaReferencing(t *testing.T) {
+	var err error
+	rm := goja.New()
+	goMeta0 := flow.Meta{"s": []any{}}
+
+	var jsMeta0 goja.Value
+	_ = convert(rm, goMeta0, &jsMeta0)
+	err = rm.Set("val", jsMeta0)
+
+	require.NoError(t, err)
+	_, err = rm.RunString(`val.s.push(1)`)
+	require.NoError(t, err)
+
+	var goMeta1 flow.Meta
+	_ = convert(rm, jsMeta0, &goMeta1)
+
+	var jsMeta1 goja.Value
+	_ = convert(rm, goMeta1, &jsMeta1)
+	err = rm.Set("val", jsMeta1)
+
+	require.NoError(t, err)
+	_, err = rm.RunString(`val.s.push(2)`)
+	require.NoError(t, err)
+
+	var goMeta2 flow.Meta
+	_ = convert(rm, jsMeta1, &goMeta2)
+
+	require.Equal(t,
+		flow.Meta{"s": []any{1., 2.}},
+		goMeta0,
+	)
+	require.Equal(t,
+		flow.Meta{"s": []any{1., 2.}},
+		goMeta1,
+	)
+	require.Equal(t,
+		flow.Meta{"s": []any{1., 2.}},
+		goMeta2,
 	)
 }

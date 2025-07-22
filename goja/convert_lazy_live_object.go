@@ -7,7 +7,7 @@ import (
 	"github.com/typomaker/flow"
 )
 
-type lazyFlowLive struct {
+type lazyLiveObject struct {
 	rm    *goja.Runtime
 	proto flow.Live
 	value struct {
@@ -16,10 +16,10 @@ type lazyFlowLive struct {
 	}
 }
 
-var _ goja.DynamicObject = (*lazyFlowLive)(nil)
+var _ goja.DynamicObject = (*lazyLiveObject)(nil)
 
 // Delete implements goja.DynamicObject.
-func (it *lazyFlowLive) Delete(key string) bool {
+func (it *lazyLiveObject) Delete(key string) bool {
 	switch key {
 	case keyLiveSince:
 		it.value.Since = goja.Undefined()
@@ -30,7 +30,7 @@ func (it *lazyFlowLive) Delete(key string) bool {
 }
 
 // Get implements goja.DynamicObject.
-func (it *lazyFlowLive) Get(key string) goja.Value {
+func (it *lazyLiveObject) Get(key string) goja.Value {
 	const jsMsPrec = 1e6
 	switch key {
 	case keyLiveSince:
@@ -77,7 +77,7 @@ func (it *lazyFlowLive) Get(key string) goja.Value {
 }
 
 // Has implements goja.DynamicObject.
-func (it *lazyFlowLive) Has(key string) bool {
+func (it *lazyLiveObject) Has(key string) bool {
 	switch key {
 	case keyLiveSince:
 		if it.value.Since != nil {
@@ -95,7 +95,7 @@ func (it *lazyFlowLive) Has(key string) bool {
 }
 
 // Set implements goja.DynamicObject.
-func (it *lazyFlowLive) Set(key string, val goja.Value) bool {
+func (it *lazyLiveObject) Set(key string, val goja.Value) bool {
 	switch key {
 	case keyLiveSince:
 		it.value.Since = val
@@ -109,7 +109,7 @@ func (it *lazyFlowLive) Set(key string, val goja.Value) bool {
 }
 
 // Keys implements goja.DynamicObject.
-func (it *lazyFlowLive) Keys() []string {
+func (it *lazyLiveObject) Keys() []string {
 	var keys = make([]string, 0, 2)
 	if it.value.Since != nil {
 		if !goja.IsUndefined(it.value.Since) {

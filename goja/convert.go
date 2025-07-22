@@ -16,21 +16,21 @@ import (
 func convert(rm *goja.Runtime, src, dst any) (err error) {
 	switch src := src.(type) {
 	case []flow.Node:
-		err = convert_FlowList(rm, src, dst)
-	case *lazyFlowList:
-		err = convert_LazyFlowList(rm, src, dst)
+		err = convert_FlowNodeArray(rm, src, dst)
+	case *lazyNodeArray:
+		err = convert_LazyNodeArray(rm, src, dst)
 	case flow.Node:
-		err = convert_FlowNode(rm, src, dst)
-	case *lazyFlowNode:
-		err = convert_LazyFlowItem(rm, src, dst)
+		err = convert_FlowNodeObject(rm, src, dst)
+	case *lazyNodeObject:
+		err = convert_LazyNodeObject(rm, src, dst)
 	case flow.Meta:
-		err = convert_FlowMeta(rm, src, dst)
+		err = convert_FlowMetaObject(rm, src, dst)
 	case flow.Hook:
-		err = convert_FlowHook(rm, src, dst)
+		err = convert_FlowHookObject(rm, src, dst)
 	case flow.Live:
-		err = convert_FlowLive(rm, src, dst)
-	case *lazyFlowLive:
-		err = convert_LazyFlowLive(rm, src, dst)
+		err = convert_FlowLiveObject(rm, src, dst)
+	case *lazyLiveObject:
+		err = convert_LazyLiveObject(rm, src, dst)
 	case map[string]any:
 		err = convert_Object(rm, src, dst)
 	case *lazyObject:
@@ -67,7 +67,7 @@ func convert_GojaValue(rm *goja.Runtime, src goja.Value, dst any) (err error) {
 	case *any:
 		err = convert_GojaValue_Any(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -75,15 +75,15 @@ func convert_GojaValue_Any(rm *goja.Runtime, src goja.Value, dst *any) (err erro
 	switch src.ExportType() {
 	case reflectNull:
 		*dst = nil
-	case reflectLazyLive:
-		var s = src.Export().(*lazyFlowLive)
-		err = convert_LazyFlowLive(rm, s, dst)
-	case reflectLazyNode:
-		var s = src.Export().(*lazyFlowNode)
-		err = convert_LazyFlowItem(rm, s, dst)
-	case reflectLazyList:
-		var s = src.Export().(*lazyFlowList)
-		err = convert_LazyFlowList(rm, s, dst)
+	case reflectLazyLiveObject:
+		var s = src.Export().(*lazyLiveObject)
+		err = convert_LazyLiveObject(rm, s, dst)
+	case reflectLazyNodeObject:
+		var s = src.Export().(*lazyNodeObject)
+		err = convert_LazyNodeObject(rm, s, dst)
+	case reflectLazyNodeArray:
+		var s = src.Export().(*lazyNodeArray)
+		err = convert_LazyNodeArray(rm, s, dst)
 	case reflectLazyArray:
 		var s = src.Export().(*lazyArray)
 		err = convert_LazyArray(rm, s, dst)
@@ -117,31 +117,31 @@ func convert_GojaValue_Any(rm *goja.Runtime, src goja.Value, dst *any) (err erro
 }
 func convert_GojaValue_FlowList(rm *goja.Runtime, src goja.Value, dst *[]flow.Node) (err error) {
 	switch src.ExportType() {
-	case reflectLazyList:
-		var src = src.Export().(*lazyFlowList)
-		err = convert_LazyList_List(rm, src, dst)
+	case reflectLazyNodeArray:
+		var src = src.Export().(*lazyNodeArray)
+		err = convert_LazyNodeArray_FlowNodeArray(rm, src, dst)
 	case reflectArray:
 		var src = src.(*goja.Object)
 		var lng = int(src.Get("length").ToInteger())
-		var laz = &lazyFlowList{rm: rm, value: make([]goja.Value, lng)}
+		var laz = &lazyNodeArray{rm: rm, value: make([]goja.Value, lng)}
 		for i := range lng {
 			laz.Set(i, src.Get(strconv.Itoa(i)))
 		}
-		err = convert_LazyList_List(rm, laz, dst)
+		err = convert_LazyNodeArray_FlowNodeArray(rm, laz, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
 func convert_GojaValue_FlowNode(rm *goja.Runtime, src goja.Value, dst *flow.Node) (err error) {
 	switch src.ExportType() {
-	case reflectLazyNode:
-		var laz = src.Export().(*lazyFlowNode)
+	case reflectLazyNodeObject:
+		var laz = src.Export().(*lazyNodeObject)
 		err = convert_LazyItem_Item(rm, laz, dst)
 	case reflectObject:
 		var src = src.(*goja.Object)
 		var keys = src.Keys()
-		var laz = &lazyFlowNode{rm: rm}
+		var laz = &lazyNodeObject{rm: rm}
 		for _, key := range keys {
 			laz.Set(key, src.Get(key))
 		}
@@ -149,7 +149,7 @@ func convert_GojaValue_FlowNode(rm *goja.Runtime, src goja.Value, dst *flow.Node
 	case reflectNull:
 		*dst = flow.Node{}
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -167,7 +167,7 @@ func convert_GojaValue_FlowMeta(rm *goja.Runtime, src goja.Value, dst *flow.Meta
 		}
 		err = convert_LazyObject_Meta(rm, laz, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -187,7 +187,7 @@ func convert_GojaValue_FlowHook(rm *goja.Runtime, src goja.Value, dst *flow.Hook
 		err = convert_LazyObject_Object(rm, laz, &laz.proto)
 		*dst = laz.proto
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -200,19 +200,19 @@ func convert_LazyObject_Hook(rm *goja.Runtime, src *lazyObject, dst *flow.Hook) 
 }
 func convert_GojaValue_FlowLive(rm *goja.Runtime, src goja.Value, dst *flow.Live) (err error) {
 	switch src.ExportType() {
-	case reflectLazyLive:
-		var laz = src.Export().(*lazyFlowLive)
-		err = convert_LazyLive_Live(rm, laz, dst)
+	case reflectLazyLiveObject:
+		var laz = src.Export().(*lazyLiveObject)
+		err = convert_LazyLiveObject_FlowLiveObject(rm, laz, dst)
 	case reflectObject:
 		var src = src.(*goja.Object)
 		var keys = src.Keys()
-		var laz = &lazyFlowLive{rm: rm}
+		var laz = &lazyLiveObject{rm: rm}
 		for _, key := range keys {
 			laz.Set(key, src.Get(key))
 		}
-		err = convert_LazyLive_Live(rm, laz, dst)
+		err = convert_LazyLiveObject_FlowLiveObject(rm, laz, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -434,32 +434,44 @@ func convert_GojaValue_Array(rm *goja.Runtime, src goja.Value, dst *[]any) (err 
 	*dst = d
 	return nil
 }
-func convert_FlowList(rm *goja.Runtime, src []flow.Node, dst any) (err error) {
+func convert_FlowNodeArray(rm *goja.Runtime, src []flow.Node, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *goja.Value:
-		err = convert_List_GojaValue(rm, src, dst)
+		err = convert_FlowNodeArray_GojaValue(rm, src, dst)
 	case *any:
-		err = convert_List_Any(rm, src, dst)
+		err = convert_FlowNodeArray_Array(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
-func convert_List_GojaValue(rm *goja.Runtime, src []flow.Node, dst *goja.Value) (err error) {
-	*dst = rm.NewDynamicArray(&lazyFlowList{rm: rm, proto: src})
+func convert_FlowNodeArray_GojaValue(rm *goja.Runtime, src []flow.Node, dst *goja.Value) (err error) {
+	var d = *dst
+	var t reflect.Type
+	if d != nil {
+		t = d.ExportType()
+	}
+	switch t {
+	case reflectLazyNodeArray:
+		var s = d.Export().(*lazyNodeArray)
+		err = convert_FlowNodeArray_LazyNodeArray(rm, src, &s)
+	default: // todo nil?
+		*dst = rm.NewDynamicArray(&lazyNodeArray{rm: rm, proto: src})
+	}
 	return err
 }
-func convert_List_Any(rm *goja.Runtime, src []flow.Node, dst *any) (err error) {
+func convert_FlowNodeArray_Array(rm *goja.Runtime, src []flow.Node, dst *any) (err error) {
 	var d, ok = (*dst).([]any)
 	if !ok {
 		d = make([]any, 0, len(src))
 	} else {
+		// todo: replace to [::]
 		d = slices.Grow(d[:0], len(src))[:0]
 	}
 	for _, v := range src {
-		var src = &lazyFlowNode{rm: rm, proto: v}
+		var src = &lazyNodeObject{rm: rm, proto: v}
 		var val any
-		if err = convert_LazyItem_Any(rm, src, &val); err != nil {
+		if err = convert_LazyNodeObject_Object(rm, src, &val); err != nil {
 			return err
 		}
 		d = append(d, val)
@@ -467,70 +479,129 @@ func convert_List_Any(rm *goja.Runtime, src []flow.Node, dst *any) (err error) {
 	*dst = d
 	return err
 }
-func convert_FlowNode(rm *goja.Runtime, src flow.Node, dst any) (err error) {
+func convert_FlowNodeArray_LazyNodeArray(rm *goja.Runtime, src []flow.Node, dst **lazyNodeArray) (err error) {
+	var d = *dst
+	d.value = d.value[0:len(src):len(src)]
+	for i, v := range src {
+		if err = convert_FlowNodeObject(rm, v, &d.value[i]); err != nil {
+			return err
+		}
+	}
+	*dst = d
+	return err
+}
+func convert_FlowNodeObject(rm *goja.Runtime, src flow.Node, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *goja.Value:
-		err = convert_Item_GojaValue(rm, src, dst)
+		err = convert_FlowNodeObject_GojaValue(rm, src, dst)
 	case *any:
-		err = convert_LazyItem_Any(rm, &lazyFlowNode{proto: src}, dst)
+		err = convert_LazyNodeObject_Object(rm, &lazyNodeObject{proto: src}, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
-func convert_Item_GojaValue(rm *goja.Runtime, src flow.Node, dst *goja.Value) (err error) {
-	*dst = rm.NewDynamicObject(&lazyFlowNode{rm: rm, proto: src})
-	return err
-}
-func convert_FlowMeta(rm *goja.Runtime, src flow.Meta, dst any) (err error) {
-	switch dst := dst.(type) {
-	case *goja.Value:
-		err = convert_Meta_GojaValue(rm, src, dst)
-	case *any:
-		err = convert_Meta_Any(rm, src, dst)
+func convert_FlowNodeObject_GojaValue(rm *goja.Runtime, src flow.Node, dst *goja.Value) (err error) {
+	var d = *dst
+	var t reflect.Type
+	if d != nil {
+		t = d.ExportType()
+	}
+	switch t {
+	case reflectLazyNodeObject:
+		var s = d.Export().(*lazyNodeObject)
+		err = convert_FlowNodeObject_LazyNodeObject(rm, src, &s)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		*dst = rm.NewDynamicObject(&lazyNodeObject{rm: rm, proto: src})
 	}
 	return err
 }
-func convert_Meta_Any(rm *goja.Runtime, src flow.Meta, dst *any) (err error) {
+func convert_FlowNodeObject_LazyNodeObject(rm *goja.Runtime, src flow.Node, dst **lazyNodeObject) (err error) {
+	var d = *dst
+	switch {
+	case src.UUID.IsZero():
+		d.value.UUID = goja.Undefined()
+	case src.UUID.IsNone():
+		d.value.UUID = goja.Null()
+	default:
+		d.value.UUID = rm.ToValue(src.UUID.Get())
+	}
+	switch {
+	case src.Meta.IsZero():
+		d.value.Meta = goja.Undefined()
+	case src.Meta.IsNone():
+		d.value.Meta = goja.Null()
+	default:
+		err = convert_FlowMetaObject_GojaValue(rm, src.Meta.Get(), &d.value.Meta)
+	}
+	switch {
+	case src.Hook.IsZero():
+		d.value.Hook = goja.Undefined()
+	case src.Hook.IsNone():
+		d.value.Hook = goja.Null()
+	default:
+		err = convert_FlowHookObject_GojaValue(rm, src.Hook.Get(), &d.value.Hook)
+	}
+	switch {
+	case src.Live.IsZero():
+		d.value.Live = goja.Undefined()
+	case src.Live.IsNone():
+		d.value.Live = goja.Null()
+	default:
+		err = convert_FlowLiveObject_GojaValue(rm, src.Live.Get(), &d.value.Live)
+	}
+	return err
+}
+func convert_FlowMetaObject(rm *goja.Runtime, src flow.Meta, dst any) (err error) {
+	switch dst := dst.(type) {
+	case *goja.Value:
+		err = convert_FlowMetaObject_GojaValue(rm, src, dst)
+	case *any:
+		err = convert_FlowMetaObject_Any(rm, src, dst)
+	default:
+		err = newErrUnexpectedType(src, dst)
+	}
+	return err
+}
+func convert_FlowMetaObject_Any(rm *goja.Runtime, src flow.Meta, dst *any) (err error) {
 	return convert_Object_Any(rm, src, dst)
 }
-func convert_Meta_GojaValue(rm *goja.Runtime, src flow.Meta, dst *goja.Value) (err error) {
+func convert_FlowMetaObject_GojaValue(rm *goja.Runtime, src flow.Meta, dst *goja.Value) (err error) {
+	//todo: add convert to passed lazyObject insted of creating new
 	*dst = rm.NewDynamicObject(&lazyObject{rm: rm, proto: src})
 	return err
 }
-func convert_FlowHook(rm *goja.Runtime, src flow.Hook, dst any) (err error) {
+func convert_FlowHookObject(rm *goja.Runtime, src flow.Hook, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *goja.Value:
-		err = convert_Hook_GojaValue(rm, src, dst)
+		err = convert_FlowHookObject_GojaValue(rm, src, dst)
 	case *any:
-		err = convert_Hook_Any(rm, src, dst)
+		err = convert_FlowHookObject_Any(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
-func convert_Hook_GojaValue(rm *goja.Runtime, src flow.Hook, dst *goja.Value) (err error) {
+func convert_FlowHookObject_GojaValue(rm *goja.Runtime, src flow.Hook, dst *goja.Value) (err error) {
 	*dst = rm.NewDynamicObject(&lazyObject{rm: rm, proto: src})
 	return err
 }
-func convert_Hook_Any(rm *goja.Runtime, src flow.Hook, dst *any) (err error) {
+func convert_FlowHookObject_Any(rm *goja.Runtime, src flow.Hook, dst *any) (err error) {
 	err = convert_Object_Any(rm, src, dst)
 	return err
 }
-func convert_FlowLive(rm *goja.Runtime, src flow.Live, dst any) (err error) {
+func convert_FlowLiveObject(rm *goja.Runtime, src flow.Live, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *goja.Value:
-		err = convert_FlowLive_GojaValue(rm, src, dst)
+		err = convert_FlowLiveObject_GojaValue(rm, src, dst)
 	case *any:
-		err = convert_FlowLive_Any(rm, src, dst)
+		err = convert_FlowLiveObject_Any(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
-func convert_FlowLive_Any(rm *goja.Runtime, src flow.Live, dst *any) (err error) {
+func convert_FlowLiveObject_Any(rm *goja.Runtime, src flow.Live, dst *any) (err error) {
 	var d, ok = (*dst).(map[string]any)
 	if !ok {
 		d = make(map[string]any, 2)
@@ -552,8 +623,8 @@ func convert_FlowLive_Any(rm *goja.Runtime, src flow.Live, dst *any) (err error)
 	*dst = d
 	return nil
 }
-func convert_FlowLive_GojaValue(rm *goja.Runtime, src flow.Live, dst *goja.Value) (err error) {
-	*dst = rm.NewDynamicObject(&lazyFlowLive{rm: rm, proto: src})
+func convert_FlowLiveObject_GojaValue(rm *goja.Runtime, src flow.Live, dst *goja.Value) (err error) {
+	*dst = rm.NewDynamicObject(&lazyLiveObject{rm: rm, proto: src})
 	return err
 }
 func convert_Any(rm *goja.Runtime, src any, dst any) (err error) {
@@ -563,7 +634,7 @@ func convert_Any(rm *goja.Runtime, src any, dst any) (err error) {
 	case *any:
 		err = convert_Any_Any(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -606,25 +677,26 @@ func convert_Any_Any(_ *goja.Runtime, src any, dst *any) (err error) {
 	}
 	return err
 }
-func convert_LazyFlowList(rm *goja.Runtime, src *lazyFlowList, dst any) (err error) {
+func convert_LazyNodeArray(rm *goja.Runtime, src *lazyNodeArray, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *[]flow.Node:
-		err = convert_LazyList_List(rm, src, dst)
+		err = convert_LazyNodeArray_FlowNodeArray(rm, src, dst)
 	case *any:
-		err = convert_LazyList_Any(rm, src, dst)
+		err = convert_LazyNodeArray_Array(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
-func convert_LazyList_Any(rm *goja.Runtime, src *lazyFlowList, dst *any) (err error) {
+func convert_LazyNodeArray_Array(rm *goja.Runtime, src *lazyNodeArray, dst *any) (err error) {
 	if src.value == nil {
-		return convert_List_Any(rm, src.proto, dst)
+		return convert_FlowNodeArray_Array(rm, src.proto, dst)
 	}
 	var d, ok = (*dst).([]any)
 	if !ok {
 		d = make([]any, 0, src.Len())
 	} else {
+		// todo: replace to [::]
 		d = slices.Grow(d[:0], src.Len())[:0]
 	}
 	for i := 0; i < len(src.value); i++ {
@@ -639,7 +711,7 @@ func convert_LazyList_Any(rm *goja.Runtime, src *lazyFlowList, dst *any) (err er
 				d[idx] = nil
 				continue
 			}
-			jsVal = &lazyFlowNode{rm: rm, proto: src.proto[i]}
+			jsVal = &lazyNodeObject{rm: rm, proto: src.proto[i]}
 		}
 		if err = convert(rm, jsVal, &goVal); err != nil {
 			return fmt.Errorf("%d %w", i, err)
@@ -649,7 +721,7 @@ func convert_LazyList_Any(rm *goja.Runtime, src *lazyFlowList, dst *any) (err er
 	*dst = d
 	return nil
 }
-func convert_LazyList_List(rm *goja.Runtime, src *lazyFlowList, dst *[]flow.Node) (err error) {
+func convert_LazyNodeArray_FlowNodeArray(rm *goja.Runtime, src *lazyNodeArray, dst *[]flow.Node) (err error) {
 	var s = src.value
 	var d = src.proto
 	if s != nil && len(d) > len(s) {
@@ -688,20 +760,20 @@ func convert_LazyList_List(rm *goja.Runtime, src *lazyFlowList, dst *[]flow.Node
 	*dst = d
 	return nil
 }
-func convert_LazyFlowItem(rm *goja.Runtime, src *lazyFlowNode, dst any) (err error) {
+func convert_LazyNodeObject(rm *goja.Runtime, src *lazyNodeObject, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *flow.Node:
 		err = convert_LazyItem_Item(rm, src, dst)
 	case *any:
-		err = convert_LazyItem_Any(rm, src, dst)
+		err = convert_LazyNodeObject_Object(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
 
 //nolint:funlen,gocyclo,gocognit,cyclop // отрефакторить если есть желание
-func convert_LazyItem_Any(rm *goja.Runtime, src *lazyFlowNode, dst *any) (err error) {
+func convert_LazyNodeObject_Object(rm *goja.Runtime, src *lazyNodeObject, dst *any) (err error) {
 	var d, ok = (*dst).(map[string]any)
 	if !ok {
 		d = make(map[string]any, 6)
@@ -821,7 +893,7 @@ func convert_LazyItem_Any(rm *goja.Runtime, src *lazyFlowNode, dst *any) (err er
 }
 
 //nolint:cyclop,funlen,gocognit // todo: отрефакторить
-func convert_LazyItem_Item(rm *goja.Runtime, src *lazyFlowNode, dst *flow.Node) (err error) {
+func convert_LazyItem_Item(rm *goja.Runtime, src *lazyNodeObject, dst *flow.Node) (err error) {
 	*dst = src.proto
 	if jsUUID := src.value.UUID; jsUUID != nil {
 		switch {
@@ -897,18 +969,18 @@ func convert_LazyItem_Item(rm *goja.Runtime, src *lazyFlowNode, dst *flow.Node) 
 	}
 	return nil
 }
-func convert_LazyFlowLive(rm *goja.Runtime, src *lazyFlowLive, dst any) (err error) {
+func convert_LazyLiveObject(rm *goja.Runtime, src *lazyLiveObject, dst any) (err error) {
 	switch dst := dst.(type) {
 	case *flow.Live:
-		err = convert_LazyLive_Live(rm, src, dst)
+		err = convert_LazyLiveObject_FlowLiveObject(rm, src, dst)
 	case *any:
-		err = convert_LazyLive_Any(rm, src, dst)
+		err = convert_LazyLiveObject_Object(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
-func convert_LazyLive_Live(rm *goja.Runtime, src *lazyFlowLive, dst *flow.Live) (err error) {
+func convert_LazyLiveObject_FlowLiveObject(rm *goja.Runtime, src *lazyLiveObject, dst *flow.Live) (err error) {
 	*dst = src.proto
 	if src.value.Since != nil {
 		switch {
@@ -940,7 +1012,7 @@ func convert_LazyLive_Live(rm *goja.Runtime, src *lazyFlowLive, dst *flow.Live) 
 	}
 	return nil
 }
-func convert_LazyLive_Any(rm *goja.Runtime, src *lazyFlowLive, dst *any) (err error) {
+func convert_LazyLiveObject_Object(rm *goja.Runtime, src *lazyLiveObject, dst *any) (err error) {
 	var d, ok = (*dst).(map[string]any)
 	if !ok {
 		d = make(map[string]any, 2)
@@ -1001,7 +1073,7 @@ func convert_LazyObject(rm *goja.Runtime, src *lazyObject, dst any) (err error) 
 		err = convert_LazyObject_Object(rm, src, &src.proto)
 		*dst = src.proto
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -1045,7 +1117,7 @@ func convert_LazyArray(rm *goja.Runtime, src *lazyArray, dst any) (err error) {
 		err = convert_LazyArray_Array(rm, src, &src.proto)
 		*dst = src.proto
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -1095,7 +1167,7 @@ func convert_Object(rm *goja.Runtime, src map[string]any, dst any) (err error) {
 	case *any:
 		err = convert_Object_Any(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -1121,7 +1193,7 @@ func convert_Array(rm *goja.Runtime, src []any, dst any) (err error) {
 	case *any:
 		err = convert_Array_Any(rm, src, dst)
 	default:
-		err = newErrUnexpectedConvert(src, dst)
+		err = newErrUnexpectedType(src, dst)
 	}
 	return err
 }
@@ -1143,34 +1215,6 @@ func convert_Array_Any(rm *goja.Runtime, src []any, dst *any) (err error) {
 
 var ErrUnexpected = fmt.Errorf("unexpected")
 
-func newErrUnexpectedConvert(src, dst any) error {
-	return fmt.Errorf("convert %T to %T %w", src, dst, ErrUnexpected)
+func newErrUnexpectedType(src, dst any) error {
+	return fmt.Errorf("convert %T to %T is %w", src, dst, ErrUnexpected)
 }
-
-const (
-	keyUUID   = "uuid"
-	keyMeta   = "meta"
-	keyHook   = "hook"
-	keyLive   = "live"
-	keyOrigin = "origin"
-
-	keyLiveSince = "since"
-	keyLiveUntil = "until"
-
-	keyCaseWhen = "when"
-	keyCaseThen = "then"
-)
-
-var (
-	reflectLazyList   = reflect.TypeOf((*lazyFlowList)(nil))
-	reflectLazyNode   = reflect.TypeOf((*lazyFlowNode)(nil))
-	reflectLazyLive   = reflect.TypeOf((*lazyFlowLive)(nil))
-	reflectLazyObject = reflect.TypeOf((*lazyObject)(nil))
-	reflectLazyArray  = reflect.TypeOf((*lazyArray)(nil))
-	reflectInt64      = reflect.TypeOf(int64(0))
-	reflectObject     = reflect.TypeOf((map[string]any)(nil))
-	reflectArray      = reflect.TypeOf(([]any)(nil))
-	reflectNull       = reflect.TypeOf(nil)
-	reflectTime       = reflect.TypeOf(time.Time{})
-	reflectString     = reflect.TypeOf("")
-)
