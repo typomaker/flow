@@ -12,6 +12,11 @@ import (
 	"github.com/typomaker/flow/build"
 )
 
+var Load = flow.NewPlugin[Callback]("goja.load")
+var Call = flow.NewPlugin[Callback]("goja.call")
+
+type Callback func(ctx context.Context, rm *goja.Runtime, this *goja.Object) error
+
 func New(path string) flow.Handler {
 	var po sync.Pool
 	var pm *goja.Program

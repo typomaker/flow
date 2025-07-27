@@ -11,46 +11,64 @@ import (
 	slogmulti "github.com/samber/slog-multi"
 )
 
-func New(o ...Setup) (f Flow) {
-	var s Setting
-	for i := range o {
-		o[i].setup(&s)
-	}
-	f.fs = s.FS
-	f.logger = s.Logger
-	f.handler = s.Handler
-	f.extension = slices.Clip(s.Extension)
-	return f
+func New(o ...Option) Flow {
+	var it Flow
+	it.config = it.config.With(o...)
+	return it
+}
+func (it Flow) With(o ...Option) Flow {
+	it.config = it.config.With(o...)
+	return it
 }
 
 type Flow struct {
-	fs        fs.FS
-	logger    *slog.Logger
-	handler   Handler
-	extension []LogAttrer
+	config Config
 }
 
-func (it Flow) setup(s *Setting) {
-	s.FS = it.fs
-	s.Logger = it.logger
-	s.Handler = it.handler
-}
-
-type Setup interface {
-	setup(s *Setting)
-}
-type Setting struct {
-	FS        fs.FS
-	Logger    *slog.Logger
-	Handler   Handler
-	Extension []LogAttrer
-}
-
-func FS(f fs.FS) Setup {
-	if f == nil {
-		return optionFunc(func(s *Setting) {})
+func (it Flow) apply(s *Config) {
+	if v := it.config.FS; v != nil {
+		FS(v).apply(s)
 	}
-	return optionFunc(func(s *Setting) {
+	if v := it.config.Logger; v != nil {
+		Logger(v).apply(s)
+	}
+	if v := it.config.Handler; v != nil {
+		Handler(v).apply(s)
+	}
+	if v := it.config.Modifier; v != nil {
+		Modifier(v...).apply(s)
+	}
+	if v := it.config.Notifier; v != nil {
+		Notifier(v...).apply(s)
+	}
+}
+
+type Option interface {
+	apply(s *Config)
+}
+
+type Config struct {
+	FS       fs.FS
+	Logger   *slog.Logger
+	Handler  Handler
+	Modifier []func(context.Context, Node) error
+	Notifier []func(context.Context, Case) error
+	Plugin   map[string]any
+}
+
+func (it Config) With(o ...Option) Config {
+	for i := range o {
+		o[i].apply(&it)
+	}
+	it.Modifier = slices.Clip(it.Modifier)
+	it.Notifier = slices.Clip(it.Notifier)
+	return it
+}
+func FS(f fs.FS) Option {
+	if f == nil {
+		return optionFunc(func(s *Config) {})
+	}
+	return optionFunc(func(s *Config) {
 		if s.FS != nil {
 			s.FS = mergefs.Merge(f, s.FS)
 		} else {
@@ -59,16 +77,16 @@ func FS(f fs.FS) Setup {
 	})
 }
 func (it Flow) FS() fs.FS {
-	if it.fs != nil {
-		return it.fs
+	if it.config.FS != nil {
+		return it.config.FS
 	}
 	return noopFS{}
 }
-func Logger(l *slog.Logger) Setup {
+func Logger(l *slog.Logger) Option {
 	if l == nil {
-		return optionFunc(func(s *Setting) {})
+		return optionFunc(func(s *Config) {})
 	}
-	return optionFunc(func(s *Setting) {
+	return optionFunc(func(s *Config) {
 		if s.Logger != nil {
 			s.Logger = slog.New(
 				slogmulti.Fanout(
@@ -82,47 +100,42 @@ func Logger(l *slog.Logger) Setup {
 	})
 }
 func (it Flow) Logger() *slog.Logger {
-	if it.logger != nil {
-		return it.logger
+	if it.config.Logger != nil {
+		return it.config.Logger
 	}
 	return slog.Default()
 }
 func (it Flow) Handler() Handler {
-	return it.handler
+	return it.config.Handler
 }
-func Extension(l ...LogAttrer) Setup {
-	if l == nil {
-		return optionFunc(func(s *Setting) {})
-	}
-	return optionFunc(func(s *Setting) {
-		s.Extension = append(s.Extension, l...)
+func Modifier(n ...func(ctx context.Context, c Node) error) Option {
+	return optionFunc(func(c *Config) {
+		c.Modifier = append(c.Modifier, n...)
 	})
 }
-func (it Flow) Extension() []LogAttrer {
-	return it.extension
+func (it Flow) Modifier() []func(context.Context, Node) error {
+	return it.config.Modifier
 }
-func (it Flow) Run(ctx context.Context, target []Node, extension ...LogAttrer) (err error) {
-	if it.handler == nil {
+func Notifier(n ...func(ctx context.Context, c Case) error) Option {
+	return optionFunc(func(c *Config) {
+		c.Notifier = append(c.Notifier, n...)
+	})
+}
+func (it Flow) Notifier() []func(context.Context, Case) error {
+	return it.config.Notifier
+}
+func (it Flow) Run(ctx context.Context, target []Node) (err error) {
+	if it.config.Handler == nil {
 		return
-	}
-	if extension != nil {
-		if it.extension != nil {
-			extension = append(
-				make([]LogAttrer, 0, len(it.extension)+len(extension)),
-				extension...,
-			)
-		}
-		it.extension = extension
 	}
 	if _, ok := ctx.Value(contextSettingKey{}).(Flow); !ok {
 		ctx = ContextWith(ctx, it)
 	}
-	if err = it.handler(ctx, target, noopNext); err != nil {
+	if err = it.config.Handler(ctx, target, noopNext); err != nil {
 		return err
 	}
 	return nil
 }
-
 func Pipe(hs ...Handler) Handler {
 	return func(ctx context.Context, target []Node, next Next) (err error) {
 		var i = 0
@@ -226,7 +239,7 @@ func Never(h Handler) Handler {
 
 type Handler func(ctx context.Context, target []Node, next Next) (err error)
 
-func (it Handler) setup(s *Setting) {
+func (it Handler) apply(s *Config) {
 	if s.Handler != nil {
 		s.Handler = Pipe(s.Handler, it)
 	} else {
@@ -240,14 +253,6 @@ func noopNext(n []Node) error {
 	return nil
 }
 
-type Notifier interface {
-	LogAttrer
-	Notify(ctx context.Context, c Case) error
-}
-type Modifier interface {
-	LogAttrer
-	Modify(ctx context.Context, m Node) error
-}
 type LogAttrer interface {
 	LogAttr() slog.Attr
 }
@@ -264,9 +269,9 @@ func ContextWith(ctx context.Context, s Flow) context.Context {
 	return context.WithValue(ctx, contextSettingKey{}, s)
 }
 
-type optionFunc func(*Setting)
+type optionFunc func(*Config)
 
-func (it optionFunc) setup(f *Setting) {
+func (it optionFunc) apply(f *Config) {
 	it(f)
 }
 
