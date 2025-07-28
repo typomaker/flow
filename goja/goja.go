@@ -12,11 +12,6 @@ import (
 	"github.com/typomaker/flow/build"
 )
 
-var Load = flow.NewPlugin[Callback]("goja.load")
-var Call = flow.NewPlugin[Callback]("goja.call")
-
-type Callback func(ctx context.Context, rm *goja.Runtime, this *goja.Object) error
-
 func New(path string) flow.Handler {
 	var po sync.Pool
 	var pm *goja.Program
@@ -48,6 +43,11 @@ func New(path string) flow.Handler {
 			if err = importConsole(ctx, rm, path); err != nil {
 				return fmt.Errorf("goja: %w", err)
 			}
+			if cb, ok := OnInit.Of(flow.Context(ctx)); ok {
+				if err = cb(ctx, rm, rm.GlobalObject()); err != nil {
+					return fmt.Errorf("goja: plugin %q: %w", OnInit.Name, err)
+				}
+			}
 			if _, err = rm.RunProgram(pm); err != nil {
 				return fmt.Errorf("goja: %w", err)
 			}
@@ -68,6 +68,11 @@ func New(path string) flow.Handler {
 		}
 		if err = importNotify(ctx, rm, jsThis); err != nil {
 			return fmt.Errorf("goja: %w", err)
+		}
+		if cb, ok := OnCall.Of(flow.Context(ctx)); ok {
+			if err = cb(ctx, rm, jsThis); err != nil {
+				return fmt.Errorf("goja: plugin %q: %w", OnCall.Name, err)
+			}
 		}
 		var jsNext goja.Value
 		if err = importNext(ctx, rm, next, &jsNext); err != nil {
@@ -97,7 +102,6 @@ func exportMain(_ context.Context, rm *goja.Runtime, main *goja.Callable) (err e
 }
 func importConsole(ctx context.Context, rm *goja.Runtime, path string) (err error) {
 	var flowctx = flow.Context(ctx)
-
 	var logger = flowctx.Logger().With(
 		slog.Group("runtime",
 			slog.String("name", "goja"),
@@ -128,18 +132,7 @@ func importConsole(ctx context.Context, rm *goja.Runtime, path string) (err erro
 func importModify(ctx context.Context, rm *goja.Runtime, this *goja.Object) (err error) {
 	const name = "modify"
 	var flowctx = flow.Context(ctx)
-	var modifiers []flow.Modifier
-
-	for _, extension := range flowctx.Extension() {
-		if modifier, ok := extension.(flow.Modifier); ok {
-			modifiers = append(modifiers, modifier)
-		}
-	}
-	if len(modifiers) == 0 {
-		return this.Set(name, rm.ToValue(func(c goja.FunctionCall) goja.Value {
-			return goja.Undefined()
-		}))
-	}
+	var modify = flowctx.Modifier()
 	return this.Set(name, rm.ToValue(func(c goja.FunctionCall) goja.Value {
 		if len(c.Arguments) == 0 {
 			return goja.Undefined()
@@ -151,31 +144,17 @@ func importModify(ctx context.Context, rm *goja.Runtime, this *goja.Object) (err
 			err = fmt.Errorf("goja: %w", err)
 			panic(rm.NewGoError(err))
 		}
-		for _, modifier := range modifiers {
-			if err = modifier.Modify(ctx, goFlowNode); err != nil {
-				err = fmt.Errorf("goja: %w", err)
-				panic(rm.NewGoError(err))
-			}
+		if err = modify(ctx, goFlowNode); err != nil {
+			err = fmt.Errorf("goja: %w", err)
+			panic(rm.NewGoError(err))
 		}
-
 		return goja.Undefined()
 	}))
 }
 func importNotify(ctx context.Context, rm *goja.Runtime, this *goja.Object) (err error) {
 	const name = "notify"
 	var flowctx = flow.Context(ctx)
-	var notifiers []flow.Notifier
-
-	for _, extension := range flowctx.Extension() {
-		if notifier, ok := extension.(flow.Notifier); ok {
-			notifiers = append(notifiers, notifier)
-		}
-	}
-	if len(notifiers) == 0 {
-		return this.Set(name, rm.ToValue(func(c goja.FunctionCall) goja.Value {
-			return goja.Undefined()
-		}))
-	}
+	var notify = flowctx.Notifier()
 	return this.Set(name, rm.ToValue(func(c goja.FunctionCall) goja.Value {
 		if len(c.Arguments) == 0 {
 			return goja.Undefined()
@@ -187,13 +166,10 @@ func importNotify(ctx context.Context, rm *goja.Runtime, this *goja.Object) (err
 			err = fmt.Errorf("goja: %w", err)
 			panic(rm.NewGoError(err))
 		}
-		for _, notifier := range notifiers {
-			if err = notifier.Notify(ctx, goFlowCase); err != nil {
-				err = fmt.Errorf("goja: %w", err)
-				panic(rm.NewGoError(err))
-			}
+		if err = notify(ctx, goFlowCase); err != nil {
+			err = fmt.Errorf("goja: %w", err)
+			panic(rm.NewGoError(err))
 		}
-
 		return goja.Undefined()
 	}))
 }
@@ -273,7 +249,6 @@ func newPrinter(ctx context.Context, rm *goja.Runtime, printer func(context.Cont
 				nest = append(nest, slog.Any("args", s))
 			}
 		}
-
 		var fields = append(root, slog.Group("js", nest...))
 		printer(ctx, message, fields...)
 		return nil

@@ -1,25 +1,24 @@
 package flow
 
-type Plugin[F any] struct {
-	name string
-}
+import (
+	"fmt"
+)
 
-func NewPlugin[F any](name string) Plugin[F] {
-	return Plugin[F]{name: name}
-}
-func (it Plugin[F]) Set(v ...F) Option {
+type Plugin[F any] struct{ Name string }
+
+func (it Plugin[F]) New(v F) Option {
 	return optionFunc(func(c *Config) {
-		if f, ok := c.Plugin[it.name].([]F); ok {
-			c.Plugin[it.name] = append(f, v...)
-		} else {
-			c.Plugin[it.name] = v
+		if e, ok := c.Plugin[it.Name]; ok {
+			if e, ok := e.(interface{ With(v F) F }); ok {
+				v = e.With(v)
+			} else {
+				panic(fmt.Sprintf("plugin %q already enabled", it.Name))
+			}
 		}
+		c.Plugin[it.Name] = v
 	})
 }
-func (it Plugin[F]) Get(f Flow) []F {
-	if v, ok := f.config.Plugin[it.name].([]F); ok {
-		return v
-	}
-	var zero []F
-	return zero
+func (it Plugin[F]) Of(f Flow) (plugin F, ok bool) {
+	plugin, ok = f.config.Plugin[it.Name].(F)
+	return plugin, ok
 }

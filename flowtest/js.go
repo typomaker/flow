@@ -466,6 +466,7 @@ var jsCases = []struct {
 		name: "modify with js object",
 		test: func(t *testing.T, provide Provider) {
 			b := bytes.Buffer{}
+			modified := []flow.Node{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
 					"path1/index.js": &fstest.MapFile{
@@ -487,33 +488,33 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
+				newModifierOk(&modified),
 				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{},
 			}
-			modify := &modifier{}
-			err := f.Run(context.Background(), target, modify)
+			err := f.Run(context.Background(), target)
 			require.NoError(t, err)
-			require.Len(t, modify.flowNode, 1)
+			require.Len(t, modified, 1)
 			require.Equal(t,
 				flow.MustUUID("08a0cfc4-9dd8-4869-9eec-47ab946e5da3"),
-				modify.flowNode[0].UUID.GetOrZero(),
+				modified[0].UUID.GetOrZero(),
 			)
 			require.Equal(t,
 				flow.Meta{"foo": true},
-				modify.flowNode[0].Meta.GetOrZero(),
+				modified[0].Meta.GetOrZero(),
 			)
 			require.Equal(t,
 				flow.Hook{"buz": "bar"},
-				modify.flowNode[0].Hook.GetOrZero(),
+				modified[0].Hook.GetOrZero(),
 			)
 			require.Equal(t,
 				flow.Live{
 					Since: option.Some(time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
 					Until: option.Some(time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)),
 				},
-				modify.flowNode[0].Live.GetOrZero(),
+				modified[0].Live.GetOrZero(),
 			)
 		},
 	},
@@ -547,6 +548,7 @@ var jsCases = []struct {
 		name: "notify with js object",
 		test: func(t *testing.T, provide Provider) {
 			b := bytes.Buffer{}
+			notified := []flow.Case{}
 			f := flow.New(
 				flow.FS(fstest.MapFS{
 					"path1/index.js": &fstest.MapFile{
@@ -577,36 +579,37 @@ var jsCases = []struct {
 				flow.Logger(
 					slog.New(slog.NewJSONHandler(&b, slogJsonHandlerOptions)),
 				),
+				newNotifierOk(&notified),
 				provide(t, "path1/index.js"),
 			)
 			target := []flow.Node{
 				{},
 			}
-			notify := &notifier{}
-			err := f.Run(context.Background(), target, notify)
+
+			err := f.Run(context.Background(), target)
 			require.NoError(t, err)
-			require.Len(t, notify.flowCase, 1)
+			require.Len(t, notified, 1)
 			require.Equal(t,
 				[]flow.UUID{
 					flow.MustUUID("08a0cfc4-9dd8-4869-9eec-47ab946e5da3"),
 					flow.MustUUID("c72e5013-f676-4f24-8df4-b49ec7113b24"),
 				},
-				notify.flowCase[0].When.UUID.GetOrZero(),
+				notified[0].When.UUID.GetOrZero(),
 			)
 			require.Equal(t,
 				flow.Meta{"foo": true},
-				notify.flowCase[0].Then.Meta.GetOrZero(),
+				notified[0].Then.Meta.GetOrZero(),
 			)
 			require.Equal(t,
 				flow.Hook{"buz": "bar"},
-				notify.flowCase[0].Then.Hook.GetOrZero(),
+				notified[0].Then.Hook.GetOrZero(),
 			)
 			require.Equal(t,
 				flow.Live{
 					Since: option.Some(time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
 					Until: option.Some(time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)),
 				},
-				notify.flowCase[0].Then.Live.GetOrZero(),
+				notified[0].Then.Live.GetOrZero(),
 			)
 		},
 	},
@@ -801,32 +804,15 @@ var slogJsonHandlerOptions = &slog.HandlerOptions{
 	},
 }
 
-type modifier struct {
-	flowNode []flow.Node
-	err      error
+func newModifierOk(output *[]flow.Node) flow.Modifier {
+	return func(ctx context.Context, c flow.Node) error {
+		*output = append(*output, c)
+		return nil
+	}
 }
-
-var _ flow.Modifier = (*modifier)(nil)
-
-func (m *modifier) Modify(ctx context.Context, n flow.Node) error {
-	m.flowNode = append(m.flowNode, n)
-	return m.err
-}
-func (m *modifier) LogAttr() slog.Attr {
-	return slog.Group("modifier", slog.String("foo", "bar"))
-}
-
-type notifier struct {
-	flowCase []flow.Case
-	err      error
-}
-
-var _ flow.Notifier = (*notifier)(nil)
-
-func (m *notifier) Notify(ctx context.Context, n flow.Case) error {
-	m.flowCase = append(m.flowCase, n)
-	return m.err
-}
-func (m *notifier) LogAttr() slog.Attr {
-	return slog.Group("notifier", slog.String("foo", "bar"))
+func newNotifierOk(output *[]flow.Case) flow.Notifier {
+	return func(ctx context.Context, c flow.Case) error {
+		*output = append(*output, c)
+		return nil
+	}
 }

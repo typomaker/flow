@@ -2,9 +2,9 @@ package flow
 
 import (
 	"context"
+	"errors"
 	"io/fs"
 	"log/slog"
-	"slices"
 	"time"
 
 	"github.com/laher/mergefs"
@@ -36,10 +36,10 @@ func (it Flow) apply(s *Config) {
 		Handler(v).apply(s)
 	}
 	if v := it.config.Modifier; v != nil {
-		Modifier(v...).apply(s)
+		Modifier(v).apply(s)
 	}
 	if v := it.config.Notifier; v != nil {
-		Notifier(v...).apply(s)
+		Notifier(v).apply(s)
 	}
 }
 
@@ -47,23 +47,6 @@ type Option interface {
 	apply(s *Config)
 }
 
-type Config struct {
-	FS       fs.FS
-	Logger   *slog.Logger
-	Handler  Handler
-	Modifier []func(context.Context, Node) error
-	Notifier []func(context.Context, Case) error
-	Plugin   map[string]any
-}
-
-func (it Config) With(o ...Option) Config {
-	for i := range o {
-		o[i].apply(&it)
-	}
-	it.Modifier = slices.Clip(it.Modifier)
-	it.Notifier = slices.Clip(it.Notifier)
-	return it
-}
 func FS(f fs.FS) Option {
 	if f == nil {
 		return optionFunc(func(s *Config) {})
@@ -108,20 +91,48 @@ func (it Flow) Logger() *slog.Logger {
 func (it Flow) Handler() Handler {
 	return it.config.Handler
 }
-func Modifier(n ...func(ctx context.Context, c Node) error) Option {
-	return optionFunc(func(c *Config) {
-		c.Modifier = append(c.Modifier, n...)
-	})
+
+type Modifier func(ctx context.Context, c Node) error
+
+func (it Modifier) apply(c *Config) {
+	if c.Modifier != nil {
+		var m = c.Modifier
+		c.Modifier = func(ctx context.Context, n Node) error {
+			return errors.Join(
+				m(ctx, n),
+				it(ctx, n),
+			)
+		}
+	} else {
+		c.Modifier = it
+	}
 }
-func (it Flow) Modifier() []func(context.Context, Node) error {
+func (it Flow) Modifier() Modifier {
+	if it.config.Modifier == nil {
+		return func(ctx context.Context, n Node) error { return nil }
+	}
 	return it.config.Modifier
 }
-func Notifier(n ...func(ctx context.Context, c Case) error) Option {
-	return optionFunc(func(c *Config) {
-		c.Notifier = append(c.Notifier, n...)
-	})
+
+type Notifier func(ctx context.Context, c Case) error
+
+func (it Notifier) apply(c *Config) {
+	if c.Notifier != nil {
+		var m = c.Notifier
+		c.Notifier = func(ctx context.Context, n Case) error {
+			return errors.Join(
+				m(ctx, n),
+				it(ctx, n),
+			)
+		}
+	} else {
+		c.Notifier = it
+	}
 }
-func (it Flow) Notifier() []func(context.Context, Case) error {
+func (it Flow) Notifier() Notifier {
+	if it.config.Notifier == nil {
+		return func(ctx context.Context, c Case) error { return nil }
+	}
 	return it.config.Notifier
 }
 func (it Flow) Run(ctx context.Context, target []Node) (err error) {
@@ -251,10 +262,6 @@ type Next func(target []Node) error
 
 func noopNext(n []Node) error {
 	return nil
-}
-
-type LogAttrer interface {
-	LogAttr() slog.Attr
 }
 
 type contextSettingKey struct{}
